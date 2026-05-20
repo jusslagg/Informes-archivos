@@ -56,7 +56,9 @@ def _apply_filter_specs(df, filters):
 
 def _apply_fecha_baja_range(df, date_range):
     if not date_range or "FECHA BAJA" not in df.columns:
-        return df
+        working = df.copy()
+        fecha_baja = pd.to_datetime(working["FECHA BAJA"], errors="coerce")
+        return working[fecha_baja <= pd.Timestamp.today().normalize()]
     working = df.copy()
     fecha_baja = pd.to_datetime(working["FECHA BAJA"], errors="coerce")
     if date_range.start:
@@ -68,6 +70,8 @@ def _apply_fecha_baja_range(df, date_range):
         end = pd.to_datetime(date_range.end, errors="coerce")
         if pd.notna(end):
             working = working[fecha_baja <= end]
+    else:
+        working = working[fecha_baja <= pd.Timestamp.today().normalize()]
     return working
 
 

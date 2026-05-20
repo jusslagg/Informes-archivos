@@ -198,6 +198,11 @@ function formatDate(input) {
   return `${date.getFullYear()}-${month}-${day}`;
 }
 
+function todayDate() {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+
 function cleanPayroll(rawRows) {
   const renamedRows = rawRows.map((row) => {
     const next = {};
@@ -307,6 +312,7 @@ function applyFechaBajaRange(rows, dateRange = {}) {
     if (!fechaBaja) return false;
     const start = dateRange.start ? dateValue(dateRange.start) : null;
     const end = dateRange.end ? dateValue(dateRange.end) : null;
+    if (!end && fechaBaja > todayDate()) return false;
     if (start && fechaBaja < start) return false;
     if (end && fechaBaja > end) return false;
     return true;
