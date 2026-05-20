@@ -55,6 +55,12 @@ export default function UploadPage({ navigate }) {
               <strong>{result.validations.length}</strong>
             </div>
           </div>
+          {result.date_summary && (
+            <div className="alert">
+              FECHA BAJA leida: {result.date_summary.min || "sin dato"} a {result.date_summary.max || "sin dato"}.
+              Bajas con fecha: {result.date_summary.total}. Periodos: {result.date_summary.periods || "sin dato"}.
+            </div>
+          )}
           <DataTable
             columns={["severity", "type", "message", "count"]}
             rows={result.validations}

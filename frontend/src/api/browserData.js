@@ -90,6 +90,7 @@ const state = {
   rows: [],
   missingCore: [],
   validations: [],
+  dateSummary: null,
 };
 
 function normalizeColumnName(value) {
@@ -311,7 +312,19 @@ async function readWorkbook(file) {
   const buffer = await file.arrayBuffer();
   const workbook = XLSX.read(buffer, { type: "array", cellDates: true });
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
-  return XLSX.utils.sheet_to_json(sheet, { defval: "" });
+  const hiddenRows = new Set(
+    (sheet["!rows"] || [])
+      .map((row, index) => (row?.hidden ? index : null))
+      .filter((index) => index !== null),
+  );
+  const rows = XLSX.utils.sheet_to_json(sheet, { defval: "", header: 1, raw: true });
+  const [headers = [], ...body] = rows;
+  return body
+    .map((cells, bodyIndex) => ({ cells, rowIndex: bodyIndex + 1 }))
+    .filter(({ cells, rowIndex }) => !hiddenRows.has(rowIndex) && cells.some((cell) => String(cell ?? "").trim() !== ""))
+    .map(({ cells }) =>
+      Object.fromEntries(headers.map((header, index) => [String(header || "").trim(), cells[index] ?? ""])),
+    );
 }
 
 function ensureRows() {
@@ -411,6 +424,25 @@ function buildDashboard(rows) {
   };
 }
 
+function buildDateSummary(rows) {
+  const bajas = rows
+    .filter(isBajaRow)
+    .map((row) => dateValue(row["FECHA BAJA"]))
+    .filter(Boolean)
+    .sort((a, b) => a - b);
+  const periods = new Map();
+  bajas.forEach((date) => {
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+    periods.set(key, (periods.get(key) || 0) + 1);
+  });
+  return {
+    min: bajas[0] ? formatDate(bajas[0]) : "",
+    max: bajas[bajas.length - 1] ? formatDate(bajas[bajas.length - 1]) : "",
+    total: bajas.length,
+    periods: [...periods.entries()].map(([period, count]) => `${period}: ${count}`).join(", "),
+  };
+}
+
 export async function uploadPayrollBrowser(file) {
   const rawRows = await readWorkbook(file);
   const { rows, missingCore } = cleanPayroll(rawRows);
@@ -418,12 +450,14 @@ export async function uploadPayrollBrowser(file) {
   state.rows = rows;
   state.missingCore = missingCore;
   state.validations = validations;
+  state.dateSummary = buildDateSummary(rows);
   return {
     batch_id: "browser",
     rows: rows.length,
     columns: ACTIVE_COLUMNS,
     missing_core_columns: missingCore,
     validations,
+    date_summary: state.dateSummary,
     dashboard: buildDashboard(rows),
   };
 }
