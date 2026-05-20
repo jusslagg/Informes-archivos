@@ -1,4 +1,19 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+import {
+  getBajasByMonthBrowser,
+  getBajasByReasonBrowser,
+  getBajasByTenureBrowser,
+  getBajasReasonByCampaignBrowser,
+  getDashboardBrowser,
+  getDatasetMetadataBrowser,
+  getFilteredRecordsBrowser,
+  getStaffingByCampaignBrowser,
+  getValidationsBrowser,
+  runDynamicAnalysisBrowser,
+  uploadPayrollBrowser,
+} from "./browserData.js";
+
+const API_URL = import.meta.env.VITE_API_URL || "";
+export const usesBrowserData = !API_URL;
 
 async function request(path, options = {}) {
   const response = await fetch(`${API_URL}${path}`, options);
@@ -10,16 +25,19 @@ async function request(path, options = {}) {
 }
 
 export async function uploadPayroll(file) {
+  if (usesBrowserData) return uploadPayrollBrowser(file);
   const formData = new FormData();
   formData.append("file", file);
   return request("/upload", { method: "POST", body: formData });
 }
 
 export function getDashboard() {
+  if (usesBrowserData) return Promise.resolve(getDashboardBrowser());
   return request("/dashboard");
 }
 
 export function getFilteredDashboard(filters = []) {
+  if (usesBrowserData) return Promise.resolve(getDashboardBrowser(filters));
   if (!filters.length) return getDashboard();
   return request("/dashboard", {
     method: "POST",
@@ -29,10 +47,12 @@ export function getFilteredDashboard(filters = []) {
 }
 
 export function getValidations() {
+  if (usesBrowserData) return Promise.resolve(getValidationsBrowser());
   return request("/validations");
 }
 
 export function getDatasetMetadata() {
+  if (usesBrowserData) return Promise.resolve(getDatasetMetadataBrowser());
   return request("/dataset-metadata");
 }
 
@@ -45,6 +65,7 @@ export function getFilterOptions(filters = []) {
 }
 
 export function getFilteredRecords(filters = []) {
+  if (usesBrowserData) return Promise.resolve(getFilteredRecordsBrowser(filters));
   return request("/records", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -53,6 +74,7 @@ export function getFilteredRecords(filters = []) {
 }
 
 export function getStaffingByCampaign(filters = []) {
+  if (usesBrowserData) return Promise.resolve(getStaffingByCampaignBrowser(filters));
   return request("/staffing-by-campaign", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -61,6 +83,7 @@ export function getStaffingByCampaign(filters = []) {
 }
 
 export function getBajasByMonth(filters = [], dateRange = {}) {
+  if (usesBrowserData) return Promise.resolve(getBajasByMonthBrowser(filters, dateRange));
   return request("/bajas-by-month", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -69,6 +92,7 @@ export function getBajasByMonth(filters = [], dateRange = {}) {
 }
 
 export function getBajasByTenure(filters = [], dateRange = {}) {
+  if (usesBrowserData) return Promise.resolve(getBajasByTenureBrowser(filters, dateRange));
   return request("/bajas-by-tenure", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -77,6 +101,7 @@ export function getBajasByTenure(filters = [], dateRange = {}) {
 }
 
 export function getBajasByReason(filters = [], dateRange = {}) {
+  if (usesBrowserData) return Promise.resolve(getBajasByReasonBrowser(filters, dateRange));
   return request("/bajas-by-reason", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -85,6 +110,7 @@ export function getBajasByReason(filters = [], dateRange = {}) {
 }
 
 export function getBajasReasonByCampaign(filters = [], dateRange = {}) {
+  if (usesBrowserData) return Promise.resolve(getBajasReasonByCampaignBrowser(filters, dateRange));
   return request("/bajas-reason-by-campaign", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -93,6 +119,7 @@ export function getBajasReasonByCampaign(filters = [], dateRange = {}) {
 }
 
 export function runDynamicAnalysis(payload) {
+  if (usesBrowserData) return Promise.resolve(runDynamicAnalysisBrowser(payload));
   return request("/dynamic-analysis", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -101,5 +128,6 @@ export function runDynamicAnalysis(payload) {
 }
 
 export function exportUrl() {
+  if (usesBrowserData) return null;
   return `${API_URL}/export`;
 }

@@ -40,6 +40,10 @@ jobs:
           VITE_BASE_PATH: /${{ github.event.repository.name }}/
         run: npm run build
 
+      - name: Disable Jekyll
+        run: New-Item -ItemType File -Path frontend/dist/.nojekyll -Force
+        shell: pwsh
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

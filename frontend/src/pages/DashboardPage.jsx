@@ -10,6 +10,7 @@ import {
   getFilteredDashboard,
   getFilteredRecords,
   getStaffingByCampaign,
+  usesBrowserData,
 } from "../api/client.js";
 import BajasByMonthTable from "../components/BajasByMonthTable.jsx";
 import BajasReasonByCampaignTable from "../components/BajasReasonByCampaignTable.jsx";
@@ -127,9 +128,11 @@ export default function DashboardPage() {
           >
             <FileSpreadsheet size={18} />
           </button>
-          <a className="icon-button" href={exportUrl()} title="Exportar Excel">
-            <Download size={18} />
-          </a>
+          {!usesBrowserData && (
+            <a className="icon-button" href={exportUrl()} title="Exportar Excel">
+              <Download size={18} />
+            </a>
+          )}
         </div>
       </header>
 
