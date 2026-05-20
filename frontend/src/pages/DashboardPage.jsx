@@ -180,7 +180,11 @@ export default function DashboardPage() {
         dateRange={bajasDateRange}
       />
 
-      <StaffingRequirements staffingRows={staffingRows} bajasByMonth={bajasByMonth} />
+      <StaffingRequirements
+        staffingRows={staffingRows}
+        bajasByMonth={bajasByMonth}
+        bajasDateRange={bajasDateRange}
+      />
 
       <DataTable
         columns={records.columns}

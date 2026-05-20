@@ -32,7 +32,8 @@ function getBajasCampaign(item) {
   return item["Campaña"] || item["CampaÃ±a"] || item["CampaÃƒÂ±a"] || item.CAMPANA || item.campana || "";
 }
 
-function currentMonthLabels(months = []) {
+function rotationMonthLabels(months = [], dateRange = {}) {
+  if (dateRange.start || dateRange.end) return months;
   const current = new Date();
   const monthName = new Intl.DateTimeFormat("es-AR", { month: "long" }).format(current).toLowerCase();
   const year = String(current.getFullYear());
@@ -83,7 +84,11 @@ function parseRequirements(text) {
   }, {});
 }
 
-export default function StaffingRequirements({ staffingRows = [], bajasByMonth = { months: [], rows: [] } }) {
+export default function StaffingRequirements({
+  staffingRows = [],
+  bajasByMonth = { months: [], rows: [] },
+  bajasDateRange = { start: "", end: "" },
+}) {
   const inputRef = useRef(null);
   const [requirements, setRequirements] = useState({});
   const [fileName, setFileName] = useState("");
@@ -91,7 +96,7 @@ export default function StaffingRequirements({ staffingRows = [], bajasByMonth =
 
   const rows = useMemo(() => {
     const campaignMap = new Map(staffingRows.map((item) => [normalize(getCampaign(item)), item]));
-    const monthLabels = currentMonthLabels(bajasByMonth.months || []);
+    const monthLabels = rotationMonthLabels(bajasByMonth.months || [], bajasDateRange);
     const bajasMap = new Map(
       (bajasByMonth.rows || []).map((item) => [
         normalize(getBajasCampaign(item)),
@@ -124,7 +129,7 @@ export default function StaffingRequirements({ staffingRows = [], bajasByMonth =
       .filter((row) => row.activo > 0 || row.licencia > 0 || row.requeridos > 0)
       .filter((row) => row.campana.toLowerCase().includes(query.toLowerCase()))
       .sort((a, b) => Math.abs(b.diferencia) - Math.abs(a.diferencia));
-  }, [bajasByMonth, query, requirements, staffingRows]);
+  }, [bajasByMonth, bajasDateRange, query, requirements, staffingRows]);
 
   const totals = rows.reduce(
     (acc, row) => ({
@@ -243,7 +248,7 @@ export default function StaffingRequirements({ staffingRows = [], bajasByMonth =
         <div className="table-toolbar">
           <div>
             <h2>Requeridos por campaña</h2>
-            <span>Rotación mes = bajas del mes en curso / requerido del servicio</span>
+            <span>Rotación mes = bajas del período filtrado / requerido del servicio</span>
           </div>
           <label className="search-field compact">
             <Search size={15} />
