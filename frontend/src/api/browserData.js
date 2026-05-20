@@ -212,6 +212,19 @@ function todayDate() {
   return new Date(now.getFullYear(), now.getMonth(), now.getDate());
 }
 
+function sixMonthsAgo(date) {
+  return new Date(date.getFullYear(), date.getMonth() - 5, 1);
+}
+
+function maxBajaDate(rows) {
+  return rows.reduce((maxDate, row) => {
+    if (!isBajaRow(row)) return maxDate;
+    const fechaBaja = dateValue(row["FECHA BAJA"]);
+    if (!fechaBaja) return maxDate;
+    return !maxDate || fechaBaja > maxDate ? fechaBaja : maxDate;
+  }, null);
+}
+
 function cleanPayroll(rawRows) {
   const renamedRows = rawRows.map((row) => {
     const next = {};
@@ -316,13 +329,17 @@ function applyFilters(rows, filters = []) {
 }
 
 function applyFechaBajaRange(rows, dateRange = {}) {
+  const fallbackEnd = todayDate();
+  const defaultEnd = maxBajaDate(rows) || fallbackEnd;
+  const defaultStart = sixMonthsAgo(defaultEnd);
   return rows.filter((row) => {
     if (!isBajaRow(row)) return false;
     const fechaBaja = dateValue(row["FECHA BAJA"]);
     if (!fechaBaja) return false;
     const start = dateRange.start ? dateValue(dateRange.start) : null;
     const end = dateRange.end ? dateValue(dateRange.end) : null;
-    if (!end && fechaBaja > todayDate()) return false;
+    if (!start && fechaBaja < defaultStart) return false;
+    if (!end && fechaBaja > defaultEnd) return false;
     if (start && fechaBaja < start) return false;
     if (end && fechaBaja > end) return false;
     return true;
