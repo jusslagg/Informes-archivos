@@ -1,4 +1,13 @@
-import { BarChart3, FileSpreadsheet, LayoutDashboard, SearchCheck } from "lucide-react";
+import {
+  BarChart3,
+  FileSpreadsheet,
+  LayoutDashboard,
+  Menu,
+  PanelLeftClose,
+  PanelLeftOpen,
+  SearchCheck,
+  X,
+} from "lucide-react";
 import { useState } from "react";
 import AnalysisPage from "./pages/AnalysisPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
@@ -14,11 +23,43 @@ const pages = [
 
 export default function App() {
   const [activePage, setActivePage] = useState("upload");
+  const [sidebarHidden, setSidebarHidden] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const CurrentPage = pages.find((page) => page.id === activePage)?.component || UploadPage;
 
+  const navigate = (pageId) => {
+    setActivePage(pageId);
+    setMobileMenuOpen(false);
+  };
+
   return (
-    <main className="app-shell">
-      <aside className="sidebar">
+    <main className={sidebarHidden ? "app-shell sidebar-collapsed" : "app-shell"}>
+      <header className="mobile-topbar">
+        <button className="icon-button" onClick={() => setMobileMenuOpen(true)} title="Abrir menu">
+          <Menu size={20} />
+        </button>
+        <div className="mobile-title">
+          <strong>Análisis Nómina</strong>
+          <small>Workforce intelligence</small>
+        </div>
+      </header>
+
+      <button
+        className="desktop-sidebar-toggle icon-button"
+        onClick={() => setSidebarHidden((current) => !current)}
+        title={sidebarHidden ? "Mostrar menu" : "Ocultar menu"}
+      >
+        {sidebarHidden ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
+      </button>
+
+      {mobileMenuOpen && (
+        <button className="sidebar-backdrop" onClick={() => setMobileMenuOpen(false)} aria-label="Cerrar menu" />
+      )}
+
+      <aside className={mobileMenuOpen ? "sidebar open" : "sidebar"}>
+        <button className="mobile-close icon-button" onClick={() => setMobileMenuOpen(false)} title="Cerrar menu">
+          <X size={18} />
+        </button>
         <div className="brand">
           <span className="brand-mark">AN</span>
           <div>
@@ -33,7 +74,7 @@ export default function App() {
               <button
                 key={page.id}
                 className={activePage === page.id ? "nav-item active" : "nav-item"}
-                onClick={() => setActivePage(page.id)}
+                onClick={() => navigate(page.id)}
                 title={page.label}
               >
                 <Icon size={18} />
@@ -44,7 +85,7 @@ export default function App() {
         </nav>
       </aside>
       <section className="content">
-        <CurrentPage navigate={setActivePage} />
+        <CurrentPage navigate={navigate} />
       </section>
     </main>
   );
