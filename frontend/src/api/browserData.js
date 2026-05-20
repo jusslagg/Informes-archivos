@@ -179,15 +179,24 @@ function dateValue(input) {
   if (!text) return null;
 
   const iso = text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-  if (iso) return new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
+  if (iso) return makeDate(Number(iso[1]), Number(iso[2]), Number(iso[3]));
 
   const dayFirst = text.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})(?:\s.*)?$/);
   if (dayFirst) {
+    const day = Number(dayFirst[1]);
+    const month = Number(dayFirst[2]);
     const year = Number(dayFirst[3].length === 2 ? `20${dayFirst[3]}` : dayFirst[3]);
-    return new Date(year, Number(dayFirst[2]) - 1, Number(dayFirst[1]));
+    return makeDate(year, month, day);
   }
 
   return null;
+}
+
+function makeDate(year, month, day) {
+  if (!year || month < 1 || month > 12 || day < 1 || day > 31) return null;
+  const date = new Date(year, month - 1, day);
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return null;
+  return date;
 }
 
 function formatDate(input) {
@@ -265,6 +274,7 @@ function validatePayroll(rows, missingCore = []) {
 
   const invalidDates = rows
     .map((row, index) => {
+      if (!isBajaRow(row)) return null;
       const alta = dateValue(row["FECHA ALTA"]);
       const baja = dateValue(row["FECHA BAJA"]);
       return alta && baja && baja < alta ? index + 2 : null;
