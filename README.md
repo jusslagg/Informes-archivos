@@ -93,10 +93,10 @@ Nota: Vercel usa funciones serverless. Los archivos subidos y la base SQLite no 
 
 GitHub Pages publica el frontend estatico. Si no se configura `VITE_API_URL`, la app funciona en modo navegador: cada usuario carga su Excel/CSV desde el link y los datos se procesan en su propia computadora, sin consola ni backend local.
 
-1. En GitHub, ir a `Settings > Pages` y elegir `GitHub Actions`.
-2. No crear la variable `VITE_API_URL` si se quiere uso automatico desde el navegador.
-3. Hacer push a `main`. El workflow `.github/workflows/deploy-pages.yml` compila el frontend con la ruta base del repositorio y lo publica en Pages.
-4. Abrir el link de GitHub Pages, cargar el archivo y usar el dashboard normalmente.
+1. Hacer push a `main`.
+2. Abrir el link de GitHub Pages, cargar el archivo y usar el dashboard normalmente.
+
+El repo tambien incluye una salida en `docs/` y un `index.html` de redireccion para que funcione aunque GitHub Pages este configurado como `Deploy from branch`.
 
 Si en algun momento la API vive en un servidor, crear la variable del repo `VITE_API_URL` con la URL publicada, por ejemplo:
 
