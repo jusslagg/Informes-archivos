@@ -1,0 +1,11 @@
+backend/storage/*.db
+backend/storage/latest_clean.csv
+backend/storage/uploads/*
+backend/storage/exports/*
+backend/__pycache__/
+backend/app/**/__pycache__/
+frontend/node_modules/
+frontend/dist/
+.env
+.venv/
+*.pyc

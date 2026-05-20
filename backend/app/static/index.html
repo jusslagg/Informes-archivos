@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Análisis Nómina</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <span>AN</span>
+          <div>
+            <strong>Análisis Nómina</strong>
+            <small>Dashboard corporativo</small>
+          </div>
+        </div>
+        <nav>
+          <button class="nav-item active" data-page="upload">Importar</button>
+          <button class="nav-item" data-page="dashboard">Dashboard</button>
+          <button class="nav-item" data-page="analysis">Análisis</button>
+          <button class="nav-item" data-page="quality">Calidad</button>
+        </nav>
+      </aside>
+
+      <section class="content">
+        <section id="upload" class="page active">
+          <header class="page-header">
+            <div>
+              <p>Importación</p>
+              <h1>Cargar nómina</h1>
+            </div>
+          </header>
+          <label class="uploader">
+            <strong>Seleccionar archivo</strong>
+            <span>Excel o CSV</span>
+            <input id="file-input" type="file" accept=".xlsx,.xls,.csv" />
+          </label>
+          <div id="upload-message"></div>
+          <section class="panel hidden" id="upload-result">
+            <h2>Resultado de procesamiento</h2>
+            <div class="summary-grid" id="upload-summary"></div>
+            <div class="table-wrap">
+              <table id="upload-validations"></table>
+            </div>
+          </section>
+        </section>
+
+        <section id="dashboard" class="page">
+          <header class="page-header">
+            <div>
+              <p>Dashboard</p>
+              <h1>Resumen de nómina</h1>
+            </div>
+            <a class="primary-button" href="/export">Exportar Excel</a>
+          </header>
+          <div id="dashboard-message"></div>
+          <section class="control-block">
+            <div class="block-title">
+              <div>
+                <h2>Filtros del dashboard</h2>
+                <p class="section-hint">Aplican al resumen, graficos y vistas guardadas.</p>
+              </div>
+              <button class="secondary-button compact" id="clear-dashboard-filters">Limpiar filtros</button>
+            </div>
+            <div class="dashboard-filter-row">
+              <select id="dashboard-filter-field"></select>
+              <button class="primary-button" id="add-dashboard-filter">Agregar filtro</button>
+            </div>
+            <div id="dashboard-filters-shelf" class="chip-list"></div>
+            <section id="dashboard-filter-editor" class="panel nested hidden">
+              <div class="block-title">
+                <h2 id="dashboard-filter-title">Filtro</h2>
+                <button class="secondary-button compact" id="close-dashboard-filter-editor">Cerrar</button>
+              </div>
+              <input class="filter-search" id="dashboard-filter-search" placeholder="Buscar valor..." />
+              <div id="dashboard-filter-values" class="filter-values large"></div>
+            </section>
+          </section>
+          <section class="metric-grid" id="metrics"></section>
+          <section class="chart-grid" id="charts"></section>
+          <section class="panel">
+            <div class="block-title">
+              <div>
+                <h2>Dashboard armado</h2>
+                <p class="section-hint">Vistas guardadas desde Analisis.</p>
+              </div>
+              <button class="secondary-button compact" id="clear-saved-dashboard-main">Vaciar</button>
+            </div>
+            <div id="saved-dashboard-main" class="saved-dashboard"></div>
+          </section>
+        </section>
+
+        <section id="analysis" class="page">
+          <header class="page-header">
+            <div>
+              <p>Análisis dinámico</p>
+              <h1>Cruces de nómina</h1>
+              <span class="page-subtitle">Arma una tabla dinamica eligiendo campos como filas, columnas o filtros.</span>
+            </div>
+          </header>
+          <section class="analysis-workbench">
+            <aside class="analysis-controls">
+              <div class="control-block">
+                <div class="block-title">
+                  <div>
+                    <h2>Campos disponibles</h2>
+                    <p class="section-hint">Busca una columna y mandala al area que corresponda.</p>
+                  </div>
+                  <button class="secondary-button compact" id="clear-pivot">Limpiar</button>
+                </div>
+                <input class="filter-search" id="field-search" placeholder="Buscar columna..." />
+                <div id="field-list" class="field-list"></div>
+              </div>
+            </aside>
+            <section class="analysis-results">
+              <div class="control-block">
+                <div class="block-title">
+                  <div>
+                    <h2>Tabla dinámica</h2>
+                    <p class="section-hint">Lo que ves aca es exactamente lo que se calcula abajo.</p>
+                  </div>
+                  <span class="value-pill">Valor: Cantidad</span>
+                </div>
+                <div class="save-row">
+                  <input id="pivot-title" class="filter-search" placeholder="Nombre para guardar en dashboard" />
+                  <button class="primary-button" id="save-to-dashboard">Pasar a dashboard</button>
+                </div>
+                <div class="pivot-shelf">
+                  <span>Filas</span>
+                  <div id="rows-shelf" class="chip-list"></div>
+                </div>
+                <div class="pivot-shelf">
+                  <span>Columnas</span>
+                  <div id="columns-shelf" class="chip-list"></div>
+                </div>
+                <div class="pivot-shelf">
+                  <span>Filtros</span>
+                  <div id="filters-shelf" class="chip-list"></div>
+                </div>
+                <div id="filter-summary" class="filter-summary"></div>
+              </div>
+              <div id="analysis-message"></div>
+              <section id="filter-editor" class="panel hidden">
+                <div class="block-title">
+                  <h2 id="filter-editor-title">Filtro</h2>
+                  <button class="secondary-button compact" id="close-filter-editor">Cerrar</button>
+                </div>
+                <input class="filter-search" id="filter-value-search" placeholder="Buscar valor..." />
+                <div id="filter-values-editor" class="filter-values large"></div>
+              </section>
+              <section class="panel">
+                <div class="block-title">
+                  <h2>Resultado</h2>
+                  <span id="pivot-shape" class="filter-summary"></span>
+                </div>
+                <div id="analysis-bars" class="bar-list"></div>
+              </section>
+              <div class="table-wrap">
+                <table id="analysis-table"></table>
+              </div>
+              <section class="panel">
+                <div class="block-title">
+                  <h2>Dashboard armado</h2>
+                  <button class="secondary-button compact" id="clear-saved-dashboard">Vaciar</button>
+                </div>
+                <div id="saved-dashboard" class="saved-dashboard"></div>
+              </section>
+            </section>
+          </section>
+        </section>
+
+        <section id="quality" class="page">
+          <header class="page-header">
+            <div>
+              <p>Calidad de datos</p>
+              <h1>Validaciones</h1>
+            </div>
+          </header>
+          <div id="quality-message"></div>
+          <div class="table-wrap">
+            <table id="quality-table"></table>
+          </div>
+        </section>
+      </section>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
