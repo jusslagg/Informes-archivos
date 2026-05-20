@@ -1,5 +1,16 @@
 import * as XLSX from "xlsx";
 
+const C = {
+  area: "\u00c1REA",
+  subArea: "SUB \u00c1REA",
+  campaign: "CAMPA\u00d1A",
+  subCampaign: "SUB CAMPA\u00d1A",
+  multiCampaign: "MULTICAMPA\u00d1A",
+  modality: "MODALIDAD DE CONTRATACI\u00d3N",
+  tenure: "Antig\u00fcedad",
+  campaignLabel: "Campa\u00f1a",
+};
+
 const CORE_COLUMNS = [
   "LEGAJO",
   "APELLIDOS",
@@ -8,20 +19,20 @@ const CORE_COLUMNS = [
   "FECHA ALTA",
   "FECHA BAJA",
   "ESTADO",
-  "ÃREA",
-  "SUB ÃREA",
+  C.area,
+  C.subArea,
   "PUESTO",
   "CLIENTE",
-  "CAMPAÃ‘A",
-  "SUB CAMPAÃ‘A",
+  C.campaign,
+  C.subCampaign,
   "CENTRO COSTO",
   "CARGA HORARIA SEMANAL",
   "SALARIO",
-  "MODALIDAD DE CONTRATACIÃ“N",
+  C.modality,
   "HORARIO CONTRACTUAL",
   "EMPLEADOR",
   "LOCALIDAD",
-  "MULTICAMPAÃ‘A",
+  C.multiCampaign,
 ];
 
 const OPTIONAL_COLUMNS = [
@@ -54,9 +65,9 @@ const REQUIRED_NOT_EMPTY = [
   "DOCUMENTO",
   "FECHA ALTA",
   "ESTADO",
-  "ÃREA",
+  C.area,
   "CLIENTE",
-  "CAMPAÃ‘A",
+  C.campaign,
   "SALARIO",
 ];
 
@@ -91,35 +102,57 @@ function normalizeColumnName(value) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
-const CANONICAL_COLUMN_MAP = [...CORE_COLUMNS, ...OPTIONAL_COLUMNS, ...USER_COLUMNS].reduce((map, column) => {
-  map[normalizeColumnName(column)] = column;
-  return map;
-}, {});
+const ALIASES = new Map();
+
+function addAlias(source, target) {
+  ALIASES.set(normalizeColumnName(source), target);
+}
+
+[...CORE_COLUMNS, ...OPTIONAL_COLUMNS, ...USER_COLUMNS].forEach((column) => addAlias(column, column));
 
 [
-  ["AREA", "ÃREA"],
-  ["\u00c1REA", "ÃREA"],
-  ["SUB AREA", "SUB ÃREA"],
-  ["SUB \u00c1REA", "SUB ÃREA"],
-  ["CAMPANA", "CAMPAÃ‘A"],
-  ["CAMPA\u00d1A", "CAMPAÃ‘A"],
-  ["SUB CAMPANA", "SUB CAMPAÃ‘A"],
-  ["SUB CAMPA\u00d1A", "SUB CAMPAÃ‘A"],
-  ["MULTICAMPANA", "MULTICAMPAÃ‘A"],
-  ["MULTICAMPA\u00d1A", "MULTICAMPAÃ‘A"],
-  ["MODALIDAD DE CONTRATACION", "MODALIDAD DE CONTRATACIÃ“N"],
-  ["MODALIDAD DE CONTRATACI\u00d3N", "MODALIDAD DE CONTRATACIÃ“N"],
-].forEach(([source, target]) => {
-  CANONICAL_COLUMN_MAP[normalizeColumnName(source)] = target;
-});
+  ["AREA", C.area],
+  ["\u00c1REA", C.area],
+  ["ÃREA", C.area],
+  ["ÃƒÂREA", C.area],
+  ["SUB AREA", C.subArea],
+  ["SUB \u00c1REA", C.subArea],
+  ["SUB ÃREA", C.subArea],
+  ["SUB ÃƒÂREA", C.subArea],
+  ["CAMPANA", C.campaign],
+  ["CAMPA\u00d1A", C.campaign],
+  ["CAMPAÃ‘A", C.campaign],
+  ["CAMPAÃƒâ€˜A", C.campaign],
+  ["SUB CAMPANA", C.subCampaign],
+  ["SUB CAMPA\u00d1A", C.subCampaign],
+  ["SUB CAMPAÃ‘A", C.subCampaign],
+  ["SUB CAMPAÃƒâ€˜A", C.subCampaign],
+  ["MULTICAMPANA", C.multiCampaign],
+  ["MULTICAMPA\u00d1A", C.multiCampaign],
+  ["MULTICAMPAÃ‘A", C.multiCampaign],
+  ["MULTICAMPAÃƒâ€˜A", C.multiCampaign],
+  ["MODALIDAD DE CONTRATACION", C.modality],
+  ["MODALIDAD DE CONTRATACI\u00d3N", C.modality],
+  ["MODALIDAD DE CONTRATACIÃ“N", C.modality],
+  ["MODALIDAD DE CONTRATACIÃƒâ€œN", C.modality],
+].forEach(([source, target]) => addAlias(source, target));
 
-function findColumn(rows, ...names) {
-  const wanted = new Set(names.map(normalizeColumnName));
-  return Object.keys(rows[0] || {}).find((column) => wanted.has(normalizeColumnName(column)));
+function columnKey(column) {
+  return ALIASES.get(normalizeColumnName(column)) || column;
 }
 
 function value(row, column) {
-  return String(row[column] ?? "").trim();
+  const key = columnKey(column);
+  return String(row[key] ?? row[column] ?? "").trim();
+}
+
+function campaignValue(row) {
+  return value(row, C.campaign) || "Sin dato";
+}
+
+function isBajaRow(row) {
+  const estado = normalizeColumnName(value(row, "ESTADO"));
+  return estado.includes("BAJA") || estado.includes("INACTIVO");
 }
 
 function numberValue(input) {
@@ -134,22 +167,27 @@ function numberValue(input) {
 }
 
 function dateValue(input) {
-  if (input instanceof Date && !Number.isNaN(input.getTime())) return input;
+  if (input instanceof Date && !Number.isNaN(input.getTime())) {
+    return new Date(input.getFullYear(), input.getMonth(), input.getDate());
+  }
   if (typeof input === "number") {
     const parsed = XLSX.SSF.parse_date_code(input);
     if (parsed) return new Date(parsed.y, parsed.m - 1, parsed.d);
   }
+
   const text = String(input ?? "").trim();
   if (!text) return null;
+
   const iso = text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
   if (iso) return new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
-  const slash = text.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})(?:\s.*)?$/);
-  if (slash) {
-    const year = Number(slash[3].length === 2 ? `20${slash[3]}` : slash[3]);
-    return new Date(year, Number(slash[2]) - 1, Number(slash[1]));
+
+  const dayFirst = text.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})(?:\s.*)?$/);
+  if (dayFirst) {
+    const year = Number(dayFirst[3].length === 2 ? `20${dayFirst[3]}` : dayFirst[3]);
+    return new Date(year, Number(dayFirst[2]) - 1, Number(dayFirst[1]));
   }
-  const parsed = new Date(text);
-  return Number.isNaN(parsed.getTime()) ? null : parsed;
+
+  return null;
 }
 
 function formatDate(input) {
@@ -164,9 +202,9 @@ function cleanPayroll(rawRows) {
   const renamedRows = rawRows.map((row) => {
     const next = {};
     Object.entries(row).forEach(([column, rawValue]) => {
-      const canonical = CANONICAL_COLUMN_MAP[normalizeColumnName(column)];
-      if (canonical && !USER_COLUMNS.includes(canonical)) {
-        next[canonical] = rawValue == null ? "" : String(rawValue).trim();
+      const canonical = columnKey(column);
+      if (ACTIVE_COLUMNS.includes(canonical)) {
+        next[canonical] = rawValue;
       }
     });
     return next;
@@ -180,7 +218,8 @@ function cleanPayroll(rawRows) {
     ACTIVE_COLUMNS.forEach((column) => {
       let current = row[column] ?? "";
       if (DATE_COLUMNS.includes(column)) current = formatDate(current);
-      if (NUMERIC_COLUMNS.includes(column)) current = numberValue(current);
+      else if (NUMERIC_COLUMNS.includes(column)) current = numberValue(current);
+      else current = String(current ?? "").trim();
       next[column] = current;
     });
     return next;
@@ -202,7 +241,7 @@ function validatePayroll(rows, missingCore = []) {
   REQUIRED_NOT_EMPTY.forEach((column) => {
     const emptyRows = rows.map((row, index) => (value(row, column) === "" ? index + 2 : null)).filter(Boolean);
     if (emptyRows.length) {
-      issues.push(buildIssue("empty_fields", "warning", `Hay campos vacÃ­os en ${column}.`, emptyRows));
+      issues.push(buildIssue("empty_fields", "warning", `Hay campos vacios en ${column}.`, emptyRows));
     }
   });
 
@@ -249,7 +288,7 @@ async function readWorkbook(file) {
 
 function ensureRows() {
   if (!state.rows.length) {
-    throw new Error("Primero cargÃ¡ un archivo de nÃ³mina.");
+    throw new Error("Primero carga un archivo de nomina.");
   }
 }
 
@@ -263,6 +302,7 @@ function applyFilters(rows, filters = []) {
 
 function applyFechaBajaRange(rows, dateRange = {}) {
   return rows.filter((row) => {
+    if (!isBajaRow(row)) return false;
     const fechaBaja = dateValue(row["FECHA BAJA"]);
     if (!fechaBaja) return false;
     const start = dateRange.start ? dateValue(dateRange.start) : null;
@@ -285,6 +325,25 @@ function seriesCounts(rows, column, limit = 12) {
     .map(([name, count]) => ({ name, value: count }));
 }
 
+function campaignRow(campana, extra = {}) {
+  return {
+    [C.campaignLabel]: campana,
+    "CampaÃ±a": campana,
+    "CampaÃƒÂ±a": campana,
+    CAMPANA: campana,
+    ...extra,
+  };
+}
+
+function tenureRow(label, bajas = 0) {
+  return {
+    [C.tenure]: label,
+    "AntigÃ¼edad": label,
+    "AntigÃƒÂ¼edad": label,
+    Bajas: bajas,
+  };
+}
+
 function buildDashboard(rows) {
   const today = new Date();
   const altasMes = rows.filter((row) => {
@@ -293,17 +352,17 @@ function buildDashboard(rows) {
   });
   const bajasMes = rows.filter((row) => {
     const date = dateValue(row["FECHA BAJA"]);
-    return date && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
+    return isBajaRow(row) && date && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
   });
   const salario = rows.map((row) => numberValue(row["SALARIO"]));
   const carga = rows.map((row) => numberValue(row["CARGA HORARIA SEMANAL"]));
-  const estado = rows.map((row) => value(row, "ESTADO").toUpperCase());
+  const estado = rows.map((row) => normalizeColumnName(value(row, "ESTADO")));
 
   return {
     metrics: {
       total_empleados: rows.length,
       activos: estado.filter((item) => item.includes("ACTIVO")).length,
-      bajas: estado.filter((item) => item.includes("BAJA") || item.includes("INACTIVO")).length,
+      bajas: rows.filter(isBajaRow).length,
       bajas_del_mes: bajasMes.length,
       altas_del_mes: altasMes.length,
       salario_total: salario.reduce((sum, item) => sum + item, 0),
@@ -311,10 +370,10 @@ function buildDashboard(rows) {
       carga_horaria_total: carga.reduce((sum, item) => sum + item, 0),
     },
     charts: {
-      empleados_por_area: seriesCounts(rows, "ÃREA"),
+      empleados_por_area: seriesCounts(rows, C.area),
       empleados_por_cliente: seriesCounts(rows, "CLIENTE"),
-      empleados_por_campana: seriesCounts(rows, "CAMPAÃ‘A"),
-      empleados_por_modalidad: seriesCounts(rows, "MODALIDAD DE CONTRATACIÃ“N"),
+      empleados_por_campana: seriesCounts(rows, C.campaign),
+      empleados_por_modalidad: seriesCounts(rows, C.modality),
     },
   };
 }
@@ -367,11 +426,11 @@ export function getFilteredRecordsBrowser(filters = []) {
     "NOMBRES",
     "DOCUMENTO",
     "ESTADO",
-    "ÃREA",
+    C.area,
     "CLIENTE",
-    "CAMPAÃ‘A",
+    C.campaign,
     "PUESTO",
-    "MODALIDAD DE CONTRATACIÃ“N",
+    C.modality,
     "LOCALIDAD",
     "SITIO",
     "CARGA HORARIA SEMANAL",
@@ -394,16 +453,15 @@ export function getStaffingByCampaignBrowser(filters = []) {
   ensureRows();
   const filtered = filters.filter((filter) => normalizeColumnName(filter.column) !== normalizeColumnName("ESTADO"));
   const rows = applyFilters(state.rows, filtered);
-  const campaignColumn = findColumn(rows, "CAMPAÃ‘A", "CAMPANA") || "CAMPAÃ‘A";
   const grouped = new Map();
   rows.forEach((row) => {
-    const campana = value(row, campaignColumn) || "Sin dato";
+    const campana = campaignValue(row);
     const estado = value(row, "ESTADO") || "Sin dato";
-    const estadoUpper = estado.toUpperCase();
+    const estadoUpper = normalizeColumnName(estado);
     const isBaja = estadoUpper.includes("BAJA");
     const isActivo = estadoUpper === "ACTIVO" || (estadoUpper.includes("ACTIVO") && !estadoUpper.includes("INACTIVO"));
     const isLicencia = !isActivo && !isBaja;
-    const current = grouped.get(campana) || { campana, "CAMPAÃ‘A": campana, activo: 0, licencia: 0, licenses: new Map() };
+    const current = grouped.get(campana) || { campana, activo: 0, licencia: 0, licenses: new Map() };
     if (isActivo) current.activo += 1;
     if (isLicencia) {
       current.licencia += 1;
@@ -413,13 +471,15 @@ export function getStaffingByCampaignBrowser(filters = []) {
   });
   return {
     rows: [...grouped.values()]
-      .map((row) => ({
-        campana: row.campana,
-        "CAMPAÃ‘A": row["CAMPAÃ‘A"],
-        activo: row.activo,
-        licencia: row.licencia,
-        observacion: [...row.licenses.entries()].map(([label, count]) => `${label}: ${count}`).join(", "),
-      }))
+      .map((row) =>
+        campaignRow(row.campana, {
+          campana: row.campana,
+          [C.campaign]: row.campana,
+          activo: row.activo,
+          licencia: row.licencia,
+          observacion: [...row.licenses.entries()].map(([label, count]) => `${label}: ${count}`).join(", "),
+        }),
+      )
       .sort((a, b) => b.activo - a.activo),
   };
 }
@@ -435,8 +495,8 @@ export function getBajasByMonthBrowser(filters = [], dateRange = {}) {
     const monthKey = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, "0")}`;
     const label = `${MONTH_LABELS[fecha.getMonth() + 1]} ${fecha.getFullYear()}`;
     months.set(monthKey, label);
-    const campana = value(row, "CAMPAÃ‘A") || "Sin dato";
-    const current = grouped.get(campana) || { "CampaÃ±a": campana, Total: 0 };
+    const campana = campaignValue(row);
+    const current = grouped.get(campana) || campaignRow(campana, { Total: 0 });
     current[label] = (current[label] || 0) + 1;
     current.Total += 1;
     grouped.set(campana, current);
@@ -458,15 +518,16 @@ export function getBajasByTenureBrowser(filters = [], dateRange = {}) {
   ensureRows();
   const rows = applyFechaBajaRange(applyFilters(state.rows, filters), dateRange);
   const buckets = [
-    ["Menos de 1 mes", 0],
-    ["1 mes", 1],
-    ["2 meses", 2],
-    ["3 meses", 3],
-    ["4 meses", 4],
-    ["5 meses", 5],
-    ["6 meses", 6],
-    ["Mayor a 6 meses", 7],
-  ].map(([label]) => ({ "AntigÃ¼edad": label, Bajas: 0 }));
+    "Menos de 1 mes",
+    "1 mes",
+    "2 meses",
+    "3 meses",
+    "4 meses",
+    "5 meses",
+    "6 meses",
+    "Mayor a 6 meses",
+  ].map((label) => tenureRow(label, 0));
+
   rows.forEach((row) => {
     const alta = dateValue(row["FECHA ALTA"]);
     const baja = dateValue(row["FECHA BAJA"]);
@@ -495,9 +556,9 @@ export function getBajasReasonByCampaignBrowser(filters = [], dateRange = {}) {
   const grouped = new Map();
   const reasonTotals = new Map();
   rows.forEach((row) => {
-    const campana = value(row, "CAMPAÃ‘A") || "Sin dato";
+    const campana = campaignValue(row);
     const motivo = value(row, "MOTIVO BAJA") || "Sin dato";
-    const current = grouped.get(campana) || { "CampaÃ±a": campana, Total: 0 };
+    const current = grouped.get(campana) || campaignRow(campana, { Total: 0 });
     current[motivo] = (current[motivo] || 0) + 1;
     current.Total += 1;
     grouped.set(campana, current);
@@ -516,7 +577,7 @@ export function getBajasReasonByCampaignBrowser(filters = [], dateRange = {}) {
 export function runDynamicAnalysisBrowser(payload) {
   ensureRows();
   const rows = applyFilters(state.rows, payload.filters || []);
-  const dimensions = payload.dimensions?.length ? payload.dimensions : ["ÃREA"];
+  const dimensions = payload.dimensions?.length ? payload.dimensions.map(columnKey) : [C.area];
   const grouped = new Map();
   rows.forEach((row) => {
     const key = dimensions.map((dimension) => value(row, dimension) || "Sin dato").join("||");

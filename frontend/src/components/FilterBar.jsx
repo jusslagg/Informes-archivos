@@ -1,14 +1,14 @@
 import { Play, RotateCcw, Search, SlidersHorizontal, X } from "lucide-react";
 import { useMemo, useState } from "react";
 
-const DEFAULT_DIMENSIONS = ["ÁREA", "CLIENTE", "CAMPAÑA", "MODALIDAD DE CONTRATACIÓN"];
+const DEFAULT_DIMENSIONS = ["\u00c1REA", "CLIENTE", "CAMPA\u00d1A", "MODALIDAD DE CONTRATACI\u00d3N"];
 const FILTER_COLUMNS = [
   "ESTADO",
   "MOTIVO BAJA",
-  "ÁREA",
+  "\u00c1REA",
   "CLIENTE",
-  "CAMPAÑA",
-  "MODALIDAD DE CONTRATACIÓN",
+  "CAMPA\u00d1A",
+  "MODALIDAD DE CONTRATACI\u00d3N",
   "PUESTO",
   "LOCALIDAD",
   "SITIO",
@@ -23,9 +23,19 @@ const METRICS = [
   { value: "hours_sum", label: "Carga horaria total" },
 ];
 
+function normalizeColumnName(value) {
+  return String(value || "")
+    .trim()
+    .toUpperCase()
+    .replace(/[_-]/g, " ")
+    .replace(/\s+/g, " ")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
 function availableColumns(metadata = [], wantedColumns = FILTER_COLUMNS) {
   return wantedColumns
-    .map((column) => metadata.find((item) => item.name === column))
+    .map((column) => metadata.find((item) => normalizeColumnName(item.name) === normalizeColumnName(column)))
     .filter(Boolean)
     .map((column) => ({ ...column, values: column.values?.filter(Boolean) || [] }));
 }
@@ -62,11 +72,11 @@ export default function FilterBar({
     onDimensionsChange(next.length ? next : [dimension]);
   };
 
-  const toggleFilter = (column, value) => {
+  const toggleFilter = (column, selectedValue) => {
     const current = filters[column] || [];
-    const nextValues = current.includes(value)
-      ? current.filter((item) => item !== value)
-      : [...current, value];
+    const nextValues = current.includes(selectedValue)
+      ? current.filter((item) => item !== selectedValue)
+      : [...current, selectedValue];
     onFiltersChange({ ...filters, [column]: nextValues });
   };
 
@@ -76,7 +86,7 @@ export default function FilterBar({
   };
 
   const options = (activeMeta?.values || [])
-    .filter((value) => value.toLowerCase().includes(query.toLowerCase()))
+    .filter((option) => option.toLowerCase().includes(query.toLowerCase()))
     .slice(0, 80);
 
   return (
@@ -94,7 +104,7 @@ export default function FilterBar({
       {showAnalysisControls && (
         <div className="control-grid">
           <label>
-            <span>Métrica</span>
+            <span>Metrica</span>
             <select value={metric} onChange={(event) => onMetricChange(event.target.value)}>
               {METRICS.map((item) => (
                 <option key={item.value} value={item.value}>
@@ -159,14 +169,14 @@ export default function FilterBar({
             )}
           </label>
           <div className="option-list">
-            {options.map((value) => (
-              <label key={value} className="check-row">
+            {options.map((option) => (
+              <label key={option} className="check-row">
                 <input
                   type="checkbox"
-                  checked={selectedValues.includes(value)}
-                  onChange={() => toggleFilter(activeMeta.name, value)}
+                  checked={selectedValues.includes(option)}
+                  onChange={() => toggleFilter(activeMeta.name, option)}
                 />
-                <span>{value}</span>
+                <span>{option}</span>
               </label>
             ))}
             {!options.length && <p className="muted">Sin opciones disponibles.</p>}

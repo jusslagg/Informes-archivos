@@ -98,6 +98,14 @@ def _exclude_filter_specs(filters, *columns):
     ]
 
 
+def _only_bajas(df):
+    estado_column = _find_column(df, "ESTADO")
+    if not estado_column:
+        return df
+    estado = df[estado_column].astype(str).map(_normalize_column_name)
+    return df[estado.str.contains("BAJA|INACTIVO", regex=True, na=False)].copy()
+
+
 @router.post("/upload")
 async def upload_payroll(file: UploadFile = File(...), db: Session = Depends(get_db)):
     suffix = Path(file.filename or "").suffix.lower()
@@ -345,7 +353,7 @@ def get_staffing_by_campaign_legacy(payload: DynamicAnalysisRequest):
 
 @router.post("/bajas-by-month")
 def get_bajas_by_month(payload: DynamicAnalysisRequest):
-    df = _apply_fecha_baja_range(_apply_filter_specs(_latest_df(), payload.filters), payload.date_range)
+    df = _apply_fecha_baja_range(_only_bajas(_apply_filter_specs(_latest_df(), payload.filters)), payload.date_range)
     if "FECHA BAJA" not in df.columns or "CAMPAÑA" not in df.columns:
         return {"months": [], "rows": [], "totals": {}}
 
@@ -393,7 +401,7 @@ def get_bajas_by_month(payload: DynamicAnalysisRequest):
 
 @router.post("/bajas-by-tenure")
 def get_bajas_by_tenure(payload: DynamicAnalysisRequest):
-    df = _apply_fecha_baja_range(_apply_filter_specs(_latest_df(), payload.filters), payload.date_range)
+    df = _apply_fecha_baja_range(_only_bajas(_apply_filter_specs(_latest_df(), payload.filters)), payload.date_range)
     if "FECHA ALTA" not in df.columns or "FECHA BAJA" not in df.columns:
         return {"rows": [], "total": 0}
 
@@ -435,7 +443,7 @@ def get_bajas_by_tenure(payload: DynamicAnalysisRequest):
 
 @router.post("/bajas-by-reason")
 def get_bajas_by_reason(payload: DynamicAnalysisRequest):
-    df = _apply_fecha_baja_range(_apply_filter_specs(_latest_df(), payload.filters), payload.date_range)
+    df = _apply_fecha_baja_range(_only_bajas(_apply_filter_specs(_latest_df(), payload.filters)), payload.date_range)
     if "FECHA BAJA" not in df.columns or "MOTIVO BAJA" not in df.columns:
         return {"rows": [], "total": 0}
 
@@ -465,7 +473,7 @@ def get_bajas_by_reason(payload: DynamicAnalysisRequest):
 
 @router.post("/bajas-reason-by-campaign")
 def get_bajas_reason_by_campaign(payload: DynamicAnalysisRequest):
-    df = _apply_fecha_baja_range(_apply_filter_specs(_latest_df(), payload.filters), payload.date_range)
+    df = _apply_fecha_baja_range(_only_bajas(_apply_filter_specs(_latest_df(), payload.filters)), payload.date_range)
     campaign_column = _find_column(df, "CAMPAÑA", "CAMPANA")
     reason_column = _find_column(df, "MOTIVO BAJA")
     fecha_baja_column = _find_column(df, "FECHA BAJA")
