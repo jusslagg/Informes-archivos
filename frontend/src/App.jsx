@@ -2,10 +2,9 @@ import {
   FileSpreadsheet,
   LayoutDashboard,
   Menu,
-  PanelLeftClose,
-  PanelLeftOpen,
   SearchCheck,
-  X,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useState } from "react";
 import DashboardPage from "./pages/DashboardPage.jsx";
@@ -42,11 +41,11 @@ export default function App() {
       </header>
 
       <button
-        className="desktop-sidebar-toggle icon-button"
+        className="desktop-sidebar-toggle"
         onClick={() => setSidebarHidden((current) => !current)}
         title={sidebarHidden ? "Mostrar menu" : "Ocultar menu"}
       >
-        {sidebarHidden ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
+        {sidebarHidden ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
       </button>
 
       {mobileMenuOpen && (
@@ -54,9 +53,6 @@ export default function App() {
       )}
 
       <aside className={mobileMenuOpen ? "sidebar open" : "sidebar"}>
-        <button className="mobile-close icon-button" onClick={() => setMobileMenuOpen(false)} title="Cerrar menu">
-          <X size={18} />
-        </button>
         <div className="brand">
           <span className="brand-mark">AN</span>
           <div>

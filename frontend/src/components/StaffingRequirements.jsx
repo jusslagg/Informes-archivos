@@ -4,7 +4,17 @@ import ChartBox from "./ChartBox.jsx";
 import MetricCard from "./MetricCard.jsx";
 
 const number = new Intl.NumberFormat("es-AR");
-const columns = ["Campaña", "Activo", "Requeridos", "Diferencia", "Licencia", "Observación"];
+const percent = new Intl.NumberFormat("es-AR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const columns = [
+  "Campaña",
+  "Activo",
+  "Requeridos",
+  "Diferencia",
+  "Bajas mes",
+  "Rotación mes",
+  "Licencia",
+  "Observación",
+];
 
 function normalize(value) {
   return String(value || "")
@@ -15,7 +25,22 @@ function normalize(value) {
 }
 
 function getCampaign(item) {
-  return item.campana || item["CAMPAÑA"] || item["CAMPANA"] || item["CAMPAÃ‘A"] || item["CAMPAÃA"];
+  return item.campana || item["CAMPAÑA"] || item["CAMPAÃ‘A"] || item.CAMPANA || item["CAMPAÃƒâ€˜A"] || "";
+}
+
+function getBajasCampaign(item) {
+  return item["Campaña"] || item["CampaÃ±a"] || item["CampaÃƒÂ±a"] || item.CAMPANA || item.campana || "";
+}
+
+function currentMonthLabels(months = []) {
+  const current = new Date();
+  const monthName = new Intl.DateTimeFormat("es-AR", { month: "long" }).format(current).toLowerCase();
+  const year = String(current.getFullYear());
+  return months.filter((month) => normalize(month).includes(normalize(monthName)) && String(month).includes(year));
+}
+
+function formatRotation(value) {
+  return Number.isFinite(value) ? `${percent.format(value)}%` : "Sin dato";
 }
 
 function splitCsvLine(line, separator) {
@@ -58,7 +83,7 @@ function parseRequirements(text) {
   }, {});
 }
 
-export default function StaffingRequirements({ staffingRows = [] }) {
+export default function StaffingRequirements({ staffingRows = [], bajasByMonth = { months: [], rows: [] } }) {
   const inputRef = useRef(null);
   const [requirements, setRequirements] = useState({});
   const [fileName, setFileName] = useState("");
@@ -66,6 +91,13 @@ export default function StaffingRequirements({ staffingRows = [] }) {
 
   const rows = useMemo(() => {
     const campaignMap = new Map(staffingRows.map((item) => [normalize(getCampaign(item)), item]));
+    const monthLabels = currentMonthLabels(bajasByMonth.months || []);
+    const bajasMap = new Map(
+      (bajasByMonth.rows || []).map((item) => [
+        normalize(getBajasCampaign(item)),
+        monthLabels.reduce((sum, month) => sum + Number(item[month] || 0), 0),
+      ]),
+    );
     const keys = new Set([...Object.keys(requirements), ...campaignMap.keys()]);
 
     return Array.from(keys)
@@ -74,6 +106,8 @@ export default function StaffingRequirements({ staffingRows = [] }) {
         const campana = getCampaign(activeRow) || key || "Sin dato";
         const activo = Number(activeRow.activo || activeRow.value || 0);
         const requeridos = Number(requirements[key] || 0);
+        const bajasMes = Number(bajasMap.get(key) || 0);
+        const rotacionMes = requeridos > 0 ? (bajasMes / requeridos) * 100 : null;
 
         return {
           key,
@@ -81,6 +115,8 @@ export default function StaffingRequirements({ staffingRows = [] }) {
           activo,
           requeridos,
           diferencia: activo - requeridos,
+          bajasMes,
+          rotacionMes,
           licencia: Number(activeRow.licencia || 0),
           observacion: activeRow.observacion || "",
         };
@@ -88,19 +124,21 @@ export default function StaffingRequirements({ staffingRows = [] }) {
       .filter((row) => row.activo > 0 || row.licencia > 0 || row.requeridos > 0)
       .filter((row) => row.campana.toLowerCase().includes(query.toLowerCase()))
       .sort((a, b) => Math.abs(b.diferencia) - Math.abs(a.diferencia));
-  }, [query, requirements, staffingRows]);
+  }, [bajasByMonth, query, requirements, staffingRows]);
 
   const totals = rows.reduce(
     (acc, row) => ({
       activo: acc.activo + row.activo,
       requeridos: acc.requeridos + row.requeridos,
       diferencia: acc.diferencia + row.diferencia,
+      bajasMes: acc.bajasMes + row.bajasMes,
       licencia: acc.licencia + row.licencia,
     }),
-    { activo: 0, requeridos: 0, diferencia: 0, licencia: 0 },
+    { activo: 0, requeridos: 0, diferencia: 0, bajasMes: 0, licencia: 0 },
   );
   const requiredWithBuffer = Math.ceil(totals.requeridos * 1.05);
   const bufferDifference = totals.activo - requiredWithBuffer;
+  const totalRotation = totals.requeridos > 0 ? (totals.bajasMes / totals.requeridos) * 100 : null;
 
   const chartData = rows
     .filter((row) => row.activo || row.requeridos)
@@ -128,12 +166,23 @@ export default function StaffingRequirements({ staffingRows = [] }) {
       row.activo,
       row.requeridos,
       row.diferencia,
+      row.bajasMes,
+      formatRotation(row.rotacionMes),
       row.licencia,
       row.observacion || "",
     ]);
-    const total = ["Total", totals.activo, totals.requeridos, totals.diferencia, totals.licencia, ""];
+    const total = [
+      "Total",
+      totals.activo,
+      totals.requeridos,
+      totals.diferencia,
+      totals.bajasMes,
+      formatRotation(totalRotation),
+      totals.licencia,
+      "",
+    ];
     return [columns, ...body, total];
-  }, [rows, totals]);
+  }, [rows, totalRotation, totals]);
 
   const copyText = tableLines.map((line) => line.join("\t")).join("\n");
 
@@ -183,6 +232,8 @@ export default function StaffingRequirements({ staffingRows = [] }) {
           value={number.format(bufferDifference)}
           tone={bufferDifference < 0 ? "danger" : "success"}
         />
+        <MetricCard label="Bajas mes" value={number.format(totals.bajasMes)} />
+        <MetricCard label="Rotación mes" value={formatRotation(totalRotation)} />
         <MetricCard label="Licencia" value={number.format(totals.licencia)} />
       </section>
 
@@ -192,7 +243,7 @@ export default function StaffingRequirements({ staffingRows = [] }) {
         <div className="table-toolbar">
           <div>
             <h2>Requeridos por campaña</h2>
-            <span>Licencia se calcula desde ESTADO: distinto de activo y baja</span>
+            <span>Rotación mes = bajas del mes en curso / requerido del servicio</span>
           </div>
           <label className="search-field compact">
             <Search size={15} />
@@ -207,6 +258,8 @@ export default function StaffingRequirements({ staffingRows = [] }) {
                 <th>Activo</th>
                 <th>Requeridos</th>
                 <th>Diferencia</th>
+                <th>Bajas mes</th>
+                <th>Rotación mes</th>
                 <th>Licencia</th>
                 <th>Observación</th>
               </tr>
@@ -229,13 +282,15 @@ export default function StaffingRequirements({ staffingRows = [] }) {
                   <td className={row.diferencia < 0 ? "negative-cell" : "positive-cell"}>
                     {number.format(row.diferencia)}
                   </td>
+                  <td>{number.format(row.bajasMes)}</td>
+                  <td>{formatRotation(row.rotacionMes)}</td>
                   <td>{number.format(row.licencia)}</td>
                   <td>{row.observacion || "Sin dato"}</td>
                 </tr>
               ))}
               {!rows.length && (
                 <tr>
-                  <td colSpan="6" className="empty-cell">
+                  <td colSpan="8" className="empty-cell">
                     Sin datos para mostrar.
                   </td>
                 </tr>
@@ -250,6 +305,8 @@ export default function StaffingRequirements({ staffingRows = [] }) {
                   <td className={totals.diferencia < 0 ? "negative-cell" : "positive-cell"}>
                     {number.format(totals.diferencia)}
                   </td>
+                  <td>{number.format(totals.bajasMes)}</td>
+                  <td>{formatRotation(totalRotation)}</td>
                   <td>{number.format(totals.licencia)}</td>
                   <td />
                 </tr>
