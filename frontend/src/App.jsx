@@ -1,5 +1,4 @@
 import {
-  BarChart3,
   FileSpreadsheet,
   LayoutDashboard,
   Menu,
@@ -9,7 +8,6 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
-import AnalysisPage from "./pages/AnalysisPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import QualityPage from "./pages/QualityPage.jsx";
 import UploadPage from "./pages/UploadPage.jsx";
@@ -17,7 +15,6 @@ import UploadPage from "./pages/UploadPage.jsx";
 const pages = [
   { id: "upload", label: "Importar", icon: FileSpreadsheet, component: UploadPage },
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, component: DashboardPage },
-  { id: "analysis", label: "Análisis", icon: BarChart3, component: AnalysisPage },
   { id: "quality", label: "Calidad", icon: SearchCheck, component: QualityPage },
 ];
 
