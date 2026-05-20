@@ -96,6 +96,23 @@ const CANONICAL_COLUMN_MAP = [...CORE_COLUMNS, ...OPTIONAL_COLUMNS, ...USER_COLU
   return map;
 }, {});
 
+[
+  ["AREA", "ÃREA"],
+  ["\u00c1REA", "ÃREA"],
+  ["SUB AREA", "SUB ÃREA"],
+  ["SUB \u00c1REA", "SUB ÃREA"],
+  ["CAMPANA", "CAMPAÃ‘A"],
+  ["CAMPA\u00d1A", "CAMPAÃ‘A"],
+  ["SUB CAMPANA", "SUB CAMPAÃ‘A"],
+  ["SUB CAMPA\u00d1A", "SUB CAMPAÃ‘A"],
+  ["MULTICAMPANA", "MULTICAMPAÃ‘A"],
+  ["MULTICAMPA\u00d1A", "MULTICAMPAÃ‘A"],
+  ["MODALIDAD DE CONTRATACION", "MODALIDAD DE CONTRATACIÃ“N"],
+  ["MODALIDAD DE CONTRATACI\u00d3N", "MODALIDAD DE CONTRATACIÃ“N"],
+].forEach(([source, target]) => {
+  CANONICAL_COLUMN_MAP[normalizeColumnName(source)] = target;
+});
+
 function findColumn(rows, ...names) {
   const wanted = new Set(names.map(normalizeColumnName));
   return Object.keys(rows[0] || {}).find((column) => wanted.has(normalizeColumnName(column)));
@@ -126,7 +143,7 @@ function dateValue(input) {
   if (!text) return null;
   const iso = text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
   if (iso) return new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
-  const slash = text.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})$/);
+  const slash = text.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})(?:\s.*)?$/);
   if (slash) {
     const year = Number(slash[3].length === 2 ? `20${slash[3]}` : slash[3]);
     return new Date(year, Number(slash[2]) - 1, Number(slash[1]));
@@ -416,7 +433,7 @@ export function getBajasByMonthBrowser(filters = [], dateRange = {}) {
     const fecha = dateValue(row["FECHA BAJA"]);
     if (!fecha) return;
     const monthKey = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, "0")}`;
-    const label = MONTH_LABELS[fecha.getMonth() + 1];
+    const label = `${MONTH_LABELS[fecha.getMonth() + 1]} ${fecha.getFullYear()}`;
     months.set(monthKey, label);
     const campana = value(row, "CAMPAÃ‘A") || "Sin dato";
     const current = grouped.get(campana) || { "CampaÃ±a": campana, Total: 0 };
