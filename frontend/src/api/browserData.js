@@ -153,7 +153,7 @@ function campaignValue(row) {
 
 function isBajaRow(row) {
   const estado = normalizeColumnName(value(row, "ESTADO"));
-  return estado.includes("BAJA") || estado.includes("INACTIVO");
+  return estado === "BAJA";
 }
 
 function numberValue(input) {
@@ -206,24 +206,6 @@ function formatDate(input) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${date.getFullYear()}-${month}-${day}`;
-}
-
-function todayDate() {
-  const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
-}
-
-function sixMonthsAgo(date) {
-  return new Date(date.getFullYear(), date.getMonth() - 5, 1);
-}
-
-function maxBajaDate(rows) {
-  return rows.reduce((maxDate, row) => {
-    if (!isBajaRow(row)) return maxDate;
-    const fechaBaja = dateValue(row["FECHA BAJA"]);
-    if (!fechaBaja) return maxDate;
-    return !maxDate || fechaBaja > maxDate ? fechaBaja : maxDate;
-  }, null);
 }
 
 function cleanPayroll(rawRows) {
@@ -310,7 +292,7 @@ function validatePayroll(rows, missingCore = []) {
 
 async function readWorkbook(file) {
   const buffer = await file.arrayBuffer();
-  const workbook = XLSX.read(buffer, { type: "array", cellDates: true });
+  const workbook = XLSX.read(buffer, { type: "array", cellDates: false, raw: true });
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
   const hiddenRows = new Set(
     (sheet["!rows"] || [])
@@ -342,17 +324,12 @@ function applyFilters(rows, filters = []) {
 }
 
 function applyFechaBajaRange(rows, dateRange = {}) {
-  const fallbackEnd = todayDate();
-  const defaultEnd = maxBajaDate(rows) || fallbackEnd;
-  const defaultStart = sixMonthsAgo(defaultEnd);
   return rows.filter((row) => {
     if (!isBajaRow(row)) return false;
     const fechaBaja = dateValue(row["FECHA BAJA"]);
     if (!fechaBaja) return false;
     const start = dateRange.start ? dateValue(dateRange.start) : null;
     const end = dateRange.end ? dateValue(dateRange.end) : null;
-    if (!start && fechaBaja < defaultStart) return false;
-    if (!end && fechaBaja > defaultEnd) return false;
     if (start && fechaBaja < start) return false;
     if (end && fechaBaja > end) return false;
     return true;

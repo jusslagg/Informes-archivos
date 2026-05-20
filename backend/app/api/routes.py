@@ -55,37 +55,19 @@ def _apply_filter_specs(df, filters):
 
 
 def _apply_fecha_baja_range(df, date_range):
-    today = pd.Timestamp.today().normalize()
     if not date_range or "FECHA BAJA" not in df.columns:
-        working = df.copy()
-        fecha_baja = pd.to_datetime(working["FECHA BAJA"], errors="coerce")
-        default_end = fecha_baja.max()
-        if pd.isna(default_end):
-            default_end = today
-        default_end = min(default_end.normalize(), today)
-        default_start = default_end.replace(day=1) - pd.DateOffset(months=5)
-        return working[(fecha_baja >= default_start) & (fecha_baja <= default_end)]
+        return df
     working = df.copy()
     fecha_baja = pd.to_datetime(working["FECHA BAJA"], errors="coerce")
-    default_end = fecha_baja.max()
-    if pd.isna(default_end):
-        default_end = today
-    default_end = min(default_end.normalize(), today)
-    default_start = default_end.replace(day=1) - pd.DateOffset(months=5)
     if date_range.start:
         start = pd.to_datetime(date_range.start, errors="coerce")
         if pd.notna(start):
             working = working[fecha_baja >= start]
             fecha_baja = fecha_baja.loc[working.index]
-    else:
-        working = working[fecha_baja >= default_start]
-        fecha_baja = fecha_baja.loc[working.index]
     if date_range.end:
         end = pd.to_datetime(date_range.end, errors="coerce")
         if pd.notna(end):
             working = working[fecha_baja <= end]
-    else:
-        working = working[fecha_baja <= today]
     return working
 
 
@@ -121,7 +103,7 @@ def _only_bajas(df):
     if not estado_column:
         return df
     estado = df[estado_column].astype(str).map(_normalize_column_name)
-    return df[estado.str.contains("BAJA|INACTIVO", regex=True, na=False)].copy()
+    return df[estado.eq("BAJA")].copy()
 
 
 @router.post("/upload")
