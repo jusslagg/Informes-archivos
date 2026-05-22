@@ -64,6 +64,9 @@ export default function FilterBar({
   const activeMeta = filterColumns.find((item) => item.name === activeColumn) || filterColumns[0];
   const selectedValues = filters[activeMeta?.name] || [];
   const totalSelections = Object.values(filters).reduce((total, values) => total + values.length, 0);
+  const activeValues = activeMeta?.values || [];
+  const allSelected = activeValues.length > 0 && selectedValues.length === activeValues.length;
+  const partiallySelected = selectedValues.length > 0 && selectedValues.length < activeValues.length;
 
   const toggleDimension = (dimension) => {
     const next = dimensions.includes(dimension)
@@ -80,12 +83,23 @@ export default function FilterBar({
     onFiltersChange({ ...filters, [column]: nextValues });
   };
 
+  const toggleAllFilters = () => {
+    if (!activeMeta) return;
+    const nextFilters = { ...filters };
+    if (allSelected) {
+      delete nextFilters[activeMeta.name];
+    } else {
+      nextFilters[activeMeta.name] = activeValues;
+    }
+    onFiltersChange(nextFilters);
+  };
+
   const clearFilters = () => {
     setQuery("");
     onFiltersChange({});
   };
 
-  const options = (activeMeta?.values || [])
+  const options = activeValues
     .filter((option) => option.toLowerCase().includes(query.toLowerCase()))
     .slice(0, 80);
 
@@ -168,6 +182,22 @@ export default function FilterBar({
               </button>
             )}
           </label>
+          {activeMeta && (
+            <div className="filter-option-actions">
+              <label className="check-row select-all-row">
+                <input
+                  type="checkbox"
+                  checked={allSelected}
+                  ref={(input) => {
+                    if (input) input.indeterminate = partiallySelected;
+                  }}
+                  onChange={toggleAllFilters}
+                />
+                <span>Seleccionar todos</span>
+                <b>{selectedValues.length}/{activeValues.length}</b>
+              </label>
+            </div>
+          )}
           <div className="option-list">
             {options.map((option) => (
               <label key={option} className="check-row">

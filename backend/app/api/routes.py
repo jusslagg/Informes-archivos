@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 import unicodedata
 
@@ -255,19 +255,25 @@ def get_filtered_records(payload: DynamicAnalysisRequest):
 def get_staffing_by_campaign(payload: DynamicAnalysisRequest):
     df = _apply_filter_specs(_latest_df(), _exclude_filter_specs(payload.filters, "ESTADO"))
     campaign_column = _find_column(df, "CAMPAÑA", "CAMPANA")
+    client_column = _find_column(df, "CLIENTE")
     estado_column = _find_column(df, "ESTADO")
+    fecha_baja_column = _find_column(df, "FECHA BAJA")
     if not campaign_column:
         return {"rows": []}
 
     working = df.copy()
     working["_campana"] = working[campaign_column].astype(str).str.strip().replace("", "Sin dato")
+    working["_cliente"] = working[client_column].astype(str).str.strip().replace("", "Sin dato") if client_column else "Sin dato"
     if not estado_column:
-        counts = working.groupby("_campana", dropna=False).size().reset_index(name="activo")
+        counts = working.groupby(["_cliente", "_campana"], dropna=False).size().reset_index(name="activo")
         rows = [
             {
                 "campana": str(row["_campana"]),
                 "CAMPAÑA": str(row["_campana"]),
+                "cliente": str(row["_cliente"]),
+                "CLIENTE": str(row["_cliente"]),
                 "activo": int(row["activo"]),
+                "bajasMes": 0,
                 "licencia": 0,
                 "observacion": "",
             }
@@ -282,14 +288,22 @@ def get_staffing_by_campaign(payload: DynamicAnalysisRequest):
         estado_upper.str.contains("ACTIVO", na=False) & ~estado_upper.str.contains("INACTIVO", na=False)
     )
     is_licencia = ~is_activo & ~is_baja
+    bajas_mes = pd.Series(False, index=working.index)
+    if fecha_baja_column:
+        today = pd.Timestamp(date.today())
+        month_start = today.replace(day=1)
+        fecha_baja = pd.to_datetime(working[fecha_baja_column], errors="coerce", dayfirst=True)
+        bajas_mes = is_baja & fecha_baja.ge(month_start) & fecha_baja.le(today)
 
     rows = []
     enriched = working.assign(
         _is_activo=is_activo,
+        _is_baja_mes=bajas_mes,
         _is_licencia=is_licencia,
         _estado=estado.replace("", "Sin dato"),
     )
-    for campana, group in enriched.groupby("_campana", dropna=False):
+    for (cliente_value, campana), group in enriched.groupby(["_cliente", "_campana"], dropna=False):
+        cliente_value = str(cliente_value or "Sin dato")
         licencia_group = group[group["_is_licencia"]]
         license_counts = licencia_group["_estado"].replace("", "Sin dato").value_counts()
         observacion = ", ".join(f"{label}: {count}" for label, count in license_counts.items())
@@ -297,7 +311,10 @@ def get_staffing_by_campaign(payload: DynamicAnalysisRequest):
             {
                 "campana": str(campana),
                 "CAMPAÑA": str(campana),
+                "cliente": cliente_value,
+                "CLIENTE": cliente_value,
                 "activo": int(group["_is_activo"].sum()),
+                "bajasMes": int(group["_is_baja_mes"].sum()),
                 "licencia": int(len(licencia_group)),
                 "observacion": observacion,
             }

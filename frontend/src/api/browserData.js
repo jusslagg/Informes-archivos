@@ -136,6 +136,7 @@ function addAlias(source, target) {
   ["MODALIDAD DE CONTRATACI\u00d3N", C.modality],
   ["MODALIDAD DE CONTRATACIÃ“N", C.modality],
   ["MODALIDAD DE CONTRATACIÃƒâ€œN", C.modality],
+  ["CLIENTES", "CLIENTE"],
 ].forEach(([source, target]) => addAlias(source, target));
 
 function columnKey(column) {
@@ -147,13 +148,40 @@ function value(row, column) {
   return String(row[key] ?? row[column] ?? "").trim();
 }
 
+function looseValue(row, ...columns) {
+  for (const column of columns) {
+    const direct = value(row, column);
+    if (direct) return direct;
+
+    const wanted = normalizeColumnName(column);
+    const entry = Object.entries(row).find(([key, rawValue]) => {
+      if (rawValue === undefined || rawValue === null || String(rawValue).trim() === "") return false;
+      const normalizedKey = normalizeColumnName(key);
+      return normalizedKey === wanted || normalizedKey.includes(wanted);
+    });
+    if (entry) return String(entry[1] ?? "").trim();
+  }
+  return "";
+}
+
 function campaignValue(row) {
-  return value(row, C.campaign) || "Sin dato";
+  return looseValue(row, C.campaign, "CAMPANA", "CAMPAÑA") || "Sin dato";
+}
+
+function clientValue(row) {
+  return looseValue(row, "CLIENTE", "CLIENTES") || "Sin dato";
 }
 
 function isBajaRow(row) {
   const estado = normalizeColumnName(value(row, "ESTADO"));
   return estado === "BAJA";
+}
+
+function currentMonthToDateBounds() {
+  const today = new Date();
+  const end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const start = new Date(today.getFullYear(), today.getMonth(), 1);
+  return { start, end };
 }
 
 function numberValue(input) {
@@ -217,6 +245,9 @@ function cleanPayroll(rawRows) {
         next[canonical] = rawValue;
       }
     });
+    if (!next.CLIENTE) next.CLIENTE = looseValue(row, "CLIENTE", "CLIENTES");
+    if (!next[C.campaign]) next[C.campaign] = looseValue(row, C.campaign, "CAMPANA", "CAMPAÑA");
+    if (!next[C.subCampaign]) next[C.subCampaign] = looseValue(row, C.subCampaign, "SUB CAMPANA", "SUB CAMPAÑA");
     return next;
   });
 
@@ -498,28 +529,38 @@ export function getStaffingByCampaignBrowser(filters = []) {
   const filtered = filters.filter((filter) => normalizeColumnName(filter.column) !== normalizeColumnName("ESTADO"));
   const rows = applyFilters(state.rows, filtered);
   const grouped = new Map();
+  const { start: monthStart, end: today } = currentMonthToDateBounds();
   rows.forEach((row) => {
     const campana = campaignValue(row);
+    const cliente = clientValue(row);
+    const groupKey = `${normalizeColumnName(cliente)}||${normalizeColumnName(campana)}`;
     const estado = value(row, "ESTADO") || "Sin dato";
     const estadoUpper = normalizeColumnName(estado);
     const isBaja = estadoUpper.includes("BAJA");
     const isActivo = estadoUpper === "ACTIVO" || (estadoUpper.includes("ACTIVO") && !estadoUpper.includes("INACTIVO"));
     const isLicencia = !isActivo && !isBaja;
-    const current = grouped.get(campana) || { campana, activo: 0, licencia: 0, licenses: new Map() };
+    const current = grouped.get(groupKey) || { campana, cliente, activo: 0, bajasMes: 0, licencia: 0, licenses: new Map() };
     if (isActivo) current.activo += 1;
+    if (isBaja) {
+      const fechaBaja = dateValue(row["FECHA BAJA"]);
+      if (fechaBaja && fechaBaja >= monthStart && fechaBaja <= today) current.bajasMes += 1;
+    }
     if (isLicencia) {
       current.licencia += 1;
       current.licenses.set(estado, (current.licenses.get(estado) || 0) + 1);
     }
-    grouped.set(campana, current);
+    grouped.set(groupKey, current);
   });
   return {
     rows: [...grouped.values()]
       .map((row) =>
         campaignRow(row.campana, {
           campana: row.campana,
+          cliente: row.cliente,
+          CLIENTE: row.cliente,
           [C.campaign]: row.campana,
           activo: row.activo,
+          bajasMes: row.bajasMes,
           licencia: row.licencia,
           observacion: [...row.licenses.entries()].map(([label, count]) => `${label}: ${count}`).join(", "),
         }),

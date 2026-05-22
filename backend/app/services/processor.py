@@ -37,6 +37,8 @@ def clean_payroll(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
         normalized = normalize_column_name(column)
         if normalized in CANONICAL_COLUMN_MAP:
             rename_map[column] = CANONICAL_COLUMN_MAP[normalized]
+        elif "CLIENTE" in normalized:
+            rename_map[column] = "CLIENTE"
 
     df = df.rename(columns=rename_map)
     missing_core = [column for column in CORE_COLUMNS if column not in df.columns]
