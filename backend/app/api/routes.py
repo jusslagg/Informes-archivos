@@ -16,7 +16,16 @@ from app.services.analysis import run_dynamic_analysis
 from app.services.dashboard import build_dashboard
 from app.services.exporter import export_workbook
 from app.services.processor import clean_payroll, read_payroll_file
-from app.services.storage import load_latest_dataset, save_latest_dataset
+from app.services.storage import (
+    load_holidays,
+    load_latest_dataset,
+    load_requirements,
+    load_requirements_catalog,
+    save_holidays,
+    save_latest_dataset,
+    save_requirements,
+    save_requirements_catalog,
+)
 from app.services.validations import validate_payroll
 
 router = APIRouter()
@@ -35,6 +44,36 @@ MONTH_LABELS = {
     11: "noviembre",
     12: "diciembre",
 }
+
+
+@router.get("/requirements/{month}")
+def get_saved_requirements(month: str):
+    return load_requirements(month)
+
+
+@router.put("/requirements/{month}")
+def put_saved_requirements(month: str, payload: dict):
+    return save_requirements(month, payload)
+
+
+@router.get("/requirements-catalog")
+def get_saved_requirements_catalog():
+    return load_requirements_catalog()
+
+
+@router.put("/requirements-catalog")
+def put_saved_requirements_catalog(payload: dict):
+    return save_requirements_catalog(payload)
+
+
+@router.get("/holidays/{year}")
+def get_saved_holidays(year: str):
+    return load_holidays(year)
+
+
+@router.put("/holidays/{year}")
+def put_saved_holidays(year: str, payload: dict):
+    return save_holidays(year, payload)
 
 
 def _latest_df():
@@ -321,6 +360,74 @@ def get_staffing_by_campaign(payload: DynamicAnalysisRequest):
         )
 
     rows = sorted(rows, key=lambda item: item["activo"], reverse=True)
+    return {"rows": rows}
+
+
+@router.post("/required-structure")
+def get_required_structure(payload: DynamicAnalysisRequest):
+    df = _apply_filter_specs(_latest_df(), _exclude_filter_specs(payload.filters, "ESTADO"))
+    pcia_column = _find_column(df, "PCIA", "PROVINCIA")
+    site_column = _find_column(df, "SITE", "SITIO")
+    responsible_column = _find_column(df, "RESPONSABLE", "FORMADOR ASIGNADO", "SUPERVISOR")
+    client_column = _find_column(df, "CLIENTE")
+    campaign_column = _find_column(df, "CAMPAÑA", "CAMPANA")
+    subcampaign_column = _find_column(df, "SUB CAMPAÑA", "SUB CAMPANA", "SUBCAMPAÑA", "SUBCAMPANA")
+    estado_column = _find_column(df, "ESTADO")
+    hours_column = _find_column(df, "CARGA HORARIA SEMANAL")
+    if not client_column and not campaign_column:
+        return {"rows": []}
+
+    working = df.copy()
+    column_map = {
+        "_pcia": pcia_column,
+        "_site": site_column,
+        "_responsable": responsible_column,
+        "_cliente": client_column,
+        "_campana": campaign_column,
+        "_subcampana": subcampaign_column,
+    }
+    for target, source in column_map.items():
+        if source:
+            working[target] = working[source].astype(str).str.strip().replace("", "Sin dato")
+        else:
+            working[target] = "Sin dato"
+
+    if estado_column:
+        estado_upper = working[estado_column].astype(str).str.strip().str.upper()
+        is_activo = estado_upper.eq("ACTIVO") | (
+            estado_upper.str.contains("ACTIVO", na=False) & ~estado_upper.str.contains("INACTIVO", na=False)
+        )
+    else:
+        is_activo = pd.Series(True, index=working.index)
+
+    working["_is_activo"] = is_activo
+    if hours_column:
+        working["_weekly_hours"] = pd.to_numeric(
+            working[hours_column].astype(str).str.replace(",", ".", regex=False),
+            errors="coerce",
+        ).fillna(0)
+    else:
+        working["_weekly_hours"] = 0
+
+    rows = []
+    group_columns = ["_pcia", "_site", "_responsable", "_cliente", "_campana", "_subcampana"]
+    for values, group in working.groupby(group_columns, dropna=False):
+        pcia, site, responsable, cliente, campana, subcampana = [str(value or "Sin dato") for value in values]
+        active_group = group[group["_is_activo"]]
+        rows.append(
+            {
+                "pcia": pcia,
+                "site": site,
+                "responsable": responsable,
+                "cliente": cliente,
+                "campana": campana,
+                "subcampana": subcampana,
+                "activo": int(active_group.shape[0]),
+                "weekly_hours": float(active_group["_weekly_hours"].sum()),
+            }
+        )
+
+    rows = sorted(rows, key=lambda item: (item["cliente"], item["campana"], item["subcampana"]))
     return {"rows": rows}
 
 

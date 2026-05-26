@@ -1,0 +1,53 @@
+{
+  "month": "2026-05",
+  "requirements": {},
+  "holidays": {},
+  "manualRows": [],
+  "masterRequirements": {
+    "AD||AD||AD": {
+      "total": 151,
+      "daily": {
+        "2026-05-04": 151
+      }
+    },
+    "PRUEBA 2||PRUEBA 2||PRUEBA 2": {
+      "total": 6515,
+      "daily": {
+        "2026-05-04": 6515
+      }
+    }
+  },
+  "rows": [
+    {
+      "id": "AS||AD||AD||AD||AD",
+      "gerente": "as",
+      "jefeSite": "ad",
+      "cliente": "ad",
+      "campana": "ad",
+      "subcampana": "ad",
+      "active": true,
+      "daily": {
+        "2026-05-04": "151"
+      }
+    },
+    {
+      "id": "PRUEBA 2||PRUEBA 2||PRUEBA 2||PRUEBA 2||PRUEBA 2",
+      "gerente": "prueba 2",
+      "jefeSite": "prueba 2",
+      "cliente": "prueba 2",
+      "campana": "prueba 2",
+      "subcampana": "prueba 2",
+      "active": true,
+      "daily": {
+        "2026-05-04": "6515"
+      }
+    }
+  ],
+  "draft": {
+    "gerente": "",
+    "jefeSite": "",
+    "cliente": "",
+    "campana": "",
+    "subcampana": ""
+  }
+}

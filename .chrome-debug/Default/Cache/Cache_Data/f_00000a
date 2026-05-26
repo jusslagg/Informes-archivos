@@ -1,0 +1,226 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/DataTable.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=1361aafa"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+let prevRefreshReg;
+let prevRefreshSig;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  prevRefreshReg = window.$RefreshReg$;
+  prevRefreshSig = window.$RefreshSig$;
+  window.$RefreshReg$ = RefreshRuntime.getRefreshReg("C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx");
+  window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+}
+var _s = $RefreshSig$();
+import { ChevronDown, ChevronUp, Search } from "/node_modules/.vite/deps/lucide-react.js?v=1361aafa";
+import __vite__cjsImport4_react from "/node_modules/.vite/deps/react.js?v=1361aafa"; const useMemo = __vite__cjsImport4_react["useMemo"]; const useState = __vite__cjsImport4_react["useState"];
+function cellValue(value) {
+  if (Array.isArray(value)) return value.join(", ");
+  if (value === null || value === void 0 || value === "") return "Sin dato";
+  return String(value);
+}
+function compareValues(a, b) {
+  const left = Number(String(a).replace(/[^\d,-.]/g, "").replace(",", "."));
+  const right = Number(String(b).replace(/[^\d,-.]/g, "").replace(",", "."));
+  if (!Number.isNaN(left) && !Number.isNaN(right)) return left - right;
+  return String(a).localeCompare(String(b), "es");
+}
+export default function DataTable({ columns = [], rows = [], title = "", subtitle = "" }) {
+  _s();
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState({ column: columns[0], direction: "asc" });
+  const [page, setPage] = useState(1);
+  const pageSize = 12;
+  const filteredRows = useMemo(() => {
+    const text = query.toLowerCase();
+    return rows.filter((row) => columns.some((column) => cellValue(row[column]).toLowerCase().includes(text))).sort((a, b) => {
+      const direction = sort.direction === "asc" ? 1 : -1;
+      return compareValues(cellValue(a[sort.column]), cellValue(b[sort.column])) * direction;
+    });
+  }, [columns, query, rows, sort]);
+  const pageCount = Math.max(1, Math.ceil(filteredRows.length / pageSize));
+  const safePage = Math.min(page, pageCount);
+  const visibleRows = filteredRows.slice((safePage - 1) * pageSize, safePage * pageSize);
+  const toggleSort = (column) => {
+    setSort((current) => ({
+      column,
+      direction: current.column === column && current.direction === "asc" ? "desc" : "asc"
+    }));
+  };
+  return /* @__PURE__ */ jsxDEV("section", { className: "table-wrap", children: [
+    /* @__PURE__ */ jsxDEV("div", { className: "table-toolbar", children: [
+      /* @__PURE__ */ jsxDEV("div", { children: [
+        title && /* @__PURE__ */ jsxDEV("h2", { children: title }, void 0, false, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+          lineNumber: 67,
+          columnNumber: 21
+        }, this),
+        /* @__PURE__ */ jsxDEV("span", { children: subtitle || `${filteredRows.length} fila(s)` }, void 0, false, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+          lineNumber: 68,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+        lineNumber: 66,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("label", { className: "search-field compact", children: [
+        /* @__PURE__ */ jsxDEV(Search, { size: 15 }, void 0, false, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+          lineNumber: 71,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV(
+          "input",
+          {
+            value: query,
+            onChange: (event) => {
+              setQuery(event.target.value);
+              setPage(1);
+            },
+            placeholder: "Buscar"
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+            lineNumber: 72,
+            columnNumber: 11
+          },
+          this
+        )
+      ] }, void 0, true, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+        lineNumber: 70,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+      lineNumber: 65,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "table-scroll", children: /* @__PURE__ */ jsxDEV("table", { children: [
+      /* @__PURE__ */ jsxDEV("thead", { children: /* @__PURE__ */ jsxDEV("tr", { children: columns.map(
+        (column) => /* @__PURE__ */ jsxDEV("th", { children: /* @__PURE__ */ jsxDEV("button", { onClick: () => toggleSort(column), children: [
+          /* @__PURE__ */ jsxDEV("span", { children: column }, void 0, false, {
+            fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+            lineNumber: 89,
+            columnNumber: 21
+          }, this),
+          sort.column === column && (sort.direction === "asc" ? /* @__PURE__ */ jsxDEV(ChevronUp, { size: 14 }, void 0, false, {
+            fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+            lineNumber: 91,
+            columnNumber: 46
+          }, this) : /* @__PURE__ */ jsxDEV(ChevronDown, { size: 14 }, void 0, false, {
+            fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+            lineNumber: 91,
+            columnNumber: 72
+          }, this))
+        ] }, void 0, true, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+          lineNumber: 88,
+          columnNumber: 19
+        }, this) }, column, false, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+          lineNumber: 87,
+          columnNumber: 15
+        }, this)
+      ) }, void 0, false, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+        lineNumber: 85,
+        columnNumber: 13
+      }, this) }, void 0, false, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+        lineNumber: 84,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("tbody", { children: visibleRows.length === 0 ? /* @__PURE__ */ jsxDEV("tr", { children: /* @__PURE__ */ jsxDEV("td", { colSpan: columns.length || 1, className: "empty-cell", children: "Sin datos para mostrar." }, void 0, false, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+        lineNumber: 100,
+        columnNumber: 17
+      }, this) }, void 0, false, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+        lineNumber: 99,
+        columnNumber: 13
+      }, this) : visibleRows.map(
+        (row, index) => /* @__PURE__ */ jsxDEV("tr", { children: columns.map(
+          (column) => /* @__PURE__ */ jsxDEV("td", { children: cellValue(row[column]) }, column, false, {
+            fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+            lineNumber: 108,
+            columnNumber: 15
+          }, this)
+        ) }, `${index}-${JSON.stringify(row)}`, false, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+          lineNumber: 106,
+          columnNumber: 13
+        }, this)
+      ) }, void 0, false, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+        lineNumber: 97,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+      lineNumber: 83,
+      columnNumber: 9
+    }, this) }, void 0, false, {
+      fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+      lineNumber: 82,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "pagination", children: [
+      /* @__PURE__ */ jsxDEV("button", { disabled: safePage === 1, onClick: () => setPage((current) => Math.max(1, current - 1)), children: "Anterior" }, void 0, false, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+        lineNumber: 117,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("span", { children: [
+        "Página ",
+        safePage,
+        " de ",
+        pageCount
+      ] }, void 0, true, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+        lineNumber: 120,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("button", { disabled: safePage === pageCount, onClick: () => setPage((current) => current + 1), children: "Siguiente" }, void 0, false, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+        lineNumber: 123,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+      lineNumber: 116,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx",
+    lineNumber: 64,
+    columnNumber: 5
+  }, this);
+}
+_s(DataTable, "afa2A6RLTtOLi8SGyqvmUBsCBos=");
+_c = DataTable;
+var _c;
+$RefreshReg$(_c, "DataTable");
+if (import.meta.hot && !inWebWorker) {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+if (import.meta.hot && !inWebWorker) {
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/DataTable.jsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+
+//# sourceMappingURL=data:application/json;base64,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O0FBQUEsU0FURjtBQUFBO0FBQUE7QUFBQTtBQUFBLFdBVUE7QUFBQSxPQTlERjtBQUFBO0FBQUE7QUFBQTtBQUFBLFNBK0RBO0FBRUo7QUFBQzNCLEdBN0Z1QkwsV0FBUztBQUFBLEtBQVRBO0FBQVMsSUFBQXVDO0FBQUEsYUFBQUEsSUFBQSIsIm5hbWVzIjpbIkNoZXZyb25Eb3duIiwiQ2hldnJvblVwIiwiU2VhcmNoIiwidXNlTWVtbyIsInVzZVN0YXRlIiwiY2VsbFZhbHVlIiwidmFsdWUiLCJBcnJheSIsImlzQXJyYXkiLCJqb2luIiwidW5kZWZpbmVkIiwiU3RyaW5nIiwiY29tcGFyZVZhbHVlcyIsImEiLCJiIiwibGVmdCIsIk51bWJlciIsInJlcGxhY2UiLCJyaWdodCIsImlzTmFOIiwibG9jYWxlQ29tcGFyZSIsIkRhdGFUYWJsZSIsImNvbHVtbnMiLCJyb3dzIiwidGl0bGUiLCJzdWJ0aXRsZSIsIl9zIiwicXVlcnkiLCJzZXRRdWVyeSIsInNvcnQiLCJzZXRTb3J0IiwiY29sdW1uIiwiZGlyZWN0aW9uIiwicGFnZSIsInNldFBhZ2UiLCJwYWdlU2l6ZSIsImZpbHRlcmVkUm93cyIsInRleHQiLCJ0b0xvd2VyQ2FzZSIsImZpbHRlciIsInJvdyIsInNvbWUiLCJpbmNsdWRlcyIsInBhZ2VDb3VudCIsIk1hdGgiLCJtYXgiLCJjZWlsIiwibGVuZ3RoIiwic2FmZVBhZ2UiLCJtaW4iLCJ2aXNpYmxlUm93cyIsInNsaWNlIiwidG9nZ2xlU29ydCIsImN1cnJlbnQiLCJldmVudCIsInRhcmdldCIsIm1hcCIsImluZGV4IiwiSlNPTiIsInN0cmluZ2lmeSIsIl9jIl0sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VzIjpbIkRhdGFUYWJsZS5qc3giXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgQ2hldnJvbkRvd24sIENoZXZyb25VcCwgU2VhcmNoIH0gZnJvbSBcImx1Y2lkZS1yZWFjdFwiO1xuaW1wb3J0IHsgdXNlTWVtbywgdXNlU3RhdGUgfSBmcm9tIFwicmVhY3RcIjtcblxuZnVuY3Rpb24gY2VsbFZhbHVlKHZhbHVlKSB7XG4gIGlmIChBcnJheS5pc0FycmF5KHZhbHVlKSkgcmV0dXJuIHZhbHVlLmpvaW4oXCIsIFwiKTtcbiAgaWYgKHZhbHVlID09PSBudWxsIHx8IHZhbHVlID09PSB1bmRlZmluZWQgfHwgdmFsdWUgPT09IFwiXCIpIHJldHVybiBcIlNpbiBkYXRvXCI7XG4gIHJldHVybiBTdHJpbmcodmFsdWUpO1xufVxuXG5mdW5jdGlvbiBjb21wYXJlVmFsdWVzKGEsIGIpIHtcbiAgY29uc3QgbGVmdCA9IE51bWJlcihTdHJpbmcoYSkucmVwbGFjZSgvW15cXGQsLS5dL2csIFwiXCIpLnJlcGxhY2UoXCIsXCIsIFwiLlwiKSk7XG4gIGNvbnN0IHJpZ2h0ID0gTnVtYmVyKFN0cmluZyhiKS5yZXBsYWNlKC9bXlxcZCwtLl0vZywgXCJcIikucmVwbGFjZShcIixcIiwgXCIuXCIpKTtcbiAgaWYgKCFOdW1iZXIuaXNOYU4obGVmdCkgJiYgIU51bWJlci5pc05hTihyaWdodCkpIHJldHVybiBsZWZ0IC0gcmlnaHQ7XG4gIHJldHVybiBTdHJpbmcoYSkubG9jYWxlQ29tcGFyZShTdHJpbmcoYiksIFwiZXNcIik7XG59XG5cbmV4cG9ydCBkZWZhdWx0IGZ1bmN0aW9uIERhdGFUYWJsZSh7IGNvbHVtbnMgPSBbXSwgcm93cyA9IFtdLCB0aXRsZSA9IFwiXCIsIHN1YnRpdGxlID0gXCJcIiB9KSB7XG4gIGNvbnN0IFtxdWVyeSwgc2V0UXVlcnldID0gdXNlU3RhdGUoXCJcIik7XG4gIGNvbnN0IFtzb3J0LCBzZXRTb3J0XSA9IHVzZVN0YXRlKHsgY29sdW1uOiBjb2x1bW5zWzBdLCBkaXJlY3Rpb246IFwiYXNjXCIgfSk7XG4gIGNvbnN0IFtwYWdlLCBzZXRQYWdlXSA9IHVzZVN0YXRlKDEpO1xuICBjb25zdCBwYWdlU2l6ZSA9IDEyO1xuXG4gIGNvbnN0IGZpbHRlcmVkUm93cyA9IHVzZU1lbW8oKCkgPT4ge1xuICAgIGNvbnN0IHRleHQgPSBxdWVyeS50b0xvd2VyQ2FzZSgpO1xuICAgIHJldHVybiByb3dzXG4gICAgICAuZmlsdGVyKChyb3cpID0+IGNvbHVtbnMuc29tZSgoY29sdW1uKSA9PiBjZWxsVmFsdWUocm93W2NvbHVtbl0pLnRvTG93ZXJDYXNlKCkuaW5jbHVkZXModGV4dCkpKVxuICAgICAgLnNvcnQoKGEsIGIpID0+IHtcbiAgICAgICAgY29uc3QgZGlyZWN0aW9uID0gc29ydC5kaXJlY3Rpb24gPT09IFwiYXNjXCIgPyAxIDogLTE7XG4gICAgICAgIHJldHVybiBjb21wYXJlVmFsdWVzKGNlbGxWYWx1ZShhW3NvcnQuY29sdW1uXSksIGNlbGxWYWx1ZShiW3NvcnQuY29sdW1uXSkpICogZGlyZWN0aW9uO1xuICAgICAgfSk7XG4gIH0sIFtjb2x1bW5zLCBxdWVyeSwgcm93cywgc29ydF0pO1xuXG4gIGNvbnN0IHBhZ2VDb3VudCA9IE1hdGgubWF4KDEsIE1hdGguY2VpbChmaWx0ZXJlZFJvd3MubGVuZ3RoIC8gcGFnZVNpemUpKTtcbiAgY29uc3Qgc2FmZVBhZ2UgPSBNYXRoLm1pbihwYWdlLCBwYWdlQ291bnQpO1xuICBjb25zdCB2aXNpYmxlUm93cyA9IGZpbHRlcmVkUm93cy5zbGljZSgoc2FmZVBhZ2UgLSAxKSAqIHBhZ2VTaXplLCBzYWZlUGFnZSAqIHBhZ2VTaXplKTtcblxuICBjb25zdCB0b2dnbGVTb3J0ID0gKGNvbHVtbikgPT4ge1xuICAgIHNldFNvcnQoKGN1cnJlbnQpID0+ICh7XG4gICAgICBjb2x1bW4sXG4gICAgICBkaXJlY3Rpb246IGN1cnJlbnQuY29sdW1uID09PSBjb2x1bW4gJiYgY3VycmVudC5kaXJlY3Rpb24gPT09IFwiYXNjXCIgPyBcImRlc2NcIiA6IFwiYXNjXCIsXG4gICAgfSkpO1xuICB9O1xuXG4gIHJldHVybiAoXG4gICAgPHNlY3Rpb24gY2xhc3NOYW1lPVwidGFibGUtd3JhcFwiPlxuICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0YWJsZS10b29sYmFyXCI+XG4gICAgICAgIDxkaXY+XG4gICAgICAgICAge3RpdGxlICYmIDxoMj57dGl0bGV9PC9oMj59XG4gICAgICAgICAgPHNwYW4+e3N1YnRpdGxlIHx8IGAke2ZpbHRlcmVkUm93cy5sZW5ndGh9IGZpbGEocylgfTwvc3Bhbj5cbiAgICAgICAgPC9kaXY+XG4gICAgICAgIDxsYWJlbCBjbGFzc05hbWU9XCJzZWFyY2gtZmllbGQgY29tcGFjdFwiPlxuICAgICAgICAgIDxTZWFyY2ggc2l6ZT17MTV9IC8+XG4gICAgICAgICAgPGlucHV0XG4gICAgICAgICAgICB2YWx1ZT17cXVlcnl9XG4gICAgICAgICAgICBvbkNoYW5nZT17KGV2ZW50KSA9PiB7XG4gICAgICAgICAgICAgIHNldFF1ZXJ5KGV2ZW50LnRhcmdldC52YWx1ZSk7XG4gICAgICAgICAgICAgIHNldFBhZ2UoMSk7XG4gICAgICAgICAgICB9fVxuICAgICAgICAgICAgcGxhY2Vob2xkZXI9XCJCdXNjYXJcIlxuICAgICAgICAgIC8+XG4gICAgICAgIDwvbGFiZWw+XG4gICAgICA8L2Rpdj5cbiAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGFibGUtc2Nyb2xsXCI+XG4gICAgICAgIDx0YWJsZT5cbiAgICAgICAgICA8dGhlYWQ+XG4gICAgICAgICAgICA8dHI+XG4gICAgICAgICAgICAgIHtjb2x1bW5zLm1hcCgoY29sdW1uKSA9PiAoXG4gICAgICAgICAgICAgICAgPHRoIGtleT17Y29sdW1ufT5cbiAgICAgICAgICAgICAgICAgIDxidXR0b24gb25DbGljaz17KCkgPT4gdG9nZ2xlU29ydChjb2x1bW4pfT5cbiAgICAgICAgICAgICAgICAgICAgPHNwYW4+e2NvbHVtbn08L3NwYW4+XG4gICAgICAgICAgICAgICAgICAgIHtzb3J0LmNvbHVtbiA9PT0gY29sdW1uICYmXG4gICAgICAgICAgICAgICAgICAgICAgKHNvcnQuZGlyZWN0aW9uID09PSBcImFzY1wiID8gPENoZXZyb25VcCBzaXplPXsxNH0gLz4gOiA8Q2hldnJvbkRvd24gc2l6ZT17MTR9IC8+KX1cbiAgICAgICAgICAgICAgICAgIDwvYnV0dG9uPlxuICAgICAgICAgICAgICAgIDwvdGg+XG4gICAgICAgICAgICAgICkpfVxuICAgICAgICAgICAgPC90cj5cbiAgICAgICAgICA8L3RoZWFkPlxuICAgICAgICAgIDx0Ym9keT5cbiAgICAgICAgICAgIHt2aXNpYmxlUm93cy5sZW5ndGggPT09IDAgPyAoXG4gICAgICAgICAgICAgIDx0cj5cbiAgICAgICAgICAgICAgICA8dGQgY29sU3Bhbj17Y29sdW1ucy5sZW5ndGggfHwgMX0gY2xhc3NOYW1lPVwiZW1wdHktY2VsbFwiPlxuICAgICAgICAgICAgICAgICAgU2luIGRhdG9zIHBhcmEgbW9zdHJhci5cbiAgICAgICAgICAgICAgICA8L3RkPlxuICAgICAgICAgICAgICA8L3RyPlxuICAgICAgICAgICAgKSA6IChcbiAgICAgICAgICAgICAgdmlzaWJsZVJvd3MubWFwKChyb3csIGluZGV4KSA9PiAoXG4gICAgICAgICAgICAgICAgPHRyIGtleT17YCR7aW5kZXh9LSR7SlNPTi5zdHJpbmdpZnkocm93KX1gfT5cbiAgICAgICAgICAgICAgICAgIHtjb2x1bW5zLm1hcCgoY29sdW1uKSA9PiAoXG4gICAgICAgICAgICAgICAgICAgIDx0ZCBrZXk9e2NvbHVtbn0+e2NlbGxWYWx1ZShyb3dbY29sdW1uXSl9PC90ZD5cbiAgICAgICAgICAgICAgICAgICkpfVxuICAgICAgICAgICAgICAgIDwvdHI+XG4gICAgICAgICAgICAgICkpXG4gICAgICAgICAgICApfVxuICAgICAgICAgIDwvdGJvZHk+XG4gICAgICAgIDwvdGFibGU+XG4gICAgICA8L2Rpdj5cbiAgICAgIDxkaXYgY2xhc3NOYW1lPVwicGFnaW5hdGlvblwiPlxuICAgICAgICA8YnV0dG9uIGRpc2FibGVkPXtzYWZlUGFnZSA9PT0gMX0gb25DbGljaz17KCkgPT4gc2V0UGFnZSgoY3VycmVudCkgPT4gTWF0aC5tYXgoMSwgY3VycmVudCAtIDEpKX0+XG4gICAgICAgICAgQW50ZXJpb3JcbiAgICAgICAgPC9idXR0b24+XG4gICAgICAgIDxzcGFuPlxuICAgICAgICAgIFDDoWdpbmEge3NhZmVQYWdlfSBkZSB7cGFnZUNvdW50fVxuICAgICAgICA8L3NwYW4+XG4gICAgICAgIDxidXR0b24gZGlzYWJsZWQ9e3NhZmVQYWdlID09PSBwYWdlQ291bnR9IG9uQ2xpY2s9eygpID0+IHNldFBhZ2UoKGN1cnJlbnQpID0+IGN1cnJlbnQgKyAxKX0+XG4gICAgICAgICAgU2lndWllbnRlXG4gICAgICAgIDwvYnV0dG9uPlxuICAgICAgPC9kaXY+XG4gICAgPC9zZWN0aW9uPlxuICApO1xufVxuIl0sImZpbGUiOiJDOi9Vc2Vycy9qZWdpbC9EZXNrdG9wL0FuYWxpc2lzIE5vbWluYS9mcm9udGVuZC9zcmMvY29tcG9uZW50cy9EYXRhVGFibGUuanN4In0=

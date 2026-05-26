@@ -6,13 +6,18 @@ import {
   getDashboardBrowser,
   getDatasetMetadataBrowser,
   getFilteredRecordsBrowser,
+  getRequiredStructureBrowser,
   getStaffingByCampaignBrowser,
   getValidationsBrowser,
   runDynamicAnalysisBrowser,
   uploadPayrollBrowser,
 } from "./browserData.js";
 
-const API_URL = import.meta.env.VITE_API_URL || "";
+const localApiUrl =
+  typeof window !== "undefined" && ["127.0.0.1:5173", "localhost:5173"].includes(window.location.host)
+    ? "http://127.0.0.1:8000"
+    : "";
+const API_URL = import.meta.env.VITE_API_URL || localApiUrl;
 export const usesBrowserData = !API_URL;
 
 async function request(path, options = {}) {
@@ -79,6 +84,57 @@ export function getStaffingByCampaign(filters = []) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ filters }),
+  });
+}
+
+export function getRequiredStructure(filters = []) {
+  if (usesBrowserData) return Promise.resolve(getRequiredStructureBrowser(filters));
+  return request("/required-structure", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ filters }),
+  });
+}
+
+export function getSavedRequirements(month) {
+  if (usesBrowserData) return Promise.resolve({ month, requirements: {}, holidays: {}, manualRows: [], rows: [], draft: {} });
+  return request(`/requirements/${month}`);
+}
+
+export function saveSavedRequirements(month, payload) {
+  if (usesBrowserData) return Promise.resolve({ month, ...payload });
+  return request(`/requirements/${month}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+}
+
+export function getRequirementCatalog() {
+  if (usesBrowserData) return Promise.resolve({ rows: [] });
+  return request("/requirements-catalog");
+}
+
+export function saveRequirementCatalog(payload) {
+  if (usesBrowserData) return Promise.resolve(payload);
+  return request("/requirements-catalog", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+}
+
+export function getSavedHolidays(year) {
+  if (usesBrowserData) return Promise.resolve({ year, holidays: [] });
+  return request(`/holidays/${year}`);
+}
+
+export function saveSavedHolidays(year, payload) {
+  if (usesBrowserData) return Promise.resolve({ year, ...payload });
+  return request(`/holidays/${year}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
   });
 }
 

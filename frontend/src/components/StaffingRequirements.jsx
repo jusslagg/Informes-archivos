@@ -1,6 +1,7 @@
 import { ChevronDown, ChevronRight, Clipboard, Download, Search, Upload } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as XLSX from "xlsx";
+import { getSavedRequirements } from "../api/client.js";
 import MetricCard from "./MetricCard.jsx";
 
 const number = new Intl.NumberFormat("es-AR");
@@ -48,6 +49,31 @@ function parseRequiredNumber(value) {
 
 function requirementKey(cliente, campana) {
   return normalize(`${cleanLabel(cliente)}||${cleanLabel(campana)}`);
+}
+
+function currentMonthValue() {
+  const today = new Date();
+  return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function parseStoredRequirement(values) {
+  if (!values || typeof values !== "object") return 0;
+  if (values.total !== undefined) return parseRequiredNumber(values.total);
+  return parseRequiredNumber(values.week || values.sat || values.sun || values.holiday || 0);
+}
+
+function normalizeSavedRequirements(saved) {
+  const next = {};
+  Object.entries(saved.masterRequirements || {}).forEach(([key, values]) => {
+    const parts = key.split("||");
+    const cliente = parts[0] || "Sin dato";
+    const campana = parts[1] || "Sin dato";
+    const required = parseStoredRequirement(values);
+    if (!required) return;
+    const campaignKey = requirementKey(cliente, campana);
+    next[campaignKey] = parseRequiredNumber(next[campaignKey]) + required;
+  });
+  return next;
 }
 
 function splitCsvLine(line, separator) {
@@ -136,6 +162,21 @@ export default function StaffingRequirements({
   const [fileName, setFileName] = useState("");
   const [query, setQuery] = useState("");
   const [collapsedClients, setCollapsedClients] = useState({});
+
+  useEffect(() => {
+    const syncStoredRequirements = () => {
+      getSavedRequirements(currentMonthValue())
+        .then((saved) => setRequirements((current) => ({ ...current, ...normalizeSavedRequirements(saved) })))
+        .catch(() => {});
+    };
+    syncStoredRequirements();
+    window.addEventListener("storage", syncStoredRequirements);
+    window.addEventListener("requeridos-updated", syncStoredRequirements);
+    return () => {
+      window.removeEventListener("storage", syncStoredRequirements);
+      window.removeEventListener("requeridos-updated", syncStoredRequirements);
+    };
+  }, []);
 
   const { campaignRows, clientGroups } = useMemo(() => {
     const campaignMap = new Map(staffingRows.map((item) => [requirementKey(getClient(item), getCampaign(item)), item]));

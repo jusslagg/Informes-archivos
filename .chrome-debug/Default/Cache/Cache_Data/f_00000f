@@ -1,0 +1,195 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/BajasTenureTable.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=1361aafa"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+let prevRefreshReg;
+let prevRefreshSig;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  prevRefreshReg = window.$RefreshReg$;
+  prevRefreshSig = window.$RefreshSig$;
+  window.$RefreshReg$ = RefreshRuntime.getRefreshReg("C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx");
+  window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+}
+import { Clipboard } from "/node_modules/.vite/deps/lucide-react.js?v=1361aafa";
+const number = new Intl.NumberFormat("es-AR");
+export default function BajasTenureTable({ rows = [], total = 0, dateRange = { start: "", end: "" } }) {
+  const copyText = [
+    ["Antigüedad", "Bajas", "Participación"],
+    ...rows.map(
+      (row) => [
+        row.Antigüedad,
+        row.Bajas,
+        total ? `${(row.Bajas / total * 100).toFixed(1)}%` : "0%"
+      ]
+    ),
+    ["Total", total, "100%"]
+  ].map((line) => line.join("	")).join("\n");
+  const copyTable = async () => {
+    await navigator.clipboard.writeText(copyText);
+  };
+  const handleCopy = (event) => {
+    event.preventDefault();
+    event.clipboardData.setData("text/plain", copyText);
+  };
+  return /* @__PURE__ */ jsxDEV("section", { className: "table-wrap compact-a4 tenure-table", onCopy: handleCopy, children: [
+    /* @__PURE__ */ jsxDEV("div", { className: "table-toolbar", children: [
+      /* @__PURE__ */ jsxDEV("div", { children: [
+        /* @__PURE__ */ jsxDEV("h2", { children: "Bajas por meses en empresa" }, void 0, false, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+          lineNumber: 50,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("span", { children: [
+          "Calculado con FECHA BAJA menos FECHA ALTA, respetando filtros",
+          dateRange.start || dateRange.end ? ` (${dateRange.start || "inicio"} a ${dateRange.end || "hoy"})` : ""
+        ] }, void 0, true, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+          lineNumber: 51,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+        lineNumber: 49,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("button", { className: "primary-button secondary-button", onClick: copyTable, children: [
+        /* @__PURE__ */ jsxDEV(Clipboard, { size: 16 }, void 0, false, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+          lineNumber: 59,
+          columnNumber: 11
+        }, this),
+        "Copiar tabla"
+      ] }, void 0, true, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+        lineNumber: 58,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+      lineNumber: 48,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "table-scroll", children: /* @__PURE__ */ jsxDEV("table", { children: [
+      /* @__PURE__ */ jsxDEV("thead", { children: /* @__PURE__ */ jsxDEV("tr", { children: [
+        /* @__PURE__ */ jsxDEV("th", { children: "Antigüedad" }, void 0, false, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+          lineNumber: 67,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV("th", { children: "Bajas" }, void 0, false, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+          lineNumber: 68,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV("th", { children: "Participación" }, void 0, false, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+          lineNumber: 69,
+          columnNumber: 15
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+        lineNumber: 66,
+        columnNumber: 13
+      }, this) }, void 0, false, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+        lineNumber: 65,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("tbody", { children: rows.length ? rows.map(
+        (row) => /* @__PURE__ */ jsxDEV("tr", { children: [
+          /* @__PURE__ */ jsxDEV("td", { children: row.Antigüedad }, void 0, false, {
+            fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+            lineNumber: 76,
+            columnNumber: 19
+          }, this),
+          /* @__PURE__ */ jsxDEV("td", { children: number.format(row.Bajas) }, void 0, false, {
+            fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+            lineNumber: 77,
+            columnNumber: 19
+          }, this),
+          /* @__PURE__ */ jsxDEV("td", { children: total ? `${(row.Bajas / total * 100).toFixed(1)}%` : "0%" }, void 0, false, {
+            fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+            lineNumber: 78,
+            columnNumber: 19
+          }, this)
+        ] }, row.Antigüedad, true, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+          lineNumber: 75,
+          columnNumber: 13
+        }, this)
+      ) : /* @__PURE__ */ jsxDEV("tr", { children: /* @__PURE__ */ jsxDEV("td", { colSpan: "3", className: "empty-cell", children: "Sin bajas con fechas válidas." }, void 0, false, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+        lineNumber: 83,
+        columnNumber: 17
+      }, this) }, void 0, false, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+        lineNumber: 82,
+        columnNumber: 13
+      }, this) }, void 0, false, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+        lineNumber: 72,
+        columnNumber: 11
+      }, this),
+      rows.length > 0 && /* @__PURE__ */ jsxDEV("tfoot", { children: /* @__PURE__ */ jsxDEV("tr", { children: [
+        /* @__PURE__ */ jsxDEV("td", { children: "Total" }, void 0, false, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+          lineNumber: 92,
+          columnNumber: 17
+        }, this),
+        /* @__PURE__ */ jsxDEV("td", { children: number.format(total) }, void 0, false, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+          lineNumber: 93,
+          columnNumber: 17
+        }, this),
+        /* @__PURE__ */ jsxDEV("td", { children: "100%" }, void 0, false, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+          lineNumber: 94,
+          columnNumber: 17
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+        lineNumber: 91,
+        columnNumber: 15
+      }, this) }, void 0, false, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+        lineNumber: 90,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+      lineNumber: 64,
+      columnNumber: 9
+    }, this) }, void 0, false, {
+      fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+      lineNumber: 63,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx",
+    lineNumber: 47,
+    columnNumber: 5
+  }, this);
+}
+_c = BajasTenureTable;
+var _c;
+$RefreshReg$(_c, "BajasTenureTable");
+if (import.meta.hot && !inWebWorker) {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+if (import.meta.hot && !inWebWorker) {
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasTenureTable.jsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6IkFBOEJVOzs7Ozs7Ozs7Ozs7Ozs7O0FBOUJWLFNBQVNBLGlCQUFpQjtBQUUxQixNQUFNQyxTQUFTLElBQUlDLEtBQUtDLGFBQWEsT0FBTztBQUU1Qyx3QkFBd0JDLGlCQUFpQixFQUFFQyxPQUFPLElBQUlDLFFBQVEsR0FBR0MsWUFBWSxFQUFFQyxPQUFPLElBQUlDLEtBQUssR0FBRyxFQUFFLEdBQUc7QUFDckcsUUFBTUMsV0FBVztBQUFBLElBQ2YsQ0FBQyxjQUFjLFNBQVMsZUFBZTtBQUFBLElBQ3ZDLEdBQUdMLEtBQUtNO0FBQUFBLE1BQUksQ0FBQ0MsUUFBUTtBQUFBLFFBQ25CQSxJQUFJQztBQUFBQSxRQUNKRCxJQUFJRTtBQUFBQSxRQUNKUixRQUFRLElBQUtNLElBQUlFLFFBQVFSLFFBQVMsS0FBS1MsUUFBUSxDQUFDLENBQUMsTUFBTTtBQUFBLE1BQUk7QUFBQSxJQUM1RDtBQUFBLElBQ0QsQ0FBQyxTQUFTVCxPQUFPLE1BQU07QUFBQSxFQUFDLEVBRXZCSyxJQUFJLENBQUNLLFNBQVNBLEtBQUtDLEtBQUssR0FBSSxDQUFDLEVBQzdCQSxLQUFLLElBQUk7QUFFWixRQUFNQyxZQUFZLFlBQVk7QUFDNUIsVUFBTUMsVUFBVUMsVUFBVUMsVUFBVVgsUUFBUTtBQUFBLEVBQzlDO0FBRUEsUUFBTVksYUFBYUEsQ0FBQ0MsVUFBVTtBQUM1QkEsVUFBTUMsZUFBZTtBQUNyQkQsVUFBTUUsY0FBY0MsUUFBUSxjQUFjaEIsUUFBUTtBQUFBLEVBQ3BEO0FBRUEsU0FDRSx1QkFBQyxhQUFRLFdBQVUsc0NBQXFDLFFBQVFZLFlBQzlEO0FBQUEsMkJBQUMsU0FBSSxXQUFVLGlCQUNiO0FBQUEsNkJBQUMsU0FDQztBQUFBLCtCQUFDLFFBQUcsMENBQUo7QUFBQTtBQUFBO0FBQUE7QUFBQSxlQUE4QjtBQUFBLFFBQzlCLHVCQUFDLFVBQUk7QUFBQTtBQUFBLFVBRUZmLFVBQVVDLFNBQVNELFVBQVVFLE1BQzFCLEtBQUtGLFVBQVVDLFNBQVMsUUFBUSxNQUFNRCxVQUFVRSxPQUFPLEtBQUssTUFDNUQ7QUFBQSxhQUpOO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUFLQTtBQUFBLFdBUEY7QUFBQTtBQUFBO0FBQUE7QUFBQSxhQVFBO0FBQUEsTUFDQSx1QkFBQyxZQUFPLFdBQVUsbUNBQWtDLFNBQVNTLFdBQzNEO0FBQUEsK0JBQUMsYUFBVSxNQUFNLE1BQWpCO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUFBb0I7QUFBQTtBQUFBLFdBRHRCO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFHQTtBQUFBLFNBYkY7QUFBQTtBQUFBO0FBQUE7QUFBQSxXQWNBO0FBQUEsSUFDQSx1QkFBQyxTQUFJLFdBQVUsZ0JBQ2IsaUNBQUMsV0FDQztBQUFBLDZCQUFDLFdBQ0MsaUNBQUMsUUFDQztBQUFBLCtCQUFDLFFBQUcsMEJBQUo7QUFBQTtBQUFBO0FBQUE7QUFBQSxlQUFjO0FBQUEsUUFDZCx1QkFBQyxRQUFHLHFCQUFKO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUFBUztBQUFBLFFBQ1QsdUJBQUMsUUFBRyw2QkFBSjtBQUFBO0FBQUE7QUFBQTtBQUFBLGVBQWlCO0FBQUEsV0FIbkI7QUFBQTtBQUFBO0FBQUE7QUFBQSxhQUlBLEtBTEY7QUFBQTtBQUFBO0FBQUE7QUFBQSxhQU1BO0FBQUEsTUFDQSx1QkFBQyxXQUNFYixlQUFLc0IsU0FDSnRCLEtBQUtNO0FBQUFBLFFBQUksQ0FBQ0MsUUFDUix1QkFBQyxRQUNDO0FBQUEsaUNBQUMsUUFBSUEsY0FBSUMsY0FBVDtBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQUFvQjtBQUFBLFVBQ3BCLHVCQUFDLFFBQUlaLGlCQUFPMkIsT0FBT2hCLElBQUlFLEtBQUssS0FBNUI7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFBOEI7QUFBQSxVQUM5Qix1QkFBQyxRQUFJUixrQkFBUSxJQUFLTSxJQUFJRSxRQUFRUixRQUFTLEtBQUtTLFFBQVEsQ0FBQyxDQUFDLE1BQU0sUUFBNUQ7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFBaUU7QUFBQSxhQUgxREgsSUFBSUMsWUFBYjtBQUFBO0FBQUE7QUFBQTtBQUFBLGVBSUE7QUFBQSxNQUNELElBRUQsdUJBQUMsUUFDQyxpQ0FBQyxRQUFHLFNBQVEsS0FBSSxXQUFVLGNBQVksNkNBQXRDO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFFQSxLQUhGO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFJQSxLQWRKO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFnQkE7QUFBQSxNQUNDUixLQUFLc0IsU0FBUyxLQUNiLHVCQUFDLFdBQ0MsaUNBQUMsUUFDQztBQUFBLCtCQUFDLFFBQUcscUJBQUo7QUFBQTtBQUFBO0FBQUE7QUFBQSxlQUFTO0FBQUEsUUFDVCx1QkFBQyxRQUFJMUIsaUJBQU8yQixPQUFPdEIsS0FBSyxLQUF4QjtBQUFBO0FBQUE7QUFBQTtBQUFBLGVBQTBCO0FBQUEsUUFDMUIsdUJBQUMsUUFBRyxvQkFBSjtBQUFBO0FBQUE7QUFBQTtBQUFBLGVBQVE7QUFBQSxXQUhWO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFJQSxLQUxGO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFNQTtBQUFBLFNBaENKO0FBQUE7QUFBQTtBQUFBO0FBQUEsV0FrQ0EsS0FuQ0Y7QUFBQTtBQUFBO0FBQUE7QUFBQSxXQW9DQTtBQUFBLE9BcERGO0FBQUE7QUFBQTtBQUFBO0FBQUEsU0FxREE7QUFFSjtBQUFDdUIsS0E5RXVCekI7QUFBZ0IsSUFBQXlCO0FBQUEsYUFBQUEsSUFBQSIsIm5hbWVzIjpbIkNsaXBib2FyZCIsIm51bWJlciIsIkludGwiLCJOdW1iZXJGb3JtYXQiLCJCYWphc1RlbnVyZVRhYmxlIiwicm93cyIsInRvdGFsIiwiZGF0ZVJhbmdlIiwic3RhcnQiLCJlbmQiLCJjb3B5VGV4dCIsIm1hcCIsInJvdyIsIkFudGlnw7xlZGFkIiwiQmFqYXMiLCJ0b0ZpeGVkIiwibGluZSIsImpvaW4iLCJjb3B5VGFibGUiLCJuYXZpZ2F0b3IiLCJjbGlwYm9hcmQiLCJ3cml0ZVRleHQiLCJoYW5kbGVDb3B5IiwiZXZlbnQiLCJwcmV2ZW50RGVmYXVsdCIsImNsaXBib2FyZERhdGEiLCJzZXREYXRhIiwibGVuZ3RoIiwiZm9ybWF0IiwiX2MiXSwiaWdub3JlTGlzdCI6W10sInNvdXJjZXMiOlsiQmFqYXNUZW51cmVUYWJsZS5qc3giXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgQ2xpcGJvYXJkIH0gZnJvbSBcImx1Y2lkZS1yZWFjdFwiO1xuXG5jb25zdCBudW1iZXIgPSBuZXcgSW50bC5OdW1iZXJGb3JtYXQoXCJlcy1BUlwiKTtcblxuZXhwb3J0IGRlZmF1bHQgZnVuY3Rpb24gQmFqYXNUZW51cmVUYWJsZSh7IHJvd3MgPSBbXSwgdG90YWwgPSAwLCBkYXRlUmFuZ2UgPSB7IHN0YXJ0OiBcIlwiLCBlbmQ6IFwiXCIgfSB9KSB7XG4gIGNvbnN0IGNvcHlUZXh0ID0gW1xuICAgIFtcIkFudGlnw7xlZGFkXCIsIFwiQmFqYXNcIiwgXCJQYXJ0aWNpcGFjacOzblwiXSxcbiAgICAuLi5yb3dzLm1hcCgocm93KSA9PiBbXG4gICAgICByb3cuQW50aWfDvGVkYWQsXG4gICAgICByb3cuQmFqYXMsXG4gICAgICB0b3RhbCA/IGAkeygocm93LkJhamFzIC8gdG90YWwpICogMTAwKS50b0ZpeGVkKDEpfSVgIDogXCIwJVwiLFxuICAgIF0pLFxuICAgIFtcIlRvdGFsXCIsIHRvdGFsLCBcIjEwMCVcIl0sXG4gIF1cbiAgICAubWFwKChsaW5lKSA9PiBsaW5lLmpvaW4oXCJcXHRcIikpXG4gICAgLmpvaW4oXCJcXG5cIik7XG5cbiAgY29uc3QgY29weVRhYmxlID0gYXN5bmMgKCkgPT4ge1xuICAgIGF3YWl0IG5hdmlnYXRvci5jbGlwYm9hcmQud3JpdGVUZXh0KGNvcHlUZXh0KTtcbiAgfTtcblxuICBjb25zdCBoYW5kbGVDb3B5ID0gKGV2ZW50KSA9PiB7XG4gICAgZXZlbnQucHJldmVudERlZmF1bHQoKTtcbiAgICBldmVudC5jbGlwYm9hcmREYXRhLnNldERhdGEoXCJ0ZXh0L3BsYWluXCIsIGNvcHlUZXh0KTtcbiAgfTtcblxuICByZXR1cm4gKFxuICAgIDxzZWN0aW9uIGNsYXNzTmFtZT1cInRhYmxlLXdyYXAgY29tcGFjdC1hNCB0ZW51cmUtdGFibGVcIiBvbkNvcHk9e2hhbmRsZUNvcHl9PlxuICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0YWJsZS10b29sYmFyXCI+XG4gICAgICAgIDxkaXY+XG4gICAgICAgICAgPGgyPkJhamFzIHBvciBtZXNlcyBlbiBlbXByZXNhPC9oMj5cbiAgICAgICAgICA8c3Bhbj5cbiAgICAgICAgICAgIENhbGN1bGFkbyBjb24gRkVDSEEgQkFKQSBtZW5vcyBGRUNIQSBBTFRBLCByZXNwZXRhbmRvIGZpbHRyb3NcbiAgICAgICAgICAgIHtkYXRlUmFuZ2Uuc3RhcnQgfHwgZGF0ZVJhbmdlLmVuZFxuICAgICAgICAgICAgICA/IGAgKCR7ZGF0ZVJhbmdlLnN0YXJ0IHx8IFwiaW5pY2lvXCJ9IGEgJHtkYXRlUmFuZ2UuZW5kIHx8IFwiaG95XCJ9KWBcbiAgICAgICAgICAgICAgOiBcIlwifVxuICAgICAgICAgIDwvc3Bhbj5cbiAgICAgICAgPC9kaXY+XG4gICAgICAgIDxidXR0b24gY2xhc3NOYW1lPVwicHJpbWFyeS1idXR0b24gc2Vjb25kYXJ5LWJ1dHRvblwiIG9uQ2xpY2s9e2NvcHlUYWJsZX0+XG4gICAgICAgICAgPENsaXBib2FyZCBzaXplPXsxNn0gLz5cbiAgICAgICAgICBDb3BpYXIgdGFibGFcbiAgICAgICAgPC9idXR0b24+XG4gICAgICA8L2Rpdj5cbiAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGFibGUtc2Nyb2xsXCI+XG4gICAgICAgIDx0YWJsZT5cbiAgICAgICAgICA8dGhlYWQ+XG4gICAgICAgICAgICA8dHI+XG4gICAgICAgICAgICAgIDx0aD5BbnRpZ8O8ZWRhZDwvdGg+XG4gICAgICAgICAgICAgIDx0aD5CYWphczwvdGg+XG4gICAgICAgICAgICAgIDx0aD5QYXJ0aWNpcGFjacOzbjwvdGg+XG4gICAgICAgICAgICA8L3RyPlxuICAgICAgICAgIDwvdGhlYWQ+XG4gICAgICAgICAgPHRib2R5PlxuICAgICAgICAgICAge3Jvd3MubGVuZ3RoID8gKFxuICAgICAgICAgICAgICByb3dzLm1hcCgocm93KSA9PiAoXG4gICAgICAgICAgICAgICAgPHRyIGtleT17cm93LkFudGlnw7xlZGFkfT5cbiAgICAgICAgICAgICAgICAgIDx0ZD57cm93LkFudGlnw7xlZGFkfTwvdGQ+XG4gICAgICAgICAgICAgICAgICA8dGQ+e251bWJlci5mb3JtYXQocm93LkJhamFzKX08L3RkPlxuICAgICAgICAgICAgICAgICAgPHRkPnt0b3RhbCA/IGAkeygocm93LkJhamFzIC8gdG90YWwpICogMTAwKS50b0ZpeGVkKDEpfSVgIDogXCIwJVwifTwvdGQ+XG4gICAgICAgICAgICAgICAgPC90cj5cbiAgICAgICAgICAgICAgKSlcbiAgICAgICAgICAgICkgOiAoXG4gICAgICAgICAgICAgIDx0cj5cbiAgICAgICAgICAgICAgICA8dGQgY29sU3Bhbj1cIjNcIiBjbGFzc05hbWU9XCJlbXB0eS1jZWxsXCI+XG4gICAgICAgICAgICAgICAgICBTaW4gYmFqYXMgY29uIGZlY2hhcyB2w6FsaWRhcy5cbiAgICAgICAgICAgICAgICA8L3RkPlxuICAgICAgICAgICAgICA8L3RyPlxuICAgICAgICAgICAgKX1cbiAgICAgICAgICA8L3Rib2R5PlxuICAgICAgICAgIHtyb3dzLmxlbmd0aCA+IDAgJiYgKFxuICAgICAgICAgICAgPHRmb290PlxuICAgICAgICAgICAgICA8dHI+XG4gICAgICAgICAgICAgICAgPHRkPlRvdGFsPC90ZD5cbiAgICAgICAgICAgICAgICA8dGQ+e251bWJlci5mb3JtYXQodG90YWwpfTwvdGQ+XG4gICAgICAgICAgICAgICAgPHRkPjEwMCU8L3RkPlxuICAgICAgICAgICAgICA8L3RyPlxuICAgICAgICAgICAgPC90Zm9vdD5cbiAgICAgICAgICApfVxuICAgICAgICA8L3RhYmxlPlxuICAgICAgPC9kaXY+XG4gICAgPC9zZWN0aW9uPlxuICApO1xufVxuIl0sImZpbGUiOiJDOi9Vc2Vycy9qZWdpbC9EZXNrdG9wL0FuYWxpc2lzIE5vbWluYS9mcm9udGVuZC9zcmMvY29tcG9uZW50cy9CYWphc1RlbnVyZVRhYmxlLmpzeCJ9

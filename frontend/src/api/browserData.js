@@ -569,6 +569,44 @@ export function getStaffingByCampaignBrowser(filters = []) {
   };
 }
 
+export function getRequiredStructureBrowser(filters = []) {
+  ensureRows();
+  const filtered = filters.filter((filter) => normalizeColumnName(filter.column) !== normalizeColumnName("ESTADO"));
+  const rows = applyFilters(state.rows, filtered);
+  const grouped = new Map();
+  rows.forEach((row) => {
+    const pcia = looseValue(row, "PCIA", "PROVINCIA") || "Sin dato";
+    const site = looseValue(row, "SITE", "SITIO") || "Sin dato";
+    const responsable = looseValue(row, "RESPONSABLE", "FORMADOR ASIGNADO", "SUPERVISOR") || "Sin dato";
+    const cliente = clientValue(row);
+    const campana = campaignValue(row);
+    const subcampana = looseValue(row, C.subCampaign, "SUB CAMPANA", "SUB CAMPAÑA") || "Sin dato";
+    const key = [pcia, site, responsable, cliente, campana, subcampana].map(normalizeColumnName).join("||");
+    const estado = normalizeColumnName(value(row, "ESTADO"));
+    const isActivo = estado === "ACTIVO" || (estado.includes("ACTIVO") && !estado.includes("INACTIVO"));
+    const current = grouped.get(key) || {
+      pcia,
+      site,
+      responsable,
+      cliente,
+      campana,
+      subcampana,
+      activo: 0,
+      weekly_hours: 0,
+    };
+    if (isActivo || !estado) {
+      current.activo += 1;
+      current.weekly_hours += numberValue(row["CARGA HORARIA SEMANAL"]);
+    }
+    grouped.set(key, current);
+  });
+  return {
+    rows: [...grouped.values()].sort((a, b) =>
+      `${a.cliente} ${a.campana} ${a.subcampana}`.localeCompare(`${b.cliente} ${b.campana} ${b.subcampana}`),
+    ),
+  };
+}
+
 export function getBajasByMonthBrowser(filters = [], dateRange = {}) {
   ensureRows();
   const rows = applyFechaBajaRange(applyFilters(state.rows, filters), dateRange);

@@ -1,21 +1,52 @@
 import {
   FileSpreadsheet,
+  ListChecks,
   LayoutDashboard,
   Menu,
   SearchCheck,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { useState } from "react";
+import { Component, useState } from "react";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import QualityPage from "./pages/QualityPage.jsx";
+import RequeridosPage from "./pages/RequeridosPage.jsx";
 import UploadPage from "./pages/UploadPage.jsx";
 
 const pages = [
   { id: "upload", label: "Importar", icon: FileSpreadsheet, component: UploadPage },
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, component: DashboardPage },
+  { id: "requeridos", label: "Requeridos", icon: ListChecks, component: RequeridosPage },
   { id: "quality", label: "Calidad", icon: SearchCheck, component: QualityPage },
 ];
+
+class PageErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+
+  componentDidUpdate(previousProps) {
+    if (previousProps.pageId !== this.props.pageId && this.state.error) {
+      this.setState({ error: null });
+    }
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="alert error">
+          No se pudo cargar esta vista: {this.state.error.message || "error inesperado"}
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 export default function App() {
   const [activePage, setActivePage] = useState("upload");
@@ -78,7 +109,9 @@ export default function App() {
         </nav>
       </aside>
       <section className="content">
-        <CurrentPage navigate={navigate} />
+        <PageErrorBoundary pageId={activePage}>
+          <CurrentPage navigate={navigate} />
+        </PageErrorBoundary>
       </section>
     </main>
   );

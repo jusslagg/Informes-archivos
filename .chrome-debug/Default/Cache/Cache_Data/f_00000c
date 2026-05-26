@@ -1,0 +1,189 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/BajasReasonByCampaignTable.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=1361aafa"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+let prevRefreshReg;
+let prevRefreshSig;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  prevRefreshReg = window.$RefreshReg$;
+  prevRefreshSig = window.$RefreshSig$;
+  window.$RefreshReg$ = RefreshRuntime.getRefreshReg("C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx");
+  window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+}
+import { Clipboard } from "/node_modules/.vite/deps/lucide-react.js?v=1361aafa";
+const number = new Intl.NumberFormat("es-AR");
+export default function BajasReasonByCampaignTable({
+  reasons = [],
+  rows = [],
+  totals = {},
+  dateRange = { start: "", end: "" }
+}) {
+  const columns = ["Campaña", ...reasons, "Total"];
+  const copyText = [
+    columns,
+    ...rows.map((row) => columns.map((column) => row[column] || "")),
+    ["Total", ...reasons.map((reason) => totals[reason] || ""), totals.Total || ""]
+  ].map((line) => line.join("	")).join("\n");
+  const copyTable = async () => {
+    await navigator.clipboard.writeText(copyText);
+  };
+  const handleCopy = (event) => {
+    event.preventDefault();
+    event.clipboardData.setData("text/plain", copyText);
+  };
+  return /* @__PURE__ */ jsxDEV("section", { className: "table-wrap compact-a4 reason-campaign-table", onCopy: handleCopy, children: [
+    /* @__PURE__ */ jsxDEV("div", { className: "table-toolbar", children: [
+      /* @__PURE__ */ jsxDEV("div", { children: [
+        /* @__PURE__ */ jsxDEV("h2", { children: "Motivos de baja por campaña" }, void 0, false, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+          lineNumber: 52,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("span", { children: [
+          "Calculado por CAMPAÑA y MOTIVO BAJA, respetando filtros",
+          dateRange.start || dateRange.end ? ` (${dateRange.start || "inicio"} a ${dateRange.end || "hoy"})` : ""
+        ] }, void 0, true, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+          lineNumber: 53,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+        lineNumber: 51,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("button", { className: "primary-button secondary-button", onClick: copyTable, children: [
+        /* @__PURE__ */ jsxDEV(Clipboard, { size: 16 }, void 0, false, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+          lineNumber: 61,
+          columnNumber: 11
+        }, this),
+        "Copiar tabla"
+      ] }, void 0, true, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+        lineNumber: 60,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+      lineNumber: 50,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "table-scroll", children: /* @__PURE__ */ jsxDEV("table", { children: [
+      /* @__PURE__ */ jsxDEV("thead", { children: /* @__PURE__ */ jsxDEV("tr", { children: columns.map(
+        (column) => /* @__PURE__ */ jsxDEV("th", { children: column }, column, false, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+          lineNumber: 70,
+          columnNumber: 15
+        }, this)
+      ) }, void 0, false, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+        lineNumber: 68,
+        columnNumber: 13
+      }, this) }, void 0, false, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+        lineNumber: 67,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("tbody", { children: rows.length ? rows.map(
+        (row) => /* @__PURE__ */ jsxDEV("tr", { children: [
+          /* @__PURE__ */ jsxDEV("td", { children: row.Campaña }, void 0, false, {
+            fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+            lineNumber: 78,
+            columnNumber: 19
+          }, this),
+          reasons.map(
+            (reason) => /* @__PURE__ */ jsxDEV("td", { children: row[reason] ? number.format(row[reason]) : "" }, reason, false, {
+              fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+              lineNumber: 80,
+              columnNumber: 15
+            }, this)
+          ),
+          /* @__PURE__ */ jsxDEV("td", { children: number.format(row.Total || 0) }, void 0, false, {
+            fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+            lineNumber: 82,
+            columnNumber: 19
+          }, this)
+        ] }, row.Campaña, true, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+          lineNumber: 77,
+          columnNumber: 13
+        }, this)
+      ) : /* @__PURE__ */ jsxDEV("tr", { children: /* @__PURE__ */ jsxDEV("td", { colSpan: columns.length, className: "empty-cell", children: "Sin bajas por motivo para mostrar." }, void 0, false, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+        lineNumber: 87,
+        columnNumber: 17
+      }, this) }, void 0, false, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+        lineNumber: 86,
+        columnNumber: 13
+      }, this) }, void 0, false, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+        lineNumber: 74,
+        columnNumber: 11
+      }, this),
+      rows.length > 0 && /* @__PURE__ */ jsxDEV("tfoot", { children: /* @__PURE__ */ jsxDEV("tr", { children: [
+        /* @__PURE__ */ jsxDEV("td", { children: "Total" }, void 0, false, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+          lineNumber: 96,
+          columnNumber: 17
+        }, this),
+        reasons.map(
+          (reason) => /* @__PURE__ */ jsxDEV("td", { children: totals[reason] ? number.format(totals[reason]) : "" }, reason, false, {
+            fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+            lineNumber: 98,
+            columnNumber: 15
+          }, this)
+        ),
+        /* @__PURE__ */ jsxDEV("td", { children: number.format(totals.Total || 0) }, void 0, false, {
+          fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+          lineNumber: 100,
+          columnNumber: 17
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+        lineNumber: 95,
+        columnNumber: 15
+      }, this) }, void 0, false, {
+        fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+        lineNumber: 94,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+      lineNumber: 66,
+      columnNumber: 9
+    }, this) }, void 0, false, {
+      fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+      lineNumber: 65,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx",
+    lineNumber: 49,
+    columnNumber: 5
+  }, this);
+}
+_c = BajasReasonByCampaignTable;
+var _c;
+$RefreshReg$(_c, "BajasReasonByCampaignTable");
+if (import.meta.hot && !inWebWorker) {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+if (import.meta.hot && !inWebWorker) {
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/jegil/Desktop/Analisis Nomina/frontend/src/components/BajasReasonByCampaignTable.jsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+
+//# sourceMappingURL=data:application/json;base64,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QUFtQztBQUFBLGFBTDVCSCxJQUFJZ0IsU0FBYjtBQUFBO0FBQUE7QUFBQTtBQUFBLGVBTUE7QUFBQSxNQUNELElBRUQsdUJBQUMsUUFDQyxpQ0FBQyxRQUFHLFNBQVNuQixRQUFRa0IsUUFBUSxXQUFVLGNBQVksa0RBQW5EO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFFQSxLQUhGO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFJQSxLQWhCSjtBQUFBO0FBQUE7QUFBQTtBQUFBLGFBa0JBO0FBQUEsTUFDQ3ZCLEtBQUt1QixTQUFTLEtBQ2IsdUJBQUMsV0FDQyxpQ0FBQyxRQUNDO0FBQUEsK0JBQUMsUUFBRyxxQkFBSjtBQUFBO0FBQUE7QUFBQTtBQUFBLGVBQVM7QUFBQSxRQUNSeEIsUUFBUVE7QUFBQUEsVUFBSSxDQUFDRyxXQUNaLHVCQUFDLFFBQWlCVCxpQkFBT1MsTUFBTSxJQUFJZixPQUFPOEIsT0FBT3hCLE9BQU9TLE1BQU0sQ0FBQyxJQUFJLE1BQTFEQSxRQUFUO0FBQUE7QUFBQTtBQUFBO0FBQUEsaUJBQXNFO0FBQUEsUUFDdkU7QUFBQSxRQUNELHVCQUFDLFFBQUlmLGlCQUFPOEIsT0FBT3hCLE9BQU9VLFNBQVMsQ0FBQyxLQUFwQztBQUFBO0FBQUE7QUFBQTtBQUFBLGVBQXNDO0FBQUEsV0FMeEM7QUFBQTtBQUFBO0FBQUE7QUFBQSxhQU1BLEtBUEY7QUFBQTtBQUFBO0FBQUE7QUFBQSxhQVFBO0FBQUEsU0FwQ0o7QUFBQTtBQUFBO0FBQUE7QUFBQSxXQXNDQSxLQXZDRjtBQUFBO0FBQUE7QUFBQTtBQUFBLFdBd0NBO0FBQUEsT0F4REY7QUFBQTtBQUFBO0FBQUE7QUFBQSxTQXlEQTtBQUVKO0FBQUNlLEtBcEZ1QjVCO0FBQTBCLElBQUE0QjtBQUFBLGFBQUFBLElBQUEiLCJuYW1lcyI6WyJDbGlwYm9hcmQiLCJudW1iZXIiLCJJbnRsIiwiTnVtYmVyRm9ybWF0IiwiQmFqYXNSZWFzb25CeUNhbXBhaWduVGFibGUiLCJyZWFzb25zIiwicm93cyIsInRvdGFscyIsImRhdGVSYW5nZSIsInN0YXJ0IiwiZW5kIiwiY29sdW1ucyIsImNvcHlUZXh0IiwibWFwIiwicm93IiwiY29sdW1uIiwicmVhc29uIiwiVG90YWwiLCJsaW5lIiwiam9pbiIsImNvcHlUYWJsZSIsIm5hdmlnYXRvciIsImNsaXBib2FyZCIsIndyaXRlVGV4dCIsImhhbmRsZUNvcHkiLCJldmVudCIsInByZXZlbnREZWZhdWx0IiwiY2xpcGJvYXJkRGF0YSIsInNldERhdGEiLCJsZW5ndGgiLCJDYW1wYcOxYSIsImZvcm1hdCIsIl9jIl0sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VzIjpbIkJhamFzUmVhc29uQnlDYW1wYWlnblRhYmxlLmpzeCJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBDbGlwYm9hcmQgfSBmcm9tIFwibHVjaWRlLXJlYWN0XCI7XG5cbmNvbnN0IG51bWJlciA9IG5ldyBJbnRsLk51bWJlckZvcm1hdChcImVzLUFSXCIpO1xuXG5leHBvcnQgZGVmYXVsdCBmdW5jdGlvbiBCYWphc1JlYXNvbkJ5Q2FtcGFpZ25UYWJsZSh7XG4gIHJlYXNvbnMgPSBbXSxcbiAgcm93cyA9IFtdLFxuICB0b3RhbHMgPSB7fSxcbiAgZGF0ZVJhbmdlID0geyBzdGFydDogXCJcIiwgZW5kOiBcIlwiIH0sXG59KSB7XG4gIGNvbnN0IGNvbHVtbnMgPSBbXCJDYW1wYcOxYVwiLCAuLi5yZWFzb25zLCBcIlRvdGFsXCJdO1xuICBjb25zdCBjb3B5VGV4dCA9IFtcbiAgICBjb2x1bW5zLFxuICAgIC4uLnJvd3MubWFwKChyb3cpID0+IGNvbHVtbnMubWFwKChjb2x1bW4pID0+IHJvd1tjb2x1bW5dIHx8IFwiXCIpKSxcbiAgICBbXCJUb3RhbFwiLCAuLi5yZWFzb25zLm1hcCgocmVhc29uKSA9PiB0b3RhbHNbcmVhc29uXSB8fCBcIlwiKSwgdG90YWxzLlRvdGFsIHx8IFwiXCJdLFxuICBdXG4gICAgLm1hcCgobGluZSkgPT4gbGluZS5qb2luKFwiXFx0XCIpKVxuICAgIC5qb2luKFwiXFxuXCIpO1xuXG4gIGNvbnN0IGNvcHlUYWJsZSA9IGFzeW5jICgpID0+IHtcbiAgICBhd2FpdCBuYXZpZ2F0b3IuY2xpcGJvYXJkLndyaXRlVGV4dChjb3B5VGV4dCk7XG4gIH07XG5cbiAgY29uc3QgaGFuZGxlQ29weSA9IChldmVudCkgPT4ge1xuICAgIGV2ZW50LnByZXZlbnREZWZhdWx0KCk7XG4gICAgZXZlbnQuY2xpcGJvYXJkRGF0YS5zZXREYXRhKFwidGV4dC9wbGFpblwiLCBjb3B5VGV4dCk7XG4gIH07XG5cbiAgcmV0dXJuIChcbiAgICA8c2VjdGlvbiBjbGFzc05hbWU9XCJ0YWJsZS13cmFwIGNvbXBhY3QtYTQgcmVhc29uLWNhbXBhaWduLXRhYmxlXCIgb25Db3B5PXtoYW5kbGVDb3B5fT5cbiAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGFibGUtdG9vbGJhclwiPlxuICAgICAgICA8ZGl2PlxuICAgICAgICAgIDxoMj5Nb3Rpdm9zIGRlIGJhamEgcG9yIGNhbXBhw7FhPC9oMj5cbiAgICAgICAgICA8c3Bhbj5cbiAgICAgICAgICAgIENhbGN1bGFkbyBwb3IgQ0FNUEHDkUEgeSBNT1RJVk8gQkFKQSwgcmVzcGV0YW5kbyBmaWx0cm9zXG4gICAgICAgICAgICB7ZGF0ZVJhbmdlLnN0YXJ0IHx8IGRhdGVSYW5nZS5lbmRcbiAgICAgICAgICAgICAgPyBgICgke2RhdGVSYW5nZS5zdGFydCB8fCBcImluaWNpb1wifSBhICR7ZGF0ZVJhbmdlLmVuZCB8fCBcImhveVwifSlgXG4gICAgICAgICAgICAgIDogXCJcIn1cbiAgICAgICAgICA8L3NwYW4+XG4gICAgICAgIDwvZGl2PlxuICAgICAgICA8YnV0dG9uIGNsYXNzTmFtZT1cInByaW1hcnktYnV0dG9uIHNlY29uZGFyeS1idXR0b25cIiBvbkNsaWNrPXtjb3B5VGFibGV9PlxuICAgICAgICAgIDxDbGlwYm9hcmQgc2l6ZT17MTZ9IC8+XG4gICAgICAgICAgQ29waWFyIHRhYmxhXG4gICAgICAgIDwvYnV0dG9uPlxuICAgICAgPC9kaXY+XG4gICAgICA8ZGl2IGNsYXNzTmFtZT1cInRhYmxlLXNjcm9sbFwiPlxuICAgICAgICA8dGFibGU+XG4gICAgICAgICAgPHRoZWFkPlxuICAgICAgICAgICAgPHRyPlxuICAgICAgICAgICAgICB7Y29sdW1ucy5tYXAoKGNvbHVtbikgPT4gKFxuICAgICAgICAgICAgICAgIDx0aCBrZXk9e2NvbHVtbn0+e2NvbHVtbn08L3RoPlxuICAgICAgICAgICAgICApKX1cbiAgICAgICAgICAgIDwvdHI+XG4gICAgICAgICAgPC90aGVhZD5cbiAgICAgICAgICA8dGJvZHk+XG4gICAgICAgICAgICB7cm93cy5sZW5ndGggPyAoXG4gICAgICAgICAgICAgIHJvd3MubWFwKChyb3cpID0+IChcbiAgICAgICAgICAgICAgICA8dHIga2V5PXtyb3cuQ2FtcGHDsWF9PlxuICAgICAgICAgICAgICAgICAgPHRkPntyb3cuQ2FtcGHDsWF9PC90ZD5cbiAgICAgICAgICAgICAgICAgIHtyZWFzb25zLm1hcCgocmVhc29uKSA9PiAoXG4gICAgICAgICAgICAgICAgICAgIDx0ZCBrZXk9e3JlYXNvbn0+e3Jvd1tyZWFzb25dID8gbnVtYmVyLmZvcm1hdChyb3dbcmVhc29uXSkgOiBcIlwifTwvdGQ+XG4gICAgICAgICAgICAgICAgICApKX1cbiAgICAgICAgICAgICAgICAgIDx0ZD57bnVtYmVyLmZvcm1hdChyb3cuVG90YWwgfHwgMCl9PC90ZD5cbiAgICAgICAgICAgICAgICA8L3RyPlxuICAgICAgICAgICAgICApKVxuICAgICAgICAgICAgKSA6IChcbiAgICAgICAgICAgICAgPHRyPlxuICAgICAgICAgICAgICAgIDx0ZCBjb2xTcGFuPXtjb2x1bW5zLmxlbmd0aH0gY2xhc3NOYW1lPVwiZW1wdHktY2VsbFwiPlxuICAgICAgICAgICAgICAgICAgU2luIGJhamFzIHBvciBtb3Rpdm8gcGFyYSBtb3N0cmFyLlxuICAgICAgICAgICAgICAgIDwvdGQ+XG4gICAgICAgICAgICAgIDwvdHI+XG4gICAgICAgICAgICApfVxuICAgICAgICAgIDwvdGJvZHk+XG4gICAgICAgICAge3Jvd3MubGVuZ3RoID4gMCAmJiAoXG4gICAgICAgICAgICA8dGZvb3Q+XG4gICAgICAgICAgICAgIDx0cj5cbiAgICAgICAgICAgICAgICA8dGQ+VG90YWw8L3RkPlxuICAgICAgICAgICAgICAgIHtyZWFzb25zLm1hcCgocmVhc29uKSA9PiAoXG4gICAgICAgICAgICAgICAgICA8dGQga2V5PXtyZWFzb259Pnt0b3RhbHNbcmVhc29uXSA/IG51bWJlci5mb3JtYXQodG90YWxzW3JlYXNvbl0pIDogXCJcIn08L3RkPlxuICAgICAgICAgICAgICAgICkpfVxuICAgICAgICAgICAgICAgIDx0ZD57bnVtYmVyLmZvcm1hdCh0b3RhbHMuVG90YWwgfHwgMCl9PC90ZD5cbiAgICAgICAgICAgICAgPC90cj5cbiAgICAgICAgICAgIDwvdGZvb3Q+XG4gICAgICAgICAgKX1cbiAgICAgICAgPC90YWJsZT5cbiAgICAgIDwvZGl2PlxuICAgIDwvc2VjdGlvbj5cbiAgKTtcbn1cbiJdLCJmaWxlIjoiQzovVXNlcnMvamVnaWwvRGVza3RvcC9BbmFsaXNpcyBOb21pbmEvZnJvbnRlbmQvc3JjL2NvbXBvbmVudHMvQmFqYXNSZWFzb25CeUNhbXBhaWduVGFibGUuanN4In0=
