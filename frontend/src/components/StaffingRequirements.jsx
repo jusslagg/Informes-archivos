@@ -51,9 +51,42 @@ function requirementKey(cliente, campana) {
   return normalize(`${cleanLabel(cliente)}||${cleanLabel(campana)}`);
 }
 
+function campaignTokens(value) {
+  return normalize(value)
+    .split(/[^A-Z0-9]+/)
+    .filter(Boolean);
+}
+
+function compatibleCampaign(left, right) {
+  const leftTokens = campaignTokens(left);
+  const rightTokens = campaignTokens(right);
+  if (!leftTokens.length || !rightTokens.length) return false;
+  const [small, large] = leftTokens.length <= rightTokens.length ? [leftTokens, rightTokens] : [rightTokens, leftTokens];
+  return small.every((token) => large.includes(token));
+}
+
+function findRequirement(requirements, cliente, campana) {
+  const exactKey = requirementKey(cliente, campana);
+  const exactValue = parseRequiredNumber(requirements[exactKey] ?? requirements[normalize(campana)]);
+  if (exactValue) return exactValue;
+  const clientKey = normalize(cleanLabel(cliente));
+  return Object.entries(requirements).reduce((total, [key, value]) => {
+    const [requirementClient, requirementCampaign] = key.split("||");
+    if (requirementClient !== clientKey) return total;
+    if (!compatibleCampaign(requirementCampaign, campana)) return total;
+    return total + parseRequiredNumber(value);
+  }, 0);
+}
+
 function currentMonthValue() {
   const today = new Date();
   return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function monthFromDateRange(dateRange = {}) {
+  const source = dateRange.start || dateRange.end || "";
+  const match = String(source).match(/^(\d{4})-(\d{2})/);
+  return match ? `${match[1]}-${match[2]}` : currentMonthValue();
 }
 
 function parseStoredRequirement(values) {
@@ -64,6 +97,21 @@ function parseStoredRequirement(values) {
 
 function normalizeSavedRequirements(saved) {
   const next = {};
+  const month = saved.month || currentMonthValue();
+  if (Array.isArray(saved.rows) && saved.rows.length) {
+    saved.rows
+      .filter((row) => row.active !== false)
+      .forEach((row) => {
+        const dailyValues = Object.entries(row.daily || {})
+          .filter(([day]) => String(day).startsWith(month))
+          .map(([, value]) => parseRequiredNumber(value));
+        const required = dailyValues.length ? Math.max(...dailyValues) : 0;
+        if (!required) return;
+        const campaignKey = requirementKey(row.cliente, row.campana);
+        next[campaignKey] = parseRequiredNumber(next[campaignKey]) + required;
+      });
+    return next;
+  }
   Object.entries(saved.masterRequirements || {}).forEach(([key, values]) => {
     const parts = key.split("||");
     const cliente = parts[0] || "Sin dato";
@@ -162,11 +210,12 @@ export default function StaffingRequirements({
   const [fileName, setFileName] = useState("");
   const [query, setQuery] = useState("");
   const [collapsedClients, setCollapsedClients] = useState({});
+  const requirementMonth = monthFromDateRange(bajasDateRange);
 
   useEffect(() => {
     const syncStoredRequirements = () => {
-      getSavedRequirements(currentMonthValue())
-        .then((saved) => setRequirements((current) => ({ ...current, ...normalizeSavedRequirements(saved) })))
+      getSavedRequirements(requirementMonth)
+        .then((saved) => setRequirements(normalizeSavedRequirements(saved)))
         .catch(() => {});
     };
     syncStoredRequirements();
@@ -176,7 +225,7 @@ export default function StaffingRequirements({
       window.removeEventListener("storage", syncStoredRequirements);
       window.removeEventListener("requeridos-updated", syncStoredRequirements);
     };
-  }, []);
+  }, [requirementMonth]);
 
   const { campaignRows, clientGroups } = useMemo(() => {
     const campaignMap = new Map(staffingRows.map((item) => [requirementKey(getClient(item), getCampaign(item)), item]));
@@ -187,7 +236,20 @@ export default function StaffingRequirements({
         monthLabels.reduce((sum, month) => sum + Number(item[month] || 0), 0),
       ]),
     );
-    const keys = new Set([...campaignMap.keys(), ...Object.keys(requirements)]);
+    const campaignEntries = [...campaignMap.entries()].map(([key, item]) => ({
+      key,
+      cliente: getClient(item),
+      campana: getCampaign(item),
+    }));
+    const unmatchedRequirementKeys = Object.keys(requirements).filter((key) => {
+      const [requirementClient, requirementCampaign] = key.split("||");
+      return !campaignEntries.some(
+        (entry) =>
+          normalize(entry.cliente) === requirementClient &&
+          compatibleCampaign(requirementCampaign, entry.campana),
+      );
+    });
+    const keys = new Set([...campaignMap.keys(), ...unmatchedRequirementKeys]);
 
     const rows = Array.from(keys)
       .map((key) => {
@@ -197,7 +259,7 @@ export default function StaffingRequirements({
         const cliente = getClient(activeRow) || keyParts.at(0) || "Sin dato";
         const rowKey = requirementKey(cliente, campana);
         const activo = Number(activeRow.activo || activeRow.value || 0);
-        const requeridos = parseRequiredNumber(requirements[rowKey] ?? requirements[normalize(campana)] ?? requirements[key]);
+        const requeridos = findRequirement(requirements, cliente, campana) || parseRequiredNumber(requirements[key]);
         const bajasMes = Number(activeRow.bajasMes ?? activeRow.bajas_mes ?? bajasMap.get(normalize(campana)) ?? 0);
         return {
           key,
@@ -395,7 +457,7 @@ export default function StaffingRequirements({
                         className="required-input"
                         type="text"
                         inputMode="decimal"
-                        value={requirements[row.requirementKey] ?? ""}
+                        value={requirements[row.requirementKey] ?? (row.requeridos ? String(row.requeridos) : "")}
                         placeholder="0"
                         onChange={(event) => updateRequired(row.requirementKey, event.target.value.replace(/[^\d,.]/g, ""))}
                       />

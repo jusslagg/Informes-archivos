@@ -3,8 +3,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Clipboard,
+  CheckCircle2,
   Download,
   Edit3,
+  Eraser,
   ListChecks,
   Plus,
   Power,
@@ -27,6 +29,8 @@ import {
   saveSavedRequirements,
 } from "../api/client.js";
 import MetricCard from "../components/MetricCard.jsx";
+import { Button } from "../components/ui/button.jsx";
+import { Card } from "../components/ui/card.jsx";
 
 const number = new Intl.NumberFormat("es-AR");
 const monthNames = [
@@ -65,7 +69,7 @@ const emptyFilters = {
 
 const dayColumnWidth = 52;
 const structureColumnWidth = 180;
-const totalColumnWidth = 74;
+const totalColumnWidth = 86;
 
 function currentMonthValue() {
   const today = new Date();
@@ -103,9 +107,24 @@ function clean(value) {
   return String(value || "").trim();
 }
 
+function getImportValue(item, ...aliases) {
+  const wanted = new Set(aliases.map(normalize));
+  const entry = Object.entries(item || {}).find(([key]) => wanted.has(normalize(key)));
+  return entry ? entry[1] : "";
+}
+
 function parseNumber(value) {
   const parsed = Number(String(value ?? "").replace(",", "."));
   return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function cellKey(rowId, dayKey) {
+  return `${rowId}__${dayKey}`;
+}
+
+function splitCellKey(key) {
+  const [rowId, dayKey] = String(key || "").split("__");
+  return { rowId, dayKey };
 }
 
 function daysForMonth(monthValue) {
@@ -279,6 +298,12 @@ export default function RequeridosPage() {
   const [holidayForm, setHolidayForm] = useState({ date: "", label: "" });
   const [editingId, setEditingId] = useState("");
   const [activeTab, setActiveTab] = useState("calendar");
+  const [selectedCells, setSelectedCells] = useState(new Set());
+  const [anchorCell, setAnchorCell] = useState(null);
+  const [bulkValue, setBulkValue] = useState("");
+  const [lockNonBusinessDays, setLockNonBusinessDays] = useState(false);
+  const [confirmedMonth, setConfirmedMonth] = useState("");
+  const cellRefs = useRef(new Map());
 
   const selectedMonth = /^\d{4}-\d{2}$/.test(month) ? month : currentMonthValue();
   const selectedYear = selectedMonth.split("-")[0];
@@ -291,7 +316,7 @@ export default function RequeridosPage() {
     },
     [days, filters.end, filters.start],
   );
-  const calendarTableWidth = (structureColumnWidth * 5) + (visibleDays.length * dayColumnWidth) + totalColumnWidth;
+  const calendarTableWidth = (structureColumnWidth * 5) + (visibleDays.length * dayColumnWidth) + (totalColumnWidth * 4) + 88;
   const calendarTitle =
     filters.start || filters.end
       ? `Proyección ${visibleDays[0]?.label || ""} a ${visibleDays.at(-1)?.label || ""}`
@@ -302,6 +327,7 @@ export default function RequeridosPage() {
     () => [...holidays].sort((a, b) => String(a.date).localeCompare(String(b.date))),
     [holidays],
   );
+  const isBlockedDay = (day) => lockNonBusinessDays && (holidayDates.has(day.key) || day.weekday === 0 || day.weekday === 6);
 
   useEffect(() => {
     getSavedHolidays(selectedYear)
@@ -367,6 +393,39 @@ export default function RequeridosPage() {
 
   const totals = useMemo(() => {
     const activeRows = rows.filter((row) => row.active !== false);
+    const activeFilteredRows = filteredRows.filter((row) => row.active !== false);
+    const editableDays = visibleDays.filter((day) => !(holidayDates.has(day.key) || day.weekday === 0 || day.weekday === 6));
+    const requiredCellCount = activeFilteredRows.length * editableDays.length;
+    const loadedCellCount = activeFilteredRows.reduce(
+      (sum, row) =>
+        sum +
+        editableDays.filter((day) => String(row.daily?.[day.key] ?? "").trim() !== "").length,
+      0,
+    );
+    const errorCellCount = activeFilteredRows.reduce(
+      (sum, row) =>
+        sum +
+        visibleDays.filter((day) => {
+          const value = String(row.daily?.[day.key] ?? "").trim();
+          return value !== "" && Number.isNaN(Number(value.replace(",", ".")));
+        }).length,
+      0,
+    );
+    const atypicalCellCount = activeFilteredRows.reduce(
+      (sum, row) => {
+        const values = editableDays.map((day) => parseNumber(row.daily?.[day.key])).filter((value) => value > 0);
+        if (!values.length) return sum;
+        const average = values.reduce((inner, value) => inner + value, 0) / values.length;
+        return (
+          sum +
+          editableDays.filter((day) => {
+            const value = parseNumber(row.daily?.[day.key]);
+            return average > 0 && value > average * 1.8;
+          }).length
+        );
+      },
+      0,
+    );
     const monthTotal = activeRows.reduce(
       (sum, row) => sum + Object.values(row.daily || {}).reduce((inner, value) => inner + parseNumber(value), 0),
       0,
@@ -383,8 +442,15 @@ export default function RequeridosPage() {
       campaigns: new Set(activeRows.map((row) => `${normalize(row.cliente)}||${normalize(row.campana)}`)).size,
       monthTotal,
       projectionTotal,
+      businessDays: editableDays.length,
+      requiredCellCount,
+      loadedCellCount,
+      pendingCellCount: Math.max(0, requiredCellCount - loadedCellCount),
+      errorCellCount,
+      atypicalCellCount,
+      progress: requiredCellCount ? Math.round((loadedCellCount / requiredCellCount) * 100) : 0,
     };
-  }, [filteredRows, rows, visibleDays]);
+  }, [filteredRows, holidayDates, rows, visibleDays]);
 
   const persistState = async (nextRows = rows, nextForm = form) => {
     setStatus("Guardando...");
@@ -530,6 +596,228 @@ export default function RequeridosPage() {
     );
   };
 
+  const updateManyDaily = (updates) => {
+    if (!updates.length) return;
+    const updateMap = updates.reduce((acc, item) => {
+      const rowUpdates = acc.get(item.rowId) || {};
+      rowUpdates[item.dayKey] = item.value;
+      acc.set(item.rowId, rowUpdates);
+      return acc;
+    }, new Map());
+    updateRows(
+      rows.map((row) =>
+        updateMap.has(row.id) && row.active !== false
+          ? {
+              ...row,
+              daily: {
+                ...(row.daily || {}),
+                ...updateMap.get(row.id),
+              },
+            }
+          : row,
+      ),
+    );
+  };
+
+  const selectedCellList = useMemo(() => [...selectedCells], [selectedCells]);
+
+  const getCellPosition = (rowId, dayKey) => ({
+    rowIndex: filteredRows.findIndex((row) => row.id === rowId),
+    dayIndex: visibleDays.findIndex((day) => day.key === dayKey),
+  });
+
+  const selectCellRange = (fromCell, toCell) => {
+    if (!fromCell || !toCell) return new Set([cellKey(toCell.rowId, toCell.dayKey)]);
+    const from = getCellPosition(fromCell.rowId, fromCell.dayKey);
+    const to = getCellPosition(toCell.rowId, toCell.dayKey);
+    if (from.rowIndex < 0 || from.dayIndex < 0 || to.rowIndex < 0 || to.dayIndex < 0) {
+      return new Set([cellKey(toCell.rowId, toCell.dayKey)]);
+    }
+    const next = new Set();
+    const startRow = Math.min(from.rowIndex, to.rowIndex);
+    const endRow = Math.max(from.rowIndex, to.rowIndex);
+    const startDay = Math.min(from.dayIndex, to.dayIndex);
+    const endDay = Math.max(from.dayIndex, to.dayIndex);
+    for (let rowIndex = startRow; rowIndex <= endRow; rowIndex += 1) {
+      for (let dayIndex = startDay; dayIndex <= endDay; dayIndex += 1) {
+        next.add(cellKey(filteredRows[rowIndex].id, visibleDays[dayIndex].key));
+      }
+    }
+    return next;
+  };
+
+  const selectCell = (rowId, dayKey, event) => {
+    const nextCell = { rowId, dayKey };
+    if (event?.shiftKey && anchorCell) {
+      setSelectedCells(selectCellRange(anchorCell, nextCell));
+      return;
+    }
+    if (event?.ctrlKey || event?.metaKey) {
+      setSelectedCells((current) => {
+        const next = new Set(current);
+        const key = cellKey(rowId, dayKey);
+        if (next.has(key)) next.delete(key);
+        else next.add(key);
+        return next;
+      });
+      setAnchorCell(nextCell);
+      return;
+    }
+    setSelectedCells(new Set([cellKey(rowId, dayKey)]));
+    setAnchorCell(nextCell);
+  };
+
+  const focusCell = (rowId, dayKey) => {
+    cellRefs.current.get(cellKey(rowId, dayKey))?.focus();
+  };
+
+  const moveFocus = (rowId, dayKey, rowDelta, dayDelta) => {
+    const current = getCellPosition(rowId, dayKey);
+    const row = filteredRows[Math.max(0, Math.min(filteredRows.length - 1, current.rowIndex + rowDelta))];
+    const day = visibleDays[Math.max(0, Math.min(visibleDays.length - 1, current.dayIndex + dayDelta))];
+    if (row && day) {
+      setSelectedCells(new Set([cellKey(row.id, day.key)]));
+      setAnchorCell({ rowId: row.id, dayKey: day.key });
+      requestAnimationFrame(() => focusCell(row.id, day.key));
+    }
+  };
+
+  const handleCellKeyDown = (event, rowId, dayKey) => {
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      moveFocus(rowId, dayKey, 0, 1);
+    } else if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      moveFocus(rowId, dayKey, 0, -1);
+    } else if (event.key === "ArrowDown" || event.key === "Enter") {
+      event.preventDefault();
+      moveFocus(rowId, dayKey, 1, 0);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      moveFocus(rowId, dayKey, -1, 0);
+    } else if (event.key === "Delete" || event.key === "Backspace") {
+      if (selectedCells.size > 1) {
+        event.preventDefault();
+        clearSelectedCells();
+      }
+    }
+  };
+
+  const pasteMatrixAt = (rowId, dayKey, text) => {
+    const matrix = String(text || "")
+      .replace(/\r/g, "")
+      .split("\n")
+      .filter((line) => line.length)
+      .map((line) => line.split("\t"));
+    if (!matrix.length) return;
+    const start = getCellPosition(rowId, dayKey);
+    const updates = [];
+    matrix.forEach((line, rowOffset) => {
+      line.forEach((value, dayOffset) => {
+        const targetRow = filteredRows[start.rowIndex + rowOffset];
+        const targetDay = visibleDays[start.dayIndex + dayOffset];
+        if (!targetRow || !targetDay || targetRow.active === false || isBlockedDay(targetDay)) return;
+        updates.push({ rowId: targetRow.id, dayKey: targetDay.key, value: String(value).replace(/[^\d,.]/g, "") });
+      });
+    });
+    updateManyDaily(updates);
+    setSelectedCells(new Set(updates.map((item) => cellKey(item.rowId, item.dayKey))));
+  };
+
+  const handleCellPaste = (event, rowId, dayKey) => {
+    const text = event.clipboardData.getData("text/plain");
+    if (text.includes("\t") || text.includes("\n")) {
+      event.preventDefault();
+      pasteMatrixAt(rowId, dayKey, text);
+    }
+  };
+
+  const applyValueToSelection = () => {
+    updateManyDaily(
+      selectedCellList.map((key) => {
+        const { rowId, dayKey } = splitCellKey(key);
+        return { rowId, dayKey, value: bulkValue.replace(/[^\d,.]/g, "") };
+      }),
+    );
+  };
+
+  const clearSelectedCells = () => {
+    updateManyDaily(selectedCellList.map((key) => ({ ...splitCellKey(key), value: "" })));
+  };
+
+  const validateLoad = () => {
+    if (totals.errorCellCount) setStatus(`Validación: ${totals.errorCellCount} error${totals.errorCellCount === 1 ? "" : "es"}`);
+    else if (totals.pendingCellCount) setStatus(`Validación: ${totals.pendingCellCount} celda${totals.pendingCellCount === 1 ? "" : "s"} pendiente${totals.pendingCellCount === 1 ? "" : "s"}`);
+    else setStatus("Validación correcta");
+  };
+
+  const confirmLoad = () => {
+    persistState(rows, form);
+    setConfirmedMonth(selectedMonth);
+    setStatus(`Carga confirmada ${monthNames[selectedMonthIndex]} ${selectedYear}`);
+  };
+
+  const fillWeekdaysForRow = (row) => {
+    const sourceValue =
+      visibleDays.map((day) => row.daily?.[day.key]).find((value) => String(value ?? "").trim() !== "") || "";
+    if (!sourceValue) return;
+    updateManyDaily(
+      visibleDays
+        .filter((day) => day.weekday >= 1 && day.weekday <= 5 && !holidayDates.has(day.key))
+        .map((day) => ({ rowId: row.id, dayKey: day.key, value: sourceValue })),
+    );
+  };
+
+  const clearRow = (row) => {
+    updateManyDaily(visibleDays.map((day) => ({ rowId: row.id, dayKey: day.key, value: "" })));
+  };
+
+  const copyPreviousWeekForRow = (row) => {
+    const updates = visibleDays
+      .map((day) => {
+        const date = dateFromKey(day.key);
+        if (!date) return null;
+        date.setDate(date.getDate() - 7);
+        const previousDay = dayFromDate(date);
+        const value = row.daily?.[previousDay.key];
+        if (String(value ?? "").trim() === "") return null;
+        return { rowId: row.id, dayKey: day.key, value };
+      })
+      .filter(Boolean);
+    updateManyDaily(updates);
+  };
+
+  const distributeMonthlyTotalForRow = (row) => {
+    const total = window.prompt(`Total mensual a distribuir para ${row.cliente} / ${row.subcampana}`);
+    const parsed = parseNumber(total);
+    if (!parsed) return;
+    const targetDays = visibleDays.filter((day) => day.weekday >= 1 && day.weekday <= 5 && !holidayDates.has(day.key));
+    const value = String((parsed / Math.max(1, targetDays.length)).toFixed(2)).replace(".", ",");
+    updateManyDaily(targetDays.map((day) => ({ rowId: row.id, dayKey: day.key, value })));
+  };
+
+  const copyFromPreviousMonth = async () => {
+    const previousMonth = shiftMonthValue(selectedMonth, -1);
+    try {
+      const saved = await getSavedRequirements(previousMonth);
+      const previousRows = mergeRowsByCampaign(saved.rows || []);
+      const updates = [];
+      rows.forEach((row) => {
+        const previousRow = previousRows.find((item) => campaignMatchKey(item) === campaignMatchKey(row));
+        if (!previousRow) return;
+        visibleDays.forEach((day) => {
+          const previousDaily = mapDailyToMonth(previousRow.daily || {}, selectedMonth);
+          const value = previousDaily[day.key];
+          if (String(value ?? "").trim() !== "") updates.push({ rowId: row.id, dayKey: day.key, value });
+        });
+      });
+      updateManyDaily(updates);
+      setStatus(`Copiado desde ${previousMonth}`);
+    } catch (err) {
+      setStatus(err.message || "No se pudo copiar el mes anterior");
+    }
+  };
+
   const addHoliday = () => {
     if (!holidayForm.date) return;
     const nextHoliday = {
@@ -552,6 +840,33 @@ export default function RequeridosPage() {
     if (day.weekday === 0) return "sun";
     if (day.weekday === 6) return "sat";
     return "week";
+  };
+
+  const cellStatus = (row, day) => {
+    if (row.active === false || isBlockedDay(day)) return "blocked";
+    const rawValue = String(row.daily?.[day.key] ?? "").trim();
+    if (!rawValue) return "pending";
+    const value = Number(rawValue.replace(",", "."));
+    if (!Number.isFinite(value) || value < 0) return "error";
+    const businessValues = visibleDays
+      .filter((item) => item.weekday >= 1 && item.weekday <= 5 && !holidayDates.has(item.key))
+      .map((item) => parseNumber(row.daily?.[item.key]))
+      .filter((item) => item > 0);
+    const average = businessValues.length ? businessValues.reduce((sum, item) => sum + item, 0) / businessValues.length : 0;
+    if (average > 0 && value > average * 1.8) return "atypical";
+    return "loaded";
+  };
+
+  const rowStats = (row) => {
+    const values = visibleDays.map((day) => parseNumber(row.daily?.[day.key]));
+    const loadedDays = visibleDays.filter((day) => String(row.daily?.[day.key] ?? "").trim() !== "").length;
+    const total = row.active === false ? 0 : values.reduce((sum, value) => sum + value, 0);
+    return {
+      total,
+      average: loadedDays ? total / loadedDays : 0,
+      loadedDays,
+      status: row.active === false ? "Inactiva" : loadedDays ? "Cargado" : "Pendiente",
+    };
   };
 
   const downloadTemplate = () => {
@@ -702,6 +1017,150 @@ export default function RequeridosPage() {
     }
   };
 
+  const downloadTemplateAccents = () => {
+    const templateDays = daysForMonth(selectedMonth);
+    const headers = ["Mes", "Gerente", "Jefe de site", "Cliente", "Campaña", "Subcampaña", ...templateDays.map((day) => day.label)];
+    const templateRows = rows.length
+      ? rows.map((row) => {
+          const item = {
+            Mes: selectedMonth,
+            Gerente: row.gerente,
+            "Jefe de site": row.jefeSite,
+            Cliente: row.cliente,
+            Campaña: row.campana,
+            Subcampaña: row.subcampana,
+          };
+          templateDays.forEach((day) => {
+            item[day.label] = row.daily?.[day.key] || "";
+          });
+          return item;
+        })
+      : [
+          Object.fromEntries(headers.map((header) => [header, header === "Mes" ? selectedMonth : ""])),
+        ];
+    const worksheet = XLSX.utils.json_to_sheet(templateRows, { header: headers });
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Requeridos");
+    XLSX.writeFile(workbook, `template_requeridos_${selectedMonth}.xlsx`);
+  };
+
+  const importTemplateAccents = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      const workbook = XLSX.read(await file.arrayBuffer(), { type: "array", raw: false });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const imported = XLSX.utils.sheet_to_json(sheet, { defval: "", raw: false });
+      const importedRows = imported
+        .map((item) => {
+          const rowMonth = parseMonthValue(getImportValue(item, "Mes", "Month") || selectedMonth, selectedMonth);
+          const monthDays = daysForMonth(rowMonth);
+          const dayByLabel = new Map(monthDays.map((day) => [day.label, day]));
+          const row = {
+            gerente: clean(getImportValue(item, "Gerente")),
+            jefeSite: clean(getImportValue(item, "Jefe de site", "Jefe Site")),
+            cliente: clean(getImportValue(item, "Cliente")),
+            campana: clean(getImportValue(item, "Campaña", "Campana")),
+            subcampana: clean(getImportValue(item, "Subcampaña", "Subcampana", "Sub campaña", "Sub campana")),
+          };
+          if (!row.gerente || !row.jefeSite || !row.cliente || !row.campana || !row.subcampana) return null;
+          const daily = {};
+          Object.entries(item).forEach(([column, value]) => {
+            const dayNumber = String(column).match(/(\d{1,2})$/)?.[1]?.padStart(2, "0");
+            const day = dayByLabel.get(dayNumber);
+            if (day && String(value ?? "").trim() !== "") daily[day.key] = String(value).replace(/[^\d,.]/g, "");
+          });
+          return { ...row, id: makeId(row), active: true, month: rowMonth, daily };
+        })
+        .filter(Boolean);
+      if (!importedRows.length) {
+        setStatus("No se encontraron filas válidas para importar");
+        return;
+      }
+      const existingCatalogKeys = new Set(catalogRows.map(campaignMatchKey));
+      const newCatalogRows = importedRows
+        .filter((row) => !existingCatalogKeys.has(campaignMatchKey(row)))
+        .map(structureOnly);
+      const nextCatalogRows = mergeRowsByCampaign([...catalogRows, ...newCatalogRows]).map(structureOnly);
+      const rowsByMonth = importedRows.reduce((acc, row) => {
+        const monthRows = acc[row.month] || [];
+        const existingRow = monthRows.find((item) => campaignMatchKey(item) === campaignMatchKey(row));
+        if (existingRow) {
+          existingRow.daily = { ...(existingRow.daily || {}), ...(row.daily || {}) };
+        } else {
+          monthRows.push(row);
+        }
+        acc[row.month] = monthRows;
+        return acc;
+      }, {});
+      const savedByMonth = {};
+      const conflicts = [];
+      await Promise.all(
+        Object.entries(rowsByMonth).map(async ([monthKey, monthImportedRows]) => {
+          const saved = await getSavedRequirements(monthKey);
+          const savedRows = mergeRowsByCampaign(saved.rows || []);
+          const baseRows = mergeCatalogWithMonth(savedRows, nextCatalogRows);
+          savedByMonth[monthKey] = { saved, baseRows };
+          monthImportedRows.forEach((importedRow) => {
+            const existingRow = baseRows.find((row) => campaignMatchKey(row) === campaignMatchKey(importedRow));
+            Object.entries(importedRow.daily || {}).forEach(([dayKey, value]) => {
+              const currentValue = existingRow?.daily?.[dayKey];
+              if (String(currentValue ?? "").trim() && String(value ?? "").trim() && String(currentValue) !== String(value)) {
+                conflicts.push({
+                  month: monthKey,
+                  day: dayKey.split("-").reverse().join("/"),
+                  account: `${importedRow.campana} / ${importedRow.subcampana}`,
+                  currentValue,
+                  nextValue: value,
+                });
+              }
+            });
+          });
+        }),
+      );
+      if (conflicts.length) {
+        const preview = conflicts
+          .slice(0, 8)
+          .map((conflict) => `${conflict.month} ${conflict.day} - ${conflict.account}: ${conflict.currentValue} -> ${conflict.nextValue}`)
+          .join("\n");
+        const extra = conflicts.length > 8 ? `\n...y ${conflicts.length - 8} coincidencia${conflicts.length - 8 === 1 ? "" : "s"} más.` : "";
+        const confirmed = window.confirm(`Se encontraron datos existentes que serán reemplazados:\n\n${preview}${extra}\n\n¿Querés pisar esos datos?`);
+        if (!confirmed) {
+          setStatus("Importación cancelada: no se pisaron datos existentes");
+          return;
+        }
+      }
+      if (newCatalogRows.length) {
+        await saveRequirementCatalog({ rows: nextCatalogRows });
+        setCatalogRows(nextCatalogRows);
+      }
+      let selectedRows = mergeCatalogWithMonth(rows, nextCatalogRows);
+      await Promise.all(
+        Object.entries(rowsByMonth).map(async ([monthKey, monthImportedRows]) => {
+          const { saved, baseRows } = savedByMonth[monthKey];
+          const mergedRows = mergeRowsByCampaign(baseRows.map((baseRow) => {
+            const importedRow = monthImportedRows.find((row) => campaignMatchKey(row) === campaignMatchKey(baseRow));
+            if (!importedRow) return baseRow;
+            return { ...baseRow, daily: { ...(baseRow.daily || {}), ...importedRow.daily } };
+          }));
+          await saveSavedRequirements(monthKey, {
+            rows: mergedRows,
+            draft: monthKey === selectedMonth ? form : saved.draft || emptyForm,
+            masterRequirements: buildMasterRequirements(mergedRows),
+          });
+          if (monthKey === selectedMonth) selectedRows = mergedRows;
+        }),
+      );
+      setRows(selectedRows);
+      window.dispatchEvent(new Event("requeridos-updated"));
+      setStatus(`Importado: ${importedRows.length} fila${importedRows.length === 1 ? "" : "s"} en ${Object.keys(rowsByMonth).length} mes${Object.keys(rowsByMonth).length === 1 ? "" : "es"}`);
+    } catch (err) {
+      setStatus(err.message || "No se pudo importar el template");
+    } finally {
+      event.target.value = "";
+    }
+  };
+
   const copyTable = async () => {
     const header = [
       "Gerente",
@@ -730,6 +1189,10 @@ export default function RequeridosPage() {
         <div>
           <p>Planificación</p>
           <h1>Requeridos</h1>
+          <span className="autosave-status">
+            {loading ? "Cargando..." : status || "Listo para cargar"}
+            {confirmedMonth === selectedMonth ? " · Confirmado" : ""}
+          </span>
         </div>
         <div className="header-actions">
           <label className="month-control">
@@ -745,7 +1208,7 @@ export default function RequeridosPage() {
           <button className="icon-button" onClick={copyTable} title="Copiar tabla">
             <Clipboard size={18} />
           </button>
-          <button className="icon-button" onClick={downloadTemplate} title="Descargar template">
+          <button className="icon-button" onClick={downloadTemplateAccents} title="Descargar template">
             <Download size={18} />
           </button>
           <button className="icon-button" onClick={() => fileInputRef.current?.click()} title="Importar template">
@@ -754,7 +1217,11 @@ export default function RequeridosPage() {
           <button className="icon-button" onClick={() => persistState(rows, form)} title="Guardar">
             <Save size={18} />
           </button>
-          <input ref={fileInputRef} type="file" accept=".xlsx,.xls,.csv" onChange={importTemplate} hidden />
+          <Button className="confirm-load-button" onClick={confirmLoad}>
+            <CheckCircle2 size={16} />
+            Confirmar carga
+          </Button>
+          <input ref={fileInputRef} type="file" accept=".xlsx,.xls,.csv" onChange={importTemplateAccents} hidden />
         </div>
       </header>
 
@@ -872,6 +1339,47 @@ export default function RequeridosPage() {
       )}
 
       {activeTab === "calendar" && (
+      <section className="ops-kpi-grid monthly-load-kpis">
+        <Card className="ops-kpi-card primary">
+          <div className="ops-kpi-icon"><Users size={20} /></div>
+          <span>Servicios visibles</span>
+          <strong>{number.format(filteredRows.filter((row) => row.active !== false).length)}</strong>
+          <small>Filas activas en la grilla</small>
+        </Card>
+        <Card className="ops-kpi-card">
+          <div className="ops-kpi-icon"><CalendarDays size={20} /></div>
+          <span>DÃ­as hÃ¡biles</span>
+          <strong>{number.format(totals.businessDays)}</strong>
+          <small>Sin sÃ¡bados, domingos ni feriados</small>
+        </Card>
+        <Card className="ops-kpi-card success">
+          <div className="ops-kpi-icon"><CheckCircle2 size={20} /></div>
+          <span>Total requerido</span>
+          <strong>{number.format(totals.projectionTotal)}</strong>
+          <small>SegÃºn filtros y rango visible</small>
+        </Card>
+        <Card className="ops-kpi-card">
+          <div className="ops-kpi-icon"><Clipboard size={20} /></div>
+          <span>Celdas pendientes</span>
+          <strong>{number.format(totals.pendingCellCount)}</strong>
+          <small>{number.format(totals.loadedCellCount)} cargadas</small>
+        </Card>
+        <Card className={totals.errorCellCount ? "ops-kpi-card danger" : "ops-kpi-card"}>
+          <div className="ops-kpi-icon"><X size={20} /></div>
+          <span>Errores</span>
+          <strong>{number.format(totals.errorCellCount)}</strong>
+          <small>{number.format(totals.atypicalCellCount)} valores atÃ­picos</small>
+        </Card>
+        <Card className="ops-kpi-card success">
+          <div className="ops-kpi-icon"><Save size={20} /></div>
+          <span>Avance</span>
+          <strong>{number.format(totals.progress)}%</strong>
+          <small>Autosave: {status || "en espera"}</small>
+        </Card>
+      </section>
+      )}
+
+      {activeTab === "calendar" && (
       <section className="table-wrap required-filter-panel">
         <div className="table-toolbar">
           <div>
@@ -910,6 +1418,40 @@ export default function RequeridosPage() {
             <span>Hasta</span>
             <input type="date" value={filters.end} onChange={(event) => setFilters((current) => ({ ...current, end: event.target.value }))} />
           </label>
+        </div>
+      </section>
+      )}
+
+      {activeTab === "calendar" && (
+      <section className="table-wrap bulk-actions-panel">
+        <div className="table-toolbar">
+          <div>
+            <h2>Acciones masivas</h2>
+            <span>{number.format(selectedCells.size)} celda{selectedCells.size === 1 ? "" : "s"} seleccionada{selectedCells.size === 1 ? "" : "s"}.</span>
+          </div>
+          <label className="lock-toggle">
+            <input type="checkbox" checked={lockNonBusinessDays} onChange={(event) => setLockNonBusinessDays(event.target.checked)} />
+            Bloquear fines de semana y feriados
+          </label>
+        </div>
+        <div className="bulk-actions-grid">
+          <label>
+            <span>Valor para selecciÃ³n</span>
+            <input value={bulkValue} onChange={(event) => setBulkValue(event.target.value.replace(/[^\d,.]/g, ""))} placeholder="Ej. 42" />
+          </label>
+          <Button onClick={applyValueToSelection} disabled={!selectedCells.size}>
+            Aplicar valor
+          </Button>
+          <Button variant="outline" onClick={copyFromPreviousMonth}>
+            Copiar mes anterior
+          </Button>
+          <Button variant="outline" onClick={validateLoad}>
+            Validar carga
+          </Button>
+          <Button variant="outline" onClick={clearSelectedCells} disabled={!selectedCells.size}>
+            <Eraser size={16} />
+            Limpiar seleccionados
+          </Button>
         </div>
       </section>
       )}
@@ -982,7 +1524,7 @@ export default function RequeridosPage() {
       )}
 
       {activeTab === "calendar" && (
-      <section className="table-wrap requeridos-table">
+      <section className="table-wrap requeridos-table spreadsheet-panel">
         <div className="table-toolbar">
           <div>
             <h2>{calendarTitle}</h2>
@@ -993,7 +1535,7 @@ export default function RequeridosPage() {
             <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar" />
           </label>
         </div>
-        <div className="table-scroll">
+        <div className="table-scroll spreadsheet-scroll">
           <table style={{ width: `${calendarTableWidth}px`, minWidth: `${calendarTableWidth}px` }}>
             <colgroup>
               {["gerente", "jefeSite", "cliente", "campana", "subcampana"].map((column) => (
@@ -1003,6 +1545,10 @@ export default function RequeridosPage() {
                 <col key={`col-${day.key}`} style={{ width: `${dayColumnWidth}px` }} />
               ))}
               <col style={{ width: `${totalColumnWidth}px` }} />
+              <col style={{ width: `${totalColumnWidth}px` }} />
+              <col style={{ width: `${totalColumnWidth}px` }} />
+              <col style={{ width: `${totalColumnWidth}px` }} />
+              <col style={{ width: "88px" }} />
             </colgroup>
             <thead>
               <tr className="calendar-weekdays">
@@ -1010,12 +1556,12 @@ export default function RequeridosPage() {
                 {visibleDays.map((day) => (
                   <th key={`weekday-${day.key}`} className="calendar-weekday">{day.weekdayLabel}</th>
                 ))}
-                <th />
+                <th colSpan="5" />
               </tr>
               <tr>
-                <th>Gerente</th>
-                <th>Jefe de site</th>
-                <th>Cliente</th>
+                <th className="sticky-col sticky-col-1">Gerente</th>
+                <th className="sticky-col sticky-col-2">Jefe de site</th>
+                <th className="sticky-col sticky-col-3">Cliente</th>
                 <th>Campaña</th>
                 <th>Subcampaña</th>
                 {visibleDays.map((day) => (
@@ -1023,39 +1569,67 @@ export default function RequeridosPage() {
                     {day.label}
                   </th>
                 ))}
-                <th>Total</th>
+                <th>Total mes</th>
+                <th>Prom.</th>
+                <th>DÃ­as</th>
+                <th>Estado</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {filteredRows.map((row) => {
                 const isInactive = row.active === false;
-                const total = isInactive ? 0 : visibleDays.reduce((sum, day) => sum + parseNumber(row.daily?.[day.key]), 0);
+                const stats = rowStats(row);
                 return (
                   <tr key={row.id} className={isInactive ? "inactive-account-row" : ""}>
-                    <td>{row.gerente}</td>
-                    <td>{row.jefeSite}</td>
-                    <td>{row.cliente}</td>
-                    <td>{row.campana}</td>
-                    <td>{row.subcampana}</td>
-                    {visibleDays.map((day) => (
-                      <td key={day.key} className={`calendar-value ${dayTone(day)}`}>
-                        <input
-                          className="required-input"
-                          type="text"
-                          inputMode="decimal"
-                          value={row.daily?.[day.key] || ""}
-                          disabled={isInactive}
-                          onChange={(event) => updateDaily(row.id, day.key, event.target.value)}
-                        />
-                      </td>
-                    ))}
-                    <td className="total-cell">{number.format(total)}</td>
+                    <td className="sticky-col sticky-col-1">{row.gerente}</td>
+                    <td className="sticky-col sticky-col-2">{row.jefeSite}</td>
+                    <td className="sticky-col sticky-col-3">{row.cliente}</td>
+                    <td className="sticky-col sticky-col-4">{row.campana}</td>
+                    <td className="sticky-col sticky-col-5">{row.subcampana}</td>
+                    {visibleDays.map((day) => {
+                      const key = cellKey(row.id, day.key);
+                      const statusName = cellStatus(row, day);
+                      const selected = selectedCells.has(key);
+                      return (
+                        <td key={day.key} className={`calendar-value ${dayTone(day)} cell-${statusName} ${selected ? "selected-cell" : ""}`}>
+                          <input
+                            ref={(element) => {
+                              if (element) cellRefs.current.set(key, element);
+                              else cellRefs.current.delete(key);
+                            }}
+                            className="required-input compact-cell-input"
+                            type="text"
+                            inputMode="decimal"
+                            value={row.daily?.[day.key] || ""}
+                            disabled={isInactive || isBlockedDay(day)}
+                            onMouseDown={(event) => selectCell(row.id, day.key, event)}
+                            onFocus={(event) => selectCell(row.id, day.key, event)}
+                            onPaste={(event) => handleCellPaste(event, row.id, day.key)}
+                            onKeyDown={(event) => handleCellKeyDown(event, row.id, day.key)}
+                            onChange={(event) => updateDaily(row.id, day.key, event.target.value)}
+                          />
+                        </td>
+                      );
+                    })}
+                    <td className="total-cell">{number.format(stats.total)}</td>
+                    <td className="total-cell">{stats.average ? number.format(Math.round(stats.average * 100) / 100) : ""}</td>
+                    <td className="total-cell">{number.format(stats.loadedDays)}</td>
+                    <td><span className={`load-status ${stats.status.toLowerCase()}`}>{stats.status}</span></td>
+                    <td>
+                      <div className="row-action-buttons">
+                        <button type="button" title="Completar lunes a viernes" onClick={() => fillWeekdaysForRow(row)}>LV</button>
+                        <button type="button" title="Copiar semana anterior" onClick={() => copyPreviousWeekForRow(row)}>S-1</button>
+                        <button type="button" title="Distribuir total mensual" onClick={() => distributeMonthlyTotalForRow(row)}>Dist.</button>
+                        <button type="button" title="Limpiar fila" onClick={() => clearRow(row)}><Eraser size={13} /></button>
+                      </div>
+                    </td>
                   </tr>
                 );
               })}
               {!filteredRows.length && (
                 <tr>
-                  <td className="empty-cell" colSpan={6 + visibleDays.length}>Sin filas cargadas.</td>
+                  <td className="empty-cell" colSpan={10 + visibleDays.length}>Sin filas cargadas.</td>
                 </tr>
               )}
             </tbody>
@@ -1070,6 +1644,10 @@ export default function RequeridosPage() {
                     return <td key={day.key}>{total ? number.format(total) : ""}</td>;
                   })}
                   <td>{number.format(totals.projectionTotal)}</td>
+                  <td />
+                  <td />
+                  <td />
+                  <td />
                 </tr>
               </tfoot>
             )}

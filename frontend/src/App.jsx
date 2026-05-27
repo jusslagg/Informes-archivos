@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   Menu,
   SearchCheck,
+  Table2,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -11,12 +12,14 @@ import { Component, useState } from "react";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import QualityPage from "./pages/QualityPage.jsx";
 import RequeridosPage from "./pages/RequeridosPage.jsx";
+import RequeridosSummaryPage from "./pages/RequeridosSummaryPage.jsx";
 import UploadPage from "./pages/UploadPage.jsx";
 
 const pages = [
   { id: "upload", label: "Importar", icon: FileSpreadsheet, component: UploadPage },
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, component: DashboardPage },
   { id: "requeridos", label: "Requeridos", icon: ListChecks, component: RequeridosPage },
+  { id: "resumen-requeridos", label: "Resumen", icon: Table2, component: RequeridosSummaryPage },
   { id: "quality", label: "Calidad", icon: SearchCheck, component: QualityPage },
 ];
 

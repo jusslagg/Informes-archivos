@@ -21,6 +21,7 @@ from app.services.storage import (
     load_latest_dataset,
     load_requirements,
     load_requirements_catalog,
+    requirements_summary,
     save_holidays,
     save_latest_dataset,
     save_requirements,
@@ -64,6 +65,11 @@ def get_saved_requirements_catalog():
 @router.put("/requirements-catalog")
 def put_saved_requirements_catalog(payload: dict):
     return save_requirements_catalog(payload)
+
+
+@router.get("/requirements-summary")
+def get_requirements_summary(month: str | None = None):
+    return requirements_summary(month)
 
 
 @router.get("/holidays/{year}")

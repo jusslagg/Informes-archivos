@@ -124,6 +124,20 @@ export function saveRequirementCatalog(payload) {
   });
 }
 
+export function getRequirementsSummary(month = "") {
+  if (usesBrowserData) {
+    return Promise.resolve({
+      months: [],
+      month,
+      rows: [],
+      totals: { required: 0, hours: 0 },
+      source: { activeAccounts: 0, usesCatalog: false },
+    });
+  }
+  const query = month ? `?month=${encodeURIComponent(month)}` : "";
+  return request(`/requirements-summary${query}`);
+}
+
 export function getSavedHolidays(year) {
   if (usesBrowserData) return Promise.resolve({ year, holidays: [] });
   return request(`/holidays/${year}`);
