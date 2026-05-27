@@ -1,5 +1,5 @@
 {
-  "month": "2026-07",
+  "month": "2026-03",
   "requirements": {},
   "holidays": {},
   "manualRows": [],
@@ -9,10 +9,8 @@
       "daily": {}
     },
     "ASEF||AF||AF": {
-      "total": 20,
-      "daily": {
-        "2026-07-01": 20
-      }
+      "total": 0,
+      "daily": {}
     }
   },
   "rows": [
@@ -34,9 +32,7 @@
       "campana": "af",
       "subcampana": "af",
       "active": true,
-      "daily": {
-        "2026-07-01": "20"
-      }
+      "daily": {}
     }
   ],
   "draft": {}

@@ -4,26 +4,16 @@
   "holidays": {},
   "manualRows": [],
   "masterRequirements": {
-    "AD||AD||AD": {
+    "PRUEBA 2||PRUEBA 2||PRUEBA 2": {
       "total": 0,
       "daily": {}
     },
-    "PRUEBA 2||PRUEBA 2||PRUEBA 2": {
+    "ASEF||AF||AF": {
       "total": 0,
       "daily": {}
     }
   },
   "rows": [
-    {
-      "id": "AS||AD||AD||AD||AD",
-      "gerente": "as",
-      "jefeSite": "ad",
-      "cliente": "ad",
-      "campana": "ad",
-      "subcampana": "ad",
-      "active": true,
-      "daily": {}
-    },
     {
       "id": "PRUEBA 2||PRUEBA 2||PRUEBA 2||PRUEBA 2||PRUEBA 2",
       "gerente": "prueba 2",
@@ -31,6 +21,16 @@
       "cliente": "prueba 2",
       "campana": "prueba 2",
       "subcampana": "prueba 2",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "AS||DIEGO||ASEF||AF||AF",
+      "gerente": "as",
+      "jefeSite": "diego",
+      "cliente": "asef",
+      "campana": "af",
+      "subcampana": "af",
       "active": true,
       "daily": {}
     }

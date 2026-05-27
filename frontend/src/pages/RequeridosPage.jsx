@@ -79,6 +79,18 @@ function shiftMonthValue(monthValue, amount) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 }
 
+function parseMonthValue(value, fallback = currentMonthValue()) {
+  const rawValue = String(value || "").trim().toLowerCase();
+  const isoMatch = rawValue.match(/^(\d{4})-(\d{1,2})$/);
+  if (isoMatch) return `${isoMatch[1]}-${String(Number(isoMatch[2])).padStart(2, "0")}`;
+  const slashMatch = rawValue.match(/^(\d{1,2})[/-](\d{4})$/);
+  if (slashMatch) return `${slashMatch[2]}-${String(Number(slashMatch[1])).padStart(2, "0")}`;
+  const namedMonth = monthNames.findIndex((monthName) => normalize(rawValue).includes(normalize(monthName)));
+  const yearMatch = rawValue.match(/\b(20\d{2})\b/);
+  if (namedMonth >= 0 && yearMatch) return `${yearMatch[1]}-${String(namedMonth + 1).padStart(2, "0")}`;
+  return fallback;
+}
+
 function normalize(value) {
   return String(value || "")
     .trim()
@@ -149,6 +161,10 @@ function makeId(row) {
   return [row.gerente, row.jefeSite, row.cliente, row.campana, row.subcampana].map(normalize).join("||");
 }
 
+function campaignMatchKey(row) {
+  return [row.campana, row.subcampana].map(normalize).join("||");
+}
+
 function structureOnly(row) {
   return {
     id: row.id,
@@ -160,6 +176,29 @@ function structureOnly(row) {
     active: row.active !== false,
     daily: {},
   };
+}
+
+function mergeRowsByCampaign(rows = []) {
+  const merged = new Map();
+  rows.map(normalizeRow).forEach((row) => {
+    const key = campaignMatchKey(row);
+    const current = merged.get(key);
+    if (!current) {
+      merged.set(key, row);
+      return;
+    }
+    merged.set(key, {
+      ...current,
+      active: current.active !== false && row.active !== false,
+      daily: {
+        ...(current.daily || {}),
+        ...Object.fromEntries(
+          Object.entries(row.daily || {}).filter(([, value]) => String(value ?? "").trim() !== ""),
+        ),
+      },
+    });
+  });
+  return [...merged.values()];
 }
 
 function normalizeRow(row) {
@@ -203,9 +242,9 @@ function cloneRowsToMonth(rows = [], monthValue) {
 }
 
 function mergeCatalogWithMonth(monthRows = [], catalogRows = []) {
-  const savedById = new Map(monthRows.map((row) => [row.id, row]));
-  return catalogRows.map((catalogRow) => {
-    const savedRow = savedById.get(catalogRow.id);
+  const savedByCampaign = new Map(mergeRowsByCampaign(monthRows).map((row) => [campaignMatchKey(row), row]));
+  return mergeRowsByCampaign(catalogRows.map(structureOnly)).map((catalogRow) => {
+    const savedRow = savedByCampaign.get(campaignMatchKey(catalogRow));
     return {
       ...catalogRow,
       daily: savedRow?.daily || {},
@@ -274,14 +313,16 @@ export default function RequeridosPage() {
     setLoading(true);
     Promise.all([getSavedRequirements(selectedMonth), getRequirementCatalog()])
       .then(([saved, catalog]) => {
-        const savedRows = (saved.rows || []).map(normalizeRow);
-        const storedCatalogRows = (catalog.rows || []).map(normalizeRow);
+        const savedRows = mergeRowsByCampaign(saved.rows || []);
+        const storedCatalogRows = mergeRowsByCampaign(catalog.rows || []);
         const baseCatalogRows = storedCatalogRows.length ? storedCatalogRows : savedRows.map(structureOnly);
         const nextRows = baseCatalogRows.length ? mergeCatalogWithMonth(savedRows, baseCatalogRows) : [];
         setRows(nextRows);
         setCatalogRows(baseCatalogRows);
         if (!storedCatalogRows.length && savedRows.length) {
           saveRequirementCatalog({ rows: savedRows.map(structureOnly) }).catch(() => {});
+        } else if (storedCatalogRows.length !== (catalog.rows || []).length) {
+          saveRequirementCatalog({ rows: baseCatalogRows.map(structureOnly) }).catch(() => {});
         }
         if (nextRows.length || savedRows.length) {
           saveSavedRequirements(selectedMonth, {
@@ -361,7 +402,7 @@ export default function RequeridosPage() {
   };
 
   const persistCatalog = async (nextRows) => {
-    const nextCatalogRows = nextRows.map(structureOnly);
+    const nextCatalogRows = mergeRowsByCampaign(nextRows).map(structureOnly);
     setCatalogRows(nextCatalogRows);
     await saveRequirementCatalog({ rows: nextCatalogRows });
   };
@@ -381,8 +422,9 @@ export default function RequeridosPage() {
   };
 
   const updateRows = (nextRows) => {
-    setRows(nextRows);
-    persistState(nextRows, form);
+    const cleanRows = mergeRowsByCampaign(nextRows);
+    setRows(cleanRows);
+    persistState(cleanRows, form);
   };
 
   const updateFormField = (field, value) => {
@@ -412,7 +454,7 @@ export default function RequeridosPage() {
       daily: {},
     };
     if (!nextRow.gerente || !nextRow.jefeSite || !nextRow.cliente || !nextRow.campana || !nextRow.subcampana) return;
-    const nextRows = editingId
+    const nextRows = mergeRowsByCampaign(editingId
       ? rows.map((row) =>
           row.id === editingId
             ? {
@@ -423,7 +465,7 @@ export default function RequeridosPage() {
               }
             : row,
         )
-      : [...rows.filter((row) => row.id !== nextRow.id), nextRow];
+      : [...rows.filter((row) => campaignMatchKey(row) !== campaignMatchKey(nextRow)), nextRow]);
     setRows(nextRows);
     setForm(emptyForm);
     setEditingId("");
@@ -514,9 +556,10 @@ export default function RequeridosPage() {
 
   const downloadTemplate = () => {
     const templateDays = daysForMonth(selectedMonth);
-    const headers = ["Gerente", "Jefe de site", "Cliente", "Campaña", "Subcampaña", ...templateDays.map((day) => day.label)];
+    const headers = ["Mes", "Gerente", "Jefe de site", "Cliente", "Campaña", "Subcampaña", ...templateDays.map((day) => day.label)];
     const templateRows = rows.length
       ? rows.map((row) => ({
+          Mes: selectedMonth,
           Gerente: row.gerente,
           "Jefe de site": row.jefeSite,
           Cliente: row.cliente,
@@ -525,7 +568,7 @@ export default function RequeridosPage() {
           ...Object.fromEntries(templateDays.map((day) => [day.label, row.daily?.[day.key] || ""])),
         }))
       : [
-          Object.fromEntries(headers.map((header) => [header, ""])),
+          Object.fromEntries(headers.map((header) => [header, header === "Mes" ? selectedMonth : ""])),
         ];
     const worksheet = XLSX.utils.json_to_sheet(templateRows, { header: headers });
     const workbook = XLSX.utils.book_new();
@@ -540,10 +583,11 @@ export default function RequeridosPage() {
       const workbook = XLSX.read(await file.arrayBuffer(), { type: "array", raw: false });
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
       const imported = XLSX.utils.sheet_to_json(sheet, { defval: "", raw: false });
-      const monthDays = daysForMonth(selectedMonth);
-      const dayByLabel = new Map(monthDays.map((day) => [day.label, day]));
-      const nextRows = imported
+      const importedRows = imported
         .map((item) => {
+          const rowMonth = parseMonthValue(item.Mes || item.MES || item.mes || item.Month, selectedMonth);
+          const monthDays = daysForMonth(rowMonth);
+          const dayByLabel = new Map(monthDays.map((day) => [day.label, day]));
           const row = {
             gerente: clean(item.Gerente),
             jefeSite: clean(item["Jefe de site"] || item["Jefe Site"]),
@@ -558,14 +602,99 @@ export default function RequeridosPage() {
             const day = dayByLabel.get(dayNumber);
             if (day && String(value ?? "").trim() !== "") daily[day.key] = String(value).replace(/[^\d,.]/g, "");
           });
-          return { ...row, id: makeId(row), active: true, daily };
+          return { ...row, id: makeId(row), active: true, month: rowMonth, daily };
         })
         .filter(Boolean);
-      const mergedRows = [...rows.filter((row) => !nextRows.some((nextRow) => nextRow.id === row.id)), ...nextRows];
-      setRows(mergedRows);
-      await persistState(mergedRows, form);
-      await persistCatalog(mergedRows);
-      setStatus(`Importado: ${nextRows.length} fila${nextRows.length === 1 ? "" : "s"}`);
+      if (!importedRows.length) {
+        setStatus("No se encontraron filas válidas para importar");
+        return;
+      }
+      const existingCatalogKeys = new Set(catalogRows.map(campaignMatchKey));
+      const newCatalogRows = importedRows
+        .filter((row) => !existingCatalogKeys.has(campaignMatchKey(row)))
+        .map(structureOnly);
+      const nextCatalogRows = mergeRowsByCampaign([...catalogRows, ...newCatalogRows]).map(structureOnly);
+      const rowsByMonth = importedRows.reduce((acc, row) => {
+        const monthRows = acc[row.month] || [];
+        const existingRow = monthRows.find((item) => campaignMatchKey(item) === campaignMatchKey(row));
+        if (existingRow) {
+          existingRow.daily = {
+            ...(existingRow.daily || {}),
+            ...(row.daily || {}),
+          };
+        } else {
+          monthRows.push(row);
+        }
+        acc[row.month] = monthRows;
+        return acc;
+      }, {});
+      const savedByMonth = {};
+      const conflicts = [];
+      await Promise.all(
+        Object.entries(rowsByMonth).map(async ([monthKey, monthImportedRows]) => {
+          const saved = await getSavedRequirements(monthKey);
+          const savedRows = mergeRowsByCampaign(saved.rows || []);
+          const baseRows = mergeCatalogWithMonth(savedRows, nextCatalogRows);
+          savedByMonth[monthKey] = { saved, baseRows };
+          monthImportedRows.forEach((importedRow) => {
+            const existingRow = baseRows.find((row) => campaignMatchKey(row) === campaignMatchKey(importedRow));
+            Object.entries(importedRow.daily || {}).forEach(([dayKey, value]) => {
+              const currentValue = existingRow?.daily?.[dayKey];
+              if (String(currentValue ?? "").trim() && String(value ?? "").trim() && String(currentValue) !== String(value)) {
+                conflicts.push({
+                  month: monthKey,
+                  day: dayKey.split("-").reverse().join("/"),
+                  account: `${importedRow.campana} / ${importedRow.subcampana}`,
+                  currentValue,
+                  nextValue: value,
+                });
+              }
+            });
+          });
+        }),
+      );
+      if (conflicts.length) {
+        const preview = conflicts
+          .slice(0, 8)
+          .map((conflict) => `${conflict.month} ${conflict.day} - ${conflict.account}: ${conflict.currentValue} -> ${conflict.nextValue}`)
+          .join("\n");
+        const extra = conflicts.length > 8 ? `\n...y ${conflicts.length - 8} coincidencia${conflicts.length - 8 === 1 ? "" : "s"} más.` : "";
+        const confirmed = window.confirm(`Se encontraron datos existentes que serán reemplazados:\n\n${preview}${extra}\n\n¿Querés pisar esos datos?`);
+        if (!confirmed) {
+          setStatus("Importación cancelada: no se pisaron datos existentes");
+          return;
+        }
+      }
+      if (newCatalogRows.length) {
+        await saveRequirementCatalog({ rows: nextCatalogRows });
+        setCatalogRows(nextCatalogRows);
+      }
+      let selectedRows = mergeCatalogWithMonth(rows, nextCatalogRows);
+      await Promise.all(
+        Object.entries(rowsByMonth).map(async ([monthKey, monthImportedRows]) => {
+          const { saved, baseRows } = savedByMonth[monthKey];
+          const mergedRows = mergeRowsByCampaign(baseRows.map((baseRow) => {
+            const importedRow = monthImportedRows.find((row) => campaignMatchKey(row) === campaignMatchKey(baseRow));
+            if (!importedRow) return baseRow;
+            return {
+              ...baseRow,
+              daily: {
+                ...(baseRow.daily || {}),
+                ...importedRow.daily,
+              },
+            };
+          }));
+          await saveSavedRequirements(monthKey, {
+            rows: mergedRows,
+            draft: monthKey === selectedMonth ? form : saved.draft || emptyForm,
+            masterRequirements: buildMasterRequirements(mergedRows),
+          });
+          if (monthKey === selectedMonth) selectedRows = mergedRows;
+        }),
+      );
+      setRows(selectedRows);
+      window.dispatchEvent(new Event("requeridos-updated"));
+      setStatus(`Importado: ${importedRows.length} fila${importedRows.length === 1 ? "" : "s"} en ${Object.keys(rowsByMonth).length} mes${Object.keys(rowsByMonth).length === 1 ? "" : "es"}`);
     } catch (err) {
       setStatus(err.message || "No se pudo importar el template");
     } finally {
