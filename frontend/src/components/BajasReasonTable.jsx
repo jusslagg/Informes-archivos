@@ -38,7 +38,7 @@ export default function BajasReasonTable({ rows = [], total = 0, dateRange = { s
         </div>
         <button className="primary-button secondary-button" onClick={copyTable}>
           <Clipboard size={16} />
-          Copiar tabla
+          Copiar
         </button>
       </div>
       <div className="table-scroll">

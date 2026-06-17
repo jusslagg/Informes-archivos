@@ -24,7 +24,7 @@ def build_dashboard(df: pd.DataFrame) -> dict[str, Any]:
     return {
         "metrics": {
             "total_empleados": int(len(df)),
-            "activos": int(estado.str.contains("ACTIVO", na=False).sum()),
+            "activos": int(estado.str.strip().eq("ACTIVO").sum()),
             "bajas": int(estado.str.contains("BAJA|INACTIVO", regex=True, na=False).sum()),
             "bajas_del_mes": int(len(bajas_mes)),
             "altas_del_mes": int(len(altas_mes)),

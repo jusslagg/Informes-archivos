@@ -17,10 +17,12 @@ from app.services.dashboard import build_dashboard
 from app.services.exporter import export_workbook
 from app.services.processor import clean_payroll, read_payroll_file
 from app.services.storage import (
+    append_requirements_history,
     load_holidays,
     load_latest_dataset,
     load_requirements,
     load_requirements_catalog,
+    load_requirements_history,
     requirements_summary,
     save_holidays,
     save_latest_dataset,
@@ -55,6 +57,16 @@ def get_saved_requirements(month: str):
 @router.put("/requirements/{month}")
 def put_saved_requirements(month: str, payload: dict):
     return save_requirements(month, payload)
+
+
+@router.get("/requirements-history")
+def get_requirements_history():
+    return load_requirements_history()
+
+
+@router.post("/requirements-history")
+def post_requirements_history(payload: dict):
+    return append_requirements_history(payload)
 
 
 @router.get("/requirements-catalog")
@@ -141,6 +153,11 @@ def _exclude_filter_specs(filters, *columns):
         for filter_spec in filters
         if _normalize_column_name(filter_spec.column) not in excluded
     ]
+
+
+def _has_filter_spec(filters, *columns):
+    wanted = {_normalize_column_name(column) for column in columns}
+    return any(_normalize_column_name(filter_spec.column) in wanted for filter_spec in filters)
 
 
 def _only_bajas(df):
@@ -303,10 +320,15 @@ def get_staffing_by_campaign(payload: DynamicAnalysisRequest):
     client_column = _find_column(df, "CLIENTE")
     estado_column = _find_column(df, "ESTADO")
     fecha_baja_column = _find_column(df, "FECHA BAJA")
+    puesto_column = _find_column(df, "PUESTO")
     if not campaign_column:
         return {"rows": []}
 
     working = df.copy()
+    if puesto_column and not _has_filter_spec(payload.filters, "PUESTO"):
+        puesto = working[puesto_column].astype(str).map(_normalize_column_name)
+        working = working[puesto.eq("OPERADOR")]
+
     working["_campana"] = working[campaign_column].astype(str).str.strip().replace("", "Sin dato")
     working["_cliente"] = working[client_column].astype(str).str.strip().replace("", "Sin dato") if client_column else "Sin dato"
     if not estado_column:
@@ -329,10 +351,9 @@ def get_staffing_by_campaign(payload: DynamicAnalysisRequest):
     estado = working[estado_column].astype(str).str.strip()
     estado_upper = estado.str.upper()
     is_baja = estado_upper.str.contains("BAJA", na=False)
-    is_activo = estado_upper.eq("ACTIVO") | (
-        estado_upper.str.contains("ACTIVO", na=False) & ~estado_upper.str.contains("INACTIVO", na=False)
-    )
-    is_licencia = ~is_activo & ~is_baja
+    is_activo = estado_upper.eq("ACTIVO")
+    is_pre_activo = estado_upper.str.replace("-", " ", regex=False).str.strip().eq("PRE ACTIVO")
+    is_licencia = ~is_activo & ~is_baja & ~is_pre_activo
     bajas_mes = pd.Series(False, index=working.index)
     if fecha_baja_column:
         today = pd.Timestamp(date.today())
@@ -400,9 +421,7 @@ def get_required_structure(payload: DynamicAnalysisRequest):
 
     if estado_column:
         estado_upper = working[estado_column].astype(str).str.strip().str.upper()
-        is_activo = estado_upper.eq("ACTIVO") | (
-            estado_upper.str.contains("ACTIVO", na=False) & ~estado_upper.str.contains("INACTIVO", na=False)
-        )
+        is_activo = estado_upper.eq("ACTIVO")
     else:
         is_activo = pd.Series(True, index=working.index)
 
@@ -453,10 +472,9 @@ def get_staffing_by_campaign_legacy(payload: DynamicAnalysisRequest):
     estado = working["ESTADO"].astype(str).str.strip()
     estado_upper = estado.str.upper()
     is_baja = estado_upper.str.contains("BAJA", na=False)
-    is_activo = estado_upper.eq("ACTIVO") | (
-        estado_upper.str.contains("ACTIVO", na=False) & ~estado_upper.str.contains("INACTIVO", na=False)
-    )
-    is_licencia = ~is_activo & ~is_baja
+    is_activo = estado_upper.eq("ACTIVO")
+    is_pre_activo = estado_upper.str.replace("-", " ", regex=False).str.strip().eq("PRE ACTIVO")
+    is_licencia = ~is_activo & ~is_baja & ~is_pre_activo
 
     rows = []
     enriched = working.assign(
@@ -483,7 +501,10 @@ def get_staffing_by_campaign_legacy(payload: DynamicAnalysisRequest):
 
 @router.post("/bajas-by-month")
 def get_bajas_by_month(payload: DynamicAnalysisRequest):
-    df = _apply_fecha_baja_range(_only_bajas(_apply_filter_specs(_latest_df(), payload.filters)), payload.date_range)
+    df = _apply_fecha_baja_range(
+        _only_bajas(_apply_filter_specs(_latest_df(), _exclude_filter_specs(payload.filters, "ESTADO"))),
+        payload.date_range,
+    )
     if "FECHA BAJA" not in df.columns or "CAMPAÑA" not in df.columns:
         return {"months": [], "rows": [], "totals": {}}
 
@@ -531,7 +552,10 @@ def get_bajas_by_month(payload: DynamicAnalysisRequest):
 
 @router.post("/bajas-by-tenure")
 def get_bajas_by_tenure(payload: DynamicAnalysisRequest):
-    df = _apply_fecha_baja_range(_only_bajas(_apply_filter_specs(_latest_df(), payload.filters)), payload.date_range)
+    df = _apply_fecha_baja_range(
+        _only_bajas(_apply_filter_specs(_latest_df(), _exclude_filter_specs(payload.filters, "ESTADO"))),
+        payload.date_range,
+    )
     if "FECHA ALTA" not in df.columns or "FECHA BAJA" not in df.columns:
         return {"rows": [], "total": 0}
 
@@ -573,7 +597,10 @@ def get_bajas_by_tenure(payload: DynamicAnalysisRequest):
 
 @router.post("/bajas-by-reason")
 def get_bajas_by_reason(payload: DynamicAnalysisRequest):
-    df = _apply_fecha_baja_range(_only_bajas(_apply_filter_specs(_latest_df(), payload.filters)), payload.date_range)
+    df = _apply_fecha_baja_range(
+        _only_bajas(_apply_filter_specs(_latest_df(), _exclude_filter_specs(payload.filters, "ESTADO"))),
+        payload.date_range,
+    )
     if "FECHA BAJA" not in df.columns or "MOTIVO BAJA" not in df.columns:
         return {"rows": [], "total": 0}
 
@@ -603,7 +630,10 @@ def get_bajas_by_reason(payload: DynamicAnalysisRequest):
 
 @router.post("/bajas-reason-by-campaign")
 def get_bajas_reason_by_campaign(payload: DynamicAnalysisRequest):
-    df = _apply_fecha_baja_range(_only_bajas(_apply_filter_specs(_latest_df(), payload.filters)), payload.date_range)
+    df = _apply_fecha_baja_range(
+        _only_bajas(_apply_filter_specs(_latest_df(), _exclude_filter_specs(payload.filters, "ESTADO"))),
+        payload.date_range,
+    )
     campaign_column = _find_column(df, "CAMPAÑA", "CAMPANA")
     reason_column = _find_column(df, "MOTIVO BAJA")
     fecha_baja_column = _find_column(df, "FECHA BAJA")

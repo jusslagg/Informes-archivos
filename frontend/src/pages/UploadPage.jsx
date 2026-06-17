@@ -2,17 +2,20 @@ import { useState } from "react";
 import { uploadPayroll } from "../api/client.js";
 import DataTable from "../components/DataTable.jsx";
 import FileUploader from "../components/FileUploader.jsx";
+import { clearPayrollSession, readUploadResult, saveUploadResult } from "../lib/payrollSession.js";
 
 export default function UploadPage({ navigate }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState(() => readUploadResult());
 
   const handleFile = async (file) => {
     setLoading(true);
     setError("");
     try {
       const response = await uploadPayroll(file);
+      clearPayrollSession();
+      saveUploadResult(response);
       setResult(response);
     } catch (err) {
       setError(err.message);

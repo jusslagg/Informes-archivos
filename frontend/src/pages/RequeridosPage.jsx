@@ -4,6 +4,7 @@ import {
   ChevronRight,
   Clipboard,
   CheckCircle2,
+  Clock3,
   Download,
   Edit3,
   Eraser,
@@ -21,7 +22,9 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as XLSX from "xlsx";
 import {
+  appendRequirementsHistory,
   getRequirementCatalog,
+  getRequirementsHistory,
   getSavedHolidays,
   getSavedRequirements,
   saveRequirementCatalog,
@@ -65,6 +68,17 @@ const emptyFilters = {
   subcampana: "",
   start: "",
   end: "",
+};
+
+const emptyHistoryFilters = {
+  actor: "",
+  action: "",
+  cliente: "",
+  campana: "",
+  subcampana: "",
+  start: "",
+  end: "",
+  query: "",
 };
 
 const dayColumnWidth = 52;
@@ -116,6 +130,35 @@ function getImportValue(item, ...aliases) {
 function parseNumber(value) {
   const parsed = Number(String(value ?? "").replace(",", "."));
   return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function localTimestamp() {
+  const now = new Date();
+  return {
+    at: now.toISOString(),
+    localAt: now.toLocaleString("es-AR"),
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "",
+  };
+}
+
+function rowLabel(row = {}) {
+  return [row.cliente, row.campana, row.subcampana].filter(Boolean).join(" / ") || "Sin cuenta";
+}
+
+function fieldLabel(field) {
+  const labels = {
+    gerente: "Gerente",
+    jefeSite: "Jefe de site",
+    cliente: "Cliente",
+    campana: "Campaña",
+    subcampana: "Subcampaña",
+    active: "Estado",
+    daily: "Requerido diario",
+    holiday: "Feriado",
+    import: "Importación",
+    confirm: "Confirmación",
+  };
+  return labels[field] || field;
 }
 
 function cellKey(rowId, dayKey) {
@@ -303,6 +346,9 @@ export default function RequeridosPage() {
   const [bulkValue, setBulkValue] = useState("");
   const [lockNonBusinessDays, setLockNonBusinessDays] = useState(false);
   const [confirmedMonth, setConfirmedMonth] = useState("");
+  const [historyItems, setHistoryItems] = useState([]);
+  const [historyFilters, setHistoryFilters] = useState(emptyHistoryFilters);
+  const [actor, setActor] = useState(() => localStorage.getItem("requirements-actor") || "");
   const cellRefs = useRef(new Map());
 
   const selectedMonth = /^\d{4}-\d{2}$/.test(month) ? month : currentMonthValue();
@@ -334,6 +380,16 @@ export default function RequeridosPage() {
       .then((saved) => setHolidays(saved.holidays || []))
       .catch(() => setHolidays([]));
   }, [selectedYear]);
+
+  useEffect(() => {
+    localStorage.setItem("requirements-actor", actor);
+  }, [actor]);
+
+  useEffect(() => {
+    getRequirementsHistory()
+      .then((saved) => setHistoryItems(saved.items || []))
+      .catch(() => setHistoryItems([]));
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -452,6 +508,26 @@ export default function RequeridosPage() {
     };
   }, [filteredRows, holidayDates, rows, visibleDays]);
 
+  const historyOptions = useMemo(() => ({
+    actors: [...new Set(historyItems.map((item) => item.actor).filter(Boolean))].sort((a, b) => a.localeCompare(b)),
+    actions: [...new Set(historyItems.map((item) => item.action).filter(Boolean))].sort((a, b) => a.localeCompare(b)),
+    clients: [...new Set(historyItems.map((item) => item.cliente).filter(Boolean))].sort((a, b) => a.localeCompare(b)),
+    campaigns: [...new Set(historyItems.map((item) => item.campana).filter(Boolean))].sort((a, b) => a.localeCompare(b)),
+    subcampaigns: [...new Set(historyItems.map((item) => item.subcampana).filter(Boolean))].sort((a, b) => a.localeCompare(b)),
+  }), [historyItems]);
+
+  const filteredHistory = useMemo(() => historyItems.filter((item) => {
+    if (historyFilters.actor && item.actor !== historyFilters.actor) return false;
+    if (historyFilters.action && item.action !== historyFilters.action) return false;
+    if (historyFilters.cliente && item.cliente !== historyFilters.cliente) return false;
+    if (historyFilters.campana && item.campana !== historyFilters.campana) return false;
+    if (historyFilters.subcampana && item.subcampana !== historyFilters.subcampana) return false;
+    if (historyFilters.start && String(item.at || "").slice(0, 10) < historyFilters.start) return false;
+    if (historyFilters.end && String(item.at || "").slice(0, 10) > historyFilters.end) return false;
+    const haystack = `${item.actor} ${item.action} ${item.field} ${item.cliente} ${item.campana} ${item.subcampana} ${item.dayKey} ${item.previousValue} ${item.nextValue} ${item.detail}`.toLowerCase();
+    return haystack.includes(historyFilters.query.toLowerCase());
+  }), [historyFilters, historyItems]);
+
   const persistState = async (nextRows = rows, nextForm = form) => {
     setStatus("Guardando...");
     try {
@@ -481,6 +557,21 @@ export default function RequeridosPage() {
     } catch (err) {
       setStatus(err.message || "No se pudieron guardar feriados");
     }
+  };
+
+  const logHistory = (entries) => {
+    const list = (Array.isArray(entries) ? entries : [entries]).filter(Boolean);
+    if (!list.length) return;
+    const timestamp = localTimestamp();
+    const normalizedEntries = list.map((entry) => ({
+      id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      month: selectedMonth,
+      actor: clean(actor) || "Usuario local",
+      ...timestamp,
+      ...entry,
+    }));
+    setHistoryItems((current) => [...normalizedEntries, ...current].slice(0, 5000));
+    appendRequirementsHistory(normalizedEntries).catch(() => {});
   };
 
   const changeMonth = async (nextMonth) => {
@@ -520,6 +611,7 @@ export default function RequeridosPage() {
       daily: {},
     };
     if (!nextRow.gerente || !nextRow.jefeSite || !nextRow.cliente || !nextRow.campana || !nextRow.subcampana) return;
+    const previousRow = editingId ? rows.find((row) => row.id === editingId) : null;
     const nextRows = mergeRowsByCampaign(editingId
       ? rows.map((row) =>
           row.id === editingId
@@ -537,6 +629,33 @@ export default function RequeridosPage() {
     setEditingId("");
     persistState(nextRows, emptyForm);
     persistCatalog(nextRows).catch((err) => setStatus(err.message || "No se pudo guardar la cuenta"));
+    if (previousRow) {
+      logHistory(["gerente", "jefeSite", "cliente", "campana", "subcampana"].map((field) =>
+        previousRow[field] !== nextRow[field]
+          ? {
+              action: "Editar cuenta",
+              field: fieldLabel(field),
+              previousValue: previousRow[field],
+              nextValue: nextRow[field],
+              cliente: nextRow.cliente,
+              campana: nextRow.campana,
+              subcampana: nextRow.subcampana,
+              detail: rowLabel(nextRow),
+            }
+          : null,
+      ));
+    } else {
+      logHistory({
+        action: "Agregar cuenta",
+        field: "Cuenta",
+        previousValue: "",
+        nextValue: rowLabel(nextRow),
+        cliente: nextRow.cliente,
+        campana: nextRow.campana,
+        subcampana: nextRow.subcampana,
+        detail: rowLabel(nextRow),
+      });
+    }
   };
 
   const removeRow = (id) => {
@@ -546,6 +665,18 @@ export default function RequeridosPage() {
       const nextRows = rows.filter((item) => item.id !== id);
       updateRows(nextRows);
       persistCatalog(nextRows).catch((err) => setStatus(err.message || "No se pudo eliminar la cuenta"));
+      if (row) {
+        logHistory({
+          action: "Eliminar cuenta",
+          field: "Cuenta",
+          previousValue: rowLabel(row),
+          nextValue: "",
+          cliente: row.cliente,
+          campana: row.campana,
+          subcampana: row.subcampana,
+          detail: rowLabel(row),
+        });
+      }
     }
   };
 
@@ -563,6 +694,7 @@ export default function RequeridosPage() {
   };
 
   const toggleRowActive = (id) => {
+    const previousRow = rows.find((row) => row.id === id);
     const nextRows = rows.map((row) =>
       row.id === id
         ? {
@@ -577,10 +709,42 @@ export default function RequeridosPage() {
     }
     updateRows(nextRows);
     persistCatalog(nextRows).catch((err) => setStatus(err.message || "No se pudo actualizar la cuenta"));
+    if (previousRow) {
+      const nextActive = previousRow.active === false;
+      logHistory({
+        action: nextActive ? "Activar cuenta" : "Desactivar cuenta",
+        field: "Estado",
+        previousValue: previousRow.active === false ? "Inactiva" : "Activa",
+        nextValue: nextActive ? "Activa" : "Inactiva",
+        cliente: previousRow.cliente,
+        campana: previousRow.campana,
+        subcampana: previousRow.subcampana,
+        detail: rowLabel(previousRow),
+      });
+    }
+  };
+
+  const dailyHistoryEntry = (row, dayKey, nextValue, action = "Editar requerido") => {
+    if (!row) return null;
+    const previousValue = row?.daily?.[dayKey] || "";
+    if (String(previousValue) === String(nextValue)) return null;
+    return {
+      action,
+      field: "Requerido diario",
+      dayKey,
+      previousValue,
+      nextValue,
+      cliente: row.cliente,
+      campana: row.campana,
+      subcampana: row.subcampana,
+      detail: `${rowLabel(row)} · ${dayKey}`,
+    };
   };
 
   const updateDaily = (id, dayKey, value) => {
     const cleanValue = value.replace(/[^\d,.]/g, "");
+    const row = rows.find((item) => item.id === id);
+    logHistory(dailyHistoryEntry(row, dayKey, cleanValue));
     updateRows(
       rows.map((row) =>
         row.id === id && row.active !== false
@@ -598,6 +762,14 @@ export default function RequeridosPage() {
 
   const updateManyDaily = (updates) => {
     if (!updates.length) return;
+    const historyEntries = updates
+      .map((item) => {
+        const row = rows.find((currentRow) => currentRow.id === item.rowId);
+        if (!row || row.active === false) return null;
+        return dailyHistoryEntry(row, item.dayKey, item.value, "Carga masiva");
+      })
+      .filter(Boolean);
+    logHistory(historyEntries);
     const updateMap = updates.reduce((acc, item) => {
       const rowUpdates = acc.get(item.rowId) || {};
       rowUpdates[item.dayKey] = item.value;
@@ -755,6 +927,13 @@ export default function RequeridosPage() {
     persistState(rows, form);
     setConfirmedMonth(selectedMonth);
     setStatus(`Carga confirmada ${monthNames[selectedMonthIndex]} ${selectedYear}`);
+    logHistory({
+      action: "Confirmar carga",
+      field: "Confirmación",
+      previousValue: "",
+      nextValue: `Confirmado ${selectedMonth}`,
+      detail: `${number.format(totals.loadedCellCount)} celdas cargadas · ${number.format(totals.projectionTotal)} requerido`,
+    });
   };
 
   const fillWeekdaysForRow = (row) => {
@@ -827,12 +1006,32 @@ export default function RequeridosPage() {
     const nextHolidays = [...holidays.filter((holiday) => holiday.date !== nextHoliday.date), nextHoliday].sort((a, b) =>
       a.date.localeCompare(b.date),
     );
+    const previousHoliday = holidays.find((holiday) => holiday.date === nextHoliday.date);
     persistHolidays(nextHolidays);
+    logHistory({
+      action: previousHoliday ? "Editar feriado" : "Agregar feriado",
+      field: "Feriado",
+      dayKey: nextHoliday.date,
+      previousValue: previousHoliday?.label || "",
+      nextValue: nextHoliday.label,
+      detail: `${nextHoliday.date} · ${nextHoliday.label}`,
+    });
     setHolidayForm({ date: "", label: "" });
   };
 
   const removeHoliday = (date) => {
+    const previousHoliday = holidays.find((holiday) => holiday.date === date);
     persistHolidays(holidays.filter((holiday) => holiday.date !== date));
+    if (previousHoliday) {
+      logHistory({
+        action: "Eliminar feriado",
+        field: "Feriado",
+        dayKey: previousHoliday.date,
+        previousValue: previousHoliday.label,
+        nextValue: "",
+        detail: `${previousHoliday.date} · ${previousHoliday.label}`,
+      });
+    }
   };
 
   const dayTone = (day) => {
@@ -1010,6 +1209,13 @@ export default function RequeridosPage() {
       setRows(selectedRows);
       window.dispatchEvent(new Event("requeridos-updated"));
       setStatus(`Importado: ${importedRows.length} fila${importedRows.length === 1 ? "" : "s"} en ${Object.keys(rowsByMonth).length} mes${Object.keys(rowsByMonth).length === 1 ? "" : "es"}`);
+      logHistory({
+        action: "Importar template",
+        field: "Importación",
+        previousValue: "",
+        nextValue: `${importedRows.length} filas`,
+        detail: `${Object.keys(rowsByMonth).length} mes(es) importados`,
+      });
     } catch (err) {
       setStatus(err.message || "No se pudo importar el template");
     } finally {
@@ -1238,6 +1444,10 @@ export default function RequeridosPage() {
           <ListChecks size={16} />
           Feriados
         </button>
+        <button className={activeTab === "history" ? "active" : ""} onClick={() => setActiveTab("history")}>
+          <Clock3 size={16} />
+          Historial
+        </button>
       </nav>
 
       {activeTab === "accounts" && (
@@ -1338,6 +1548,119 @@ export default function RequeridosPage() {
       </section>
       )}
 
+      {activeTab === "history" && (
+        <>
+          <section className="table-wrap required-form-panel">
+            <div className="table-toolbar">
+              <div>
+                <h2>Historial de cambios</h2>
+                <span>Registra cambios de cuentas, calendario, feriados, importaciones y confirmaciones con horario local de la máquina.</span>
+              </div>
+              <button className="primary-button secondary-button" onClick={() => setHistoryFilters(emptyHistoryFilters)}>
+                Limpiar filtros
+              </button>
+            </div>
+            <div className="required-filter-grid history-filter-grid">
+              <label>
+                <span>Usuario</span>
+                <input value={actor} onChange={(event) => setActor(event.target.value)} placeholder="Nombre de quien carga" />
+              </label>
+              <label>
+                <span>Filtrar usuario</span>
+                <select value={historyFilters.actor} onChange={(event) => setHistoryFilters((current) => ({ ...current, actor: event.target.value }))}>
+                  <option value="">Todos</option>
+                  {historyOptions.actors.map((option) => <option key={option} value={option}>{option}</option>)}
+                </select>
+              </label>
+              <label>
+                <span>Acción</span>
+                <select value={historyFilters.action} onChange={(event) => setHistoryFilters((current) => ({ ...current, action: event.target.value }))}>
+                  <option value="">Todas</option>
+                  {historyOptions.actions.map((option) => <option key={option} value={option}>{option}</option>)}
+                </select>
+              </label>
+              <label>
+                <span>Cliente</span>
+                <select value={historyFilters.cliente} onChange={(event) => setHistoryFilters((current) => ({ ...current, cliente: event.target.value }))}>
+                  <option value="">Todos</option>
+                  {historyOptions.clients.map((option) => <option key={option} value={option}>{option}</option>)}
+                </select>
+              </label>
+              <label>
+                <span>Campaña</span>
+                <select value={historyFilters.campana} onChange={(event) => setHistoryFilters((current) => ({ ...current, campana: event.target.value }))}>
+                  <option value="">Todas</option>
+                  {historyOptions.campaigns.map((option) => <option key={option} value={option}>{option}</option>)}
+                </select>
+              </label>
+              <label>
+                <span>Subcampaña</span>
+                <select value={historyFilters.subcampana} onChange={(event) => setHistoryFilters((current) => ({ ...current, subcampana: event.target.value }))}>
+                  <option value="">Todas</option>
+                  {historyOptions.subcampaigns.map((option) => <option key={option} value={option}>{option}</option>)}
+                </select>
+              </label>
+              <label>
+                <span>Desde</span>
+                <input type="date" value={historyFilters.start} onChange={(event) => setHistoryFilters((current) => ({ ...current, start: event.target.value }))} />
+              </label>
+              <label>
+                <span>Hasta</span>
+                <input type="date" value={historyFilters.end} onChange={(event) => setHistoryFilters((current) => ({ ...current, end: event.target.value }))} />
+              </label>
+              <label>
+                <span>Buscar</span>
+                <input value={historyFilters.query} onChange={(event) => setHistoryFilters((current) => ({ ...current, query: event.target.value }))} placeholder="Campo, valor o fecha" />
+              </label>
+            </div>
+          </section>
+
+          <section className="table-wrap account-list-table history-table">
+            <div className="table-toolbar">
+              <div>
+                <h2>Cambios registrados</h2>
+                <span>{number.format(filteredHistory.length)} evento{filteredHistory.length === 1 ? "" : "s"} visible{filteredHistory.length === 1 ? "" : "s"}.</span>
+              </div>
+            </div>
+            <div className="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Fecha y hora</th>
+                    <th>Usuario</th>
+                    <th>Acción</th>
+                    <th>Campo</th>
+                    <th>Cuenta</th>
+                    <th>Día</th>
+                    <th>Anterior</th>
+                    <th>Nuevo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredHistory.map((item) => (
+                    <tr key={item.id}>
+                      <td>{item.localAt || item.at}</td>
+                      <td>{item.actor || "Usuario local"}</td>
+                      <td>{item.action}</td>
+                      <td>{item.field}</td>
+                      <td>{item.detail || rowLabel(item)}</td>
+                      <td>{item.dayKey || ""}</td>
+                      <td>{item.previousValue ?? ""}</td>
+                      <td>{item.nextValue ?? ""}</td>
+                    </tr>
+                  ))}
+                  {!filteredHistory.length && (
+                    <tr>
+                      <td className="empty-cell" colSpan="8">Sin cambios para los filtros seleccionados.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </>
+      )}
+
       {activeTab === "calendar" && (
       <section className="ops-kpi-grid monthly-load-kpis">
         <Card className="ops-kpi-card primary">
@@ -1348,15 +1671,15 @@ export default function RequeridosPage() {
         </Card>
         <Card className="ops-kpi-card">
           <div className="ops-kpi-icon"><CalendarDays size={20} /></div>
-          <span>DÃ­as hÃ¡biles</span>
+          <span>Días hábiles</span>
           <strong>{number.format(totals.businessDays)}</strong>
-          <small>Sin sÃ¡bados, domingos ni feriados</small>
+          <small>Sin sábados, domingos ni feriados</small>
         </Card>
         <Card className="ops-kpi-card success">
           <div className="ops-kpi-icon"><CheckCircle2 size={20} /></div>
           <span>Total requerido</span>
           <strong>{number.format(totals.projectionTotal)}</strong>
-          <small>SegÃºn filtros y rango visible</small>
+          <small>Según filtros y rango visible</small>
         </Card>
         <Card className="ops-kpi-card">
           <div className="ops-kpi-icon"><Clipboard size={20} /></div>
@@ -1368,7 +1691,7 @@ export default function RequeridosPage() {
           <div className="ops-kpi-icon"><X size={20} /></div>
           <span>Errores</span>
           <strong>{number.format(totals.errorCellCount)}</strong>
-          <small>{number.format(totals.atypicalCellCount)} valores atÃ­picos</small>
+          <small>{number.format(totals.atypicalCellCount)} valores atípicos</small>
         </Card>
         <Card className="ops-kpi-card success">
           <div className="ops-kpi-icon"><Save size={20} /></div>
@@ -1436,7 +1759,7 @@ export default function RequeridosPage() {
         </div>
         <div className="bulk-actions-grid">
           <label>
-            <span>Valor para selecciÃ³n</span>
+            <span>Valor para selección</span>
             <input value={bulkValue} onChange={(event) => setBulkValue(event.target.value.replace(/[^\d,.]/g, ""))} placeholder="Ej. 42" />
           </label>
           <Button onClick={applyValueToSelection} disabled={!selectedCells.size}>
@@ -1571,7 +1894,7 @@ export default function RequeridosPage() {
                 ))}
                 <th>Total mes</th>
                 <th>Prom.</th>
-                <th>DÃ­as</th>
+                <th>Días</th>
                 <th>Estado</th>
                 <th>Acciones</th>
               </tr>

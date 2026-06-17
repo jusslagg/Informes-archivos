@@ -1,12 +1,12 @@
 import {
+  ChevronLeft,
+  ChevronRight,
   FileSpreadsheet,
-  ListChecks,
   LayoutDashboard,
+  ListChecks,
   Menu,
   SearchCheck,
   Table2,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import { Component, useState } from "react";
 import DashboardPage from "./pages/DashboardPage.jsx";
@@ -41,11 +41,7 @@ class PageErrorBoundary extends Component {
 
   render() {
     if (this.state.error) {
-      return (
-        <div className="alert error">
-          No se pudo cargar esta vista: {this.state.error.message || "error inesperado"}
-        </div>
-      );
+      return <div className="alert error">No se pudo cargar esta vista: {this.state.error.message || "error inesperado"}</div>;
     }
     return this.props.children;
   }
@@ -65,7 +61,7 @@ export default function App() {
   return (
     <main className={sidebarHidden ? "app-shell sidebar-collapsed" : "app-shell"}>
       <header className="mobile-topbar">
-        <button className="icon-button" onClick={() => setMobileMenuOpen(true)} title="Abrir menu">
+        <button className="icon-button" onClick={() => setMobileMenuOpen(true)} title="Abrir menú">
           <Menu size={20} />
         </button>
         <div className="mobile-title">
@@ -77,14 +73,12 @@ export default function App() {
       <button
         className="desktop-sidebar-toggle"
         onClick={() => setSidebarHidden((current) => !current)}
-        title={sidebarHidden ? "Mostrar menu" : "Ocultar menu"}
+        title={sidebarHidden ? "Mostrar menú" : "Ocultar menú"}
       >
         {sidebarHidden ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
       </button>
 
-      {mobileMenuOpen && (
-        <button className="sidebar-backdrop" onClick={() => setMobileMenuOpen(false)} aria-label="Cerrar menu" />
-      )}
+      {mobileMenuOpen && <button className="sidebar-backdrop" onClick={() => setMobileMenuOpen(false)} aria-label="Cerrar menú" />}
 
       <aside className={mobileMenuOpen ? "sidebar open" : "sidebar"}>
         <div className="brand">

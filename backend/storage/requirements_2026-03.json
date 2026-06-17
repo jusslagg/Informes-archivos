@@ -787,10 +787,6 @@
         "2026-03-27": 8
       }
     },
-    "SANTANDER ISLA PREVENCION DE FRAUDES||SANTANDER ISLA PREVENCION DE FRAUDES||SANTANDER ISLA PREVENCION DE FRAUDES": {
-      "total": 0,
-      "daily": {}
-    },
     "SANTANDER||SANTANDER||GETNET GOLD ANALISTA VIP": {
       "total": 13,
       "daily": {
@@ -2765,16 +2761,6 @@
         "2026-03-26": "8",
         "2026-03-27": "8"
       }
-    },
-    {
-      "id": "LUCAS CAAMANO||MARIELA DITTO||SANTANDER ISLA PREVENCION DE FRAUDES||SANTANDER ISLA PREVENCION DE FRAUDES||SANTANDER ISLA PREVENCION DE FRAUDES",
-      "gerente": "Lucas Caamaño",
-      "jefeSite": "Mariela Ditto",
-      "cliente": "Santander Isla Prevención de Fraudes",
-      "campana": "Santander Isla Prevención de Fraudes",
-      "subcampana": "Santander Isla Prevención de Fraudes",
-      "active": true,
-      "daily": {}
     },
     {
       "id": "LUCAS CAAMANO||ROXANA LOPEZ DE LA VEGA||SANTANDER||SANTANDER||GETNET GOLD ANALISTA VIP",

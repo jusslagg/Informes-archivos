@@ -354,6 +354,10 @@ function applyFilters(rows, filters = []) {
   }, rows);
 }
 
+function withoutEstadoFilter(filters = []) {
+  return filters.filter((filter) => normalizeColumnName(filter.column) !== normalizeColumnName("ESTADO"));
+}
+
 function applyFechaBajaRange(rows, dateRange = {}) {
   return rows.filter((row) => {
     if (!isBajaRow(row)) return false;
@@ -415,7 +419,7 @@ function buildDashboard(rows) {
   return {
     metrics: {
       total_empleados: rows.length,
-      activos: estado.filter((item) => item.includes("ACTIVO")).length,
+      activos: estado.filter((item) => item === "ACTIVO").length,
       bajas: rows.filter(isBajaRow).length,
       bajas_del_mes: bajasMes.length,
       altas_del_mes: altasMes.length,
@@ -527,7 +531,11 @@ export function getFilteredRecordsBrowser(filters = []) {
 export function getStaffingByCampaignBrowser(filters = []) {
   ensureRows();
   const filtered = filters.filter((filter) => normalizeColumnName(filter.column) !== normalizeColumnName("ESTADO"));
-  const rows = applyFilters(state.rows, filtered);
+  const hasPuestoFilter = filters.some((filter) => normalizeColumnName(filter.column) === normalizeColumnName("PUESTO"));
+  const rows = applyFilters(state.rows, filtered).filter((row) => {
+    if (hasPuestoFilter) return true;
+    return normalizeColumnName(value(row, "PUESTO")) === "OPERADOR";
+  });
   const grouped = new Map();
   const { start: monthStart, end: today } = currentMonthToDateBounds();
   rows.forEach((row) => {
@@ -537,8 +545,9 @@ export function getStaffingByCampaignBrowser(filters = []) {
     const estado = value(row, "ESTADO") || "Sin dato";
     const estadoUpper = normalizeColumnName(estado);
     const isBaja = estadoUpper.includes("BAJA");
-    const isActivo = estadoUpper === "ACTIVO" || (estadoUpper.includes("ACTIVO") && !estadoUpper.includes("INACTIVO"));
-    const isLicencia = !isActivo && !isBaja;
+    const isActivo = estadoUpper === "ACTIVO";
+    const isPreActivo = estadoUpper.replace(/-/g, " ").trim() === "PRE ACTIVO";
+    const isLicencia = !isActivo && !isBaja && !isPreActivo;
     const current = grouped.get(groupKey) || { campana, cliente, activo: 0, bajasMes: 0, licencia: 0, licenses: new Map() };
     if (isActivo) current.activo += 1;
     if (isBaja) {
@@ -583,7 +592,7 @@ export function getRequiredStructureBrowser(filters = []) {
     const subcampana = looseValue(row, C.subCampaign, "SUB CAMPANA", "SUB CAMPAÑA") || "Sin dato";
     const key = [pcia, site, responsable, cliente, campana, subcampana].map(normalizeColumnName).join("||");
     const estado = normalizeColumnName(value(row, "ESTADO"));
-    const isActivo = estado === "ACTIVO" || (estado.includes("ACTIVO") && !estado.includes("INACTIVO"));
+    const isActivo = estado === "ACTIVO";
     const current = grouped.get(key) || {
       pcia,
       site,
@@ -609,7 +618,7 @@ export function getRequiredStructureBrowser(filters = []) {
 
 export function getBajasByMonthBrowser(filters = [], dateRange = {}) {
   ensureRows();
-  const rows = applyFechaBajaRange(applyFilters(state.rows, filters), dateRange);
+  const rows = applyFechaBajaRange(applyFilters(state.rows, withoutEstadoFilter(filters)), dateRange);
   const grouped = new Map();
   const months = new Map();
   rows.forEach((row) => {
@@ -639,7 +648,7 @@ export function getBajasByMonthBrowser(filters = [], dateRange = {}) {
 
 export function getBajasByTenureBrowser(filters = [], dateRange = {}) {
   ensureRows();
-  const rows = applyFechaBajaRange(applyFilters(state.rows, filters), dateRange);
+  const rows = applyFechaBajaRange(applyFilters(state.rows, withoutEstadoFilter(filters)), dateRange);
   const buckets = [
     "Menos de 1 mes",
     "1 mes",
@@ -665,7 +674,7 @@ export function getBajasByTenureBrowser(filters = [], dateRange = {}) {
 
 export function getBajasByReasonBrowser(filters = [], dateRange = {}) {
   ensureRows();
-  const rows = applyFechaBajaRange(applyFilters(state.rows, filters), dateRange);
+  const rows = applyFechaBajaRange(applyFilters(state.rows, withoutEstadoFilter(filters)), dateRange);
   const counts = seriesCounts(rows, "MOTIVO BAJA", 1000);
   return {
     rows: counts.map((row) => ({ Motivo: row.name, Bajas: row.value })),
@@ -675,7 +684,7 @@ export function getBajasByReasonBrowser(filters = [], dateRange = {}) {
 
 export function getBajasReasonByCampaignBrowser(filters = [], dateRange = {}) {
   ensureRows();
-  const rows = applyFechaBajaRange(applyFilters(state.rows, filters), dateRange);
+  const rows = applyFechaBajaRange(applyFilters(state.rows, withoutEstadoFilter(filters)), dateRange);
   const grouped = new Map();
   const reasonTotals = new Map();
   rows.forEach((row) => {

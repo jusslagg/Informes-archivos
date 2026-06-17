@@ -1,12 +1,22 @@
-import { ChevronDown, ChevronRight, Clipboard, Download, Search, Upload } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import * as XLSX from "xlsx";
+import { ChevronDown, ChevronRight, Clipboard, Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { getSavedRequirements } from "../api/client.js";
 import MetricCard from "./MetricCard.jsx";
 
 const number = new Intl.NumberFormat("es-AR");
 const percent = new Intl.NumberFormat("es-AR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-const columns = ["Cliente", "Campaña", "Activo", "Requeridos", "Diferencia", "Bajas mes", "Rotación mes", "Licencia", "Observación"];
+const columns = [
+  "Cliente",
+  "Campaña",
+  "Activo",
+  "Requeridos",
+  "Diferencia",
+  "Diferencia +5%",
+  "Bajas mes",
+  "Rotación mes",
+  "Licencia",
+  "Observación",
+];
 
 function normalize(value) {
   return String(value || "")
@@ -20,6 +30,10 @@ function cleanLabel(value, fallback = "Sin dato") {
   const text = String(value ?? "").trim();
   if (!text || ["NAN", "NONE", "NULL"].includes(normalize(text))) return fallback;
   return text;
+}
+
+function operationalCampaign(row) {
+  return cleanLabel(row?.subcampana, "") || cleanLabel(row?.campana, "");
 }
 
 function getCampaign(item) {
@@ -47,33 +61,23 @@ function parseRequiredNumber(value) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+function requiredWithBuffer(value) {
+  return Math.ceil(parseRequiredNumber(value) * 1.05);
+}
+
 function requirementKey(cliente, campana) {
-  return normalize(`${cleanLabel(cliente)}||${cleanLabel(campana)}`);
-}
-
-function campaignTokens(value) {
-  return normalize(value)
-    .split(/[^A-Z0-9]+/)
-    .filter(Boolean);
-}
-
-function compatibleCampaign(left, right) {
-  const leftTokens = campaignTokens(left);
-  const rightTokens = campaignTokens(right);
-  if (!leftTokens.length || !rightTokens.length) return false;
-  const [small, large] = leftTokens.length <= rightTokens.length ? [leftTokens, rightTokens] : [rightTokens, leftTokens];
-  return small.every((token) => large.includes(token));
+  return [cleanLabel(cliente), cleanLabel(campana)].map(normalize).join("||");
 }
 
 function findRequirement(requirements, cliente, campana) {
   const exactKey = requirementKey(cliente, campana);
   const exactValue = parseRequiredNumber(requirements[exactKey] ?? requirements[normalize(campana)]);
   if (exactValue) return exactValue;
-  const clientKey = normalize(cleanLabel(cliente));
+  const campaignKey = normalize(cleanLabel(campana));
   return Object.entries(requirements).reduce((total, [key, value]) => {
-    const [requirementClient, requirementCampaign] = key.split("||");
-    if (requirementClient !== clientKey) return total;
-    if (!compatibleCampaign(requirementCampaign, campana)) return total;
+    const parts = key.split("||");
+    const requirementCampaign = parts.length > 1 ? parts[1] : parts[0];
+    if (requirementCampaign !== campaignKey) return total;
     return total + parseRequiredNumber(value);
   }, 0);
 }
@@ -107,7 +111,7 @@ function normalizeSavedRequirements(saved) {
           .map(([, value]) => parseRequiredNumber(value));
         const required = dailyValues.length ? Math.max(...dailyValues) : 0;
         if (!required) return;
-        const campaignKey = requirementKey(row.cliente, row.campana);
+        const campaignKey = requirementKey(row.cliente, operationalCampaign(row));
         next[campaignKey] = parseRequiredNumber(next[campaignKey]) + required;
       });
     return next;
@@ -115,7 +119,7 @@ function normalizeSavedRequirements(saved) {
   Object.entries(saved.masterRequirements || {}).forEach(([key, values]) => {
     const parts = key.split("||");
     const cliente = parts[0] || "Sin dato";
-    const campana = parts[1] || "Sin dato";
+    const campana = parts[2] || parts[1] || "Sin dato";
     const required = parseStoredRequirement(values);
     if (!required) return;
     const campaignKey = requirementKey(cliente, campana);
@@ -124,66 +128,17 @@ function normalizeSavedRequirements(saved) {
   return next;
 }
 
-function splitCsvLine(line, separator) {
-  const cells = [];
-  let current = "";
-  let quoted = false;
-  for (const char of line) {
-    if (char === '"') quoted = !quoted;
-    else if (char === separator && !quoted) {
-      cells.push(current.trim());
-      current = "";
-    } else current += char;
-  }
-  cells.push(current.trim());
-  return cells.map((cell) => cell.replace(/^"|"$/g, ""));
-}
-
-function rowsToRequirements(rawRows) {
-  if (!rawRows.length) return {};
-  const headers = rawRows[0].map(normalize);
-  const indexOf = (...names) => headers.findIndex((header) => names.includes(header));
-  const clientIndex = indexOf("CLIENTE", "CLIENTES", "CLIENT");
-  const campaignIndex = indexOf("CAMPANA", "CAMPAÑA", "CAMPAÃ‘A", "CAMPAIGN");
-  const requiredIndex = indexOf("REQUERIDO", "REQUERIDOS", "DOTACION REQUERIDA");
-  if (campaignIndex < 0 || requiredIndex < 0) return {};
-
-  return rawRows.slice(1).reduce((acc, cells) => {
-    const cliente = clientIndex >= 0 ? cleanLabel(cells[clientIndex], "") : "";
-    const campana = cleanLabel(cells[campaignIndex], "");
-    const requerido = parseRequiredNumber(cells[requiredIndex]);
-    if (!campana || !requerido) return acc;
-    if (cliente) acc[requirementKey(cliente, campana)] = requerido;
-    else acc[normalize(campana)] = requerido;
-    return acc;
-  }, {});
-}
-
-function parseRequirementsText(text) {
-  const lines = text.split(/\r?\n/).filter((line) => line.trim());
-  if (lines.length < 2) return {};
-  const firstLine = lines[0];
-  const separator = firstLine.includes(";") ? ";" : firstLine.includes("\t") ? "\t" : ",";
-  return rowsToRequirements(lines.map((line) => splitCsvLine(line, separator)));
-}
-
-async function parseRequirementsFile(file) {
-  const extension = file.name.split(".").pop()?.toLowerCase();
-  if (extension === "xlsx" || extension === "xls") {
-    const buffer = await file.arrayBuffer();
-    const workbook = XLSX.read(buffer, { type: "array", cellDates: false, raw: true });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    return rowsToRequirements(XLSX.utils.sheet_to_json(sheet, { defval: "", header: 1, raw: true }));
-  }
-  return parseRequirementsText(await file.text());
-}
-
 function rotationMonthLabels(months = [], dateRange = {}) {
   if (dateRange.start || dateRange.end) return months;
   const current = new Date();
   const monthName = new Intl.DateTimeFormat("es-AR", { month: "long" }).format(current).toLowerCase();
   const year = String(current.getFullYear());
   return months.filter((month) => normalize(month).includes(normalize(monthName)) && String(month).includes(year));
+}
+
+function selectedFilterValues(filters = {}, columnName) {
+  const entry = Object.entries(filters).find(([column]) => normalize(column) === normalize(columnName));
+  return new Set((entry?.[1] || []).map(normalize).filter(Boolean));
 }
 
 function summarizeRows(rows) {
@@ -197,17 +152,22 @@ function summarizeRows(rows) {
     }),
     { activo: 0, requeridos: 0, diferencia: 0, bajasMes: 0, licencia: 0 },
   );
-  return { ...totals, rotacionMes: totals.requeridos > 0 ? (totals.bajasMes / totals.requeridos) * 100 : null };
+  const requeridosMasCinco = requiredWithBuffer(totals.requeridos);
+  return {
+    ...totals,
+    requeridosMasCinco,
+    diferenciaMasCinco: totals.activo - requeridosMasCinco,
+    rotacionMes: totals.requeridos > 0 ? (totals.bajasMes / totals.requeridos) * 100 : null,
+  };
 }
 
 export default function StaffingRequirements({
   staffingRows = [],
   bajasByMonth = { months: [], rows: [] },
   bajasDateRange = { start: "", end: "" },
+  filters = {},
 }) {
-  const inputRef = useRef(null);
   const [requirements, setRequirements] = useState({});
-  const [fileName, setFileName] = useState("");
   const [query, setQuery] = useState("");
   const [collapsedClients, setCollapsedClients] = useState({});
   const requirementMonth = monthFromDateRange(bajasDateRange);
@@ -229,25 +189,25 @@ export default function StaffingRequirements({
 
   const { campaignRows, clientGroups } = useMemo(() => {
     const campaignMap = new Map(staffingRows.map((item) => [requirementKey(getClient(item), getCampaign(item)), item]));
+    const selectedClients = selectedFilterValues(filters, "CLIENTE");
+    const selectedCampaigns = selectedFilterValues(filters, "CAMPAÑA");
     const monthLabels = rotationMonthLabels(bajasByMonth.months || [], bajasDateRange);
+    const hasSelectedBajasPeriod = Boolean(bajasDateRange.start || bajasDateRange.end || monthLabels.length);
     const bajasMap = new Map(
       (bajasByMonth.rows || []).map((item) => [
         normalize(getBajasCampaign(item)),
         monthLabels.reduce((sum, month) => sum + Number(item[month] || 0), 0),
       ]),
     );
-    const campaignEntries = [...campaignMap.entries()].map(([key, item]) => ({
-      key,
-      cliente: getClient(item),
-      campana: getCampaign(item),
-    }));
+    const campaignNames = new Set([...campaignMap.keys()].map((key) => key.split("||")[1]).filter(Boolean));
     const unmatchedRequirementKeys = Object.keys(requirements).filter((key) => {
-      const [requirementClient, requirementCampaign] = key.split("||");
-      return !campaignEntries.some(
-        (entry) =>
-          normalize(entry.cliente) === requirementClient &&
-          compatibleCampaign(requirementCampaign, entry.campana),
-      );
+      if (campaignMap.has(key)) return false;
+      const parts = key.split("||");
+      const requirementClient = parts[0] || "";
+      const requirementCampaign = parts.length > 1 ? parts[1] : parts[0];
+      if (selectedClients.size && !selectedClients.has(requirementClient)) return false;
+      if (selectedCampaigns.size && !selectedCampaigns.has(requirementCampaign)) return false;
+      return !campaignNames.has(requirementCampaign);
     });
     const keys = new Set([...campaignMap.keys(), ...unmatchedRequirementKeys]);
 
@@ -255,12 +215,15 @@ export default function StaffingRequirements({
       .map((key) => {
         const activeRow = campaignMap.get(key) || {};
         const keyParts = key.split("||");
-        const campana = getCampaign(activeRow) || keyParts.at(-1) || "Sin dato";
+        const campana = getCampaign(activeRow) || keyParts[1] || "Sin dato";
         const cliente = getClient(activeRow) || keyParts.at(0) || "Sin dato";
         const rowKey = requirementKey(cliente, campana);
         const activo = Number(activeRow.activo || activeRow.value || 0);
         const requeridos = findRequirement(requirements, cliente, campana) || parseRequiredNumber(requirements[key]);
-        const bajasMes = Number(activeRow.bajasMes ?? activeRow.bajas_mes ?? bajasMap.get(normalize(campana)) ?? 0);
+        const bajasSeleccionadas = bajasMap.get(normalize(campana));
+        const bajasMes = Number(
+          hasSelectedBajasPeriod ? bajasSeleccionadas ?? 0 : activeRow.bajasMes ?? activeRow.bajas_mes ?? 0,
+        );
         return {
           key,
           requirementKey: rowKey,
@@ -269,6 +232,7 @@ export default function StaffingRequirements({
           activo,
           requeridos,
           diferencia: activo - requeridos,
+          diferenciaMasCinco: activo - requiredWithBuffer(requeridos),
           bajasMes,
           rotacionMes: requeridos > 0 ? (bajasMes / requeridos) * 100 : null,
           licencia: Number(activeRow.licencia || 0),
@@ -295,11 +259,11 @@ export default function StaffingRequirements({
       .sort((a, b) => b.totals.activo - a.totals.activo);
 
     return { campaignRows: rows.sort((a, b) => Math.abs(b.diferencia) - Math.abs(a.diferencia)), clientGroups: groups };
-  }, [bajasByMonth, bajasDateRange, query, requirements, staffingRows]);
+  }, [bajasByMonth, bajasDateRange, filters, query, requirements, staffingRows]);
 
   const totals = summarizeRows(campaignRows);
-  const requiredWithBuffer = Math.ceil(totals.requeridos * 1.05);
-  const bufferDifference = totals.activo - requiredWithBuffer;
+  const totalRequiredWithBuffer = totals.requeridosMasCinco;
+  const bufferDifference = totals.diferenciaMasCinco;
   const loadedRequirements = Object.values(requirements).filter((value) => parseRequiredNumber(value) > 0).length;
   const pendingRequirements = campaignRows.filter((row) => row.requeridos <= 0).length;
 
@@ -313,30 +277,8 @@ export default function StaffingRequirements({
     setCollapsedClients((current) => ({ ...current, [key]: current[key] !== false ? false : true }));
   };
 
-  const handleFile = async (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    setFileName(file.name);
-    const parsed = await parseRequirementsFile(file);
-    setRequirements((current) => ({ ...current, ...parsed }));
-    event.target.value = "";
-  };
-
   const updateRequired = (key, value) => {
     setRequirements((current) => ({ ...current, [key]: value }));
-  };
-
-  const downloadTemplate = () => {
-    const rows = staffingRows.map((item) => ({
-      Cliente: getClient(item),
-      Campaña: getCampaign(item),
-      Requerido: "",
-      "Suma de Horas objetivo mes": "",
-    }));
-    const worksheet = XLSX.utils.json_to_sheet(rows.length ? rows : [{ Cliente: "", Campaña: "", Requerido: "", "Suma de Horas objetivo mes": "" }]);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Requeridos");
-    XLSX.writeFile(workbook, "template_requeridos.xlsx");
   };
 
   const tableLines = useMemo(() => {
@@ -346,6 +288,7 @@ export default function StaffingRequirements({
       row.activo,
       row.requeridos,
       row.diferencia,
+      row.diferenciaMasCinco,
       row.bajasMes,
       formatRotation(row.rotacionMes),
       row.licencia,
@@ -354,7 +297,18 @@ export default function StaffingRequirements({
     return [
       columns,
       ...body,
-      ["Total", "", totals.activo, totals.requeridos, totals.diferencia, totals.bajasMes, formatRotation(totals.rotacionMes), totals.licencia, ""],
+      [
+        "Total",
+        "",
+        totals.activo,
+        totals.requeridos,
+        totals.diferencia,
+        totals.diferenciaMasCinco,
+        totals.bajasMes,
+        formatRotation(totals.rotacionMes),
+        totals.licencia,
+        "",
+      ],
     ];
   }, [totals, visibleRows]);
 
@@ -371,22 +325,11 @@ export default function StaffingRequirements({
         <div>
           <span className="eyebrow">Dotación</span>
           <h2>Dotación requerida</h2>
-          <p className="section-subtitle">Importá requeridos por cliente y campaña para calcular diferencia y rotación.</p>
+          <p className="section-subtitle">El Dashboard consolida por cliente y campaña; la carga de Requeridos mantiene el detalle por subcampaña.</p>
         </div>
-        <div className="header-actions">
-          <button className="primary-button" onClick={() => inputRef.current?.click()}>
-            <Upload size={16} />
-            Importar
-          </button>
-          <button className="primary-button secondary-button" onClick={downloadTemplate}>
-            <Download size={16} />
-            Template
-          </button>
-          <button className="icon-button" onClick={copyTable} title="Copiar tabla">
-            <Clipboard size={16} />
-          </button>
-        </div>
-        <input ref={inputRef} type="file" accept=".xlsx,.xls,.csv,.txt" onChange={handleFile} hidden />
+        <button className="icon-button" onClick={copyTable} title="Copiar tabla">
+          <Clipboard size={16} />
+        </button>
       </div>
 
       <div className="requirements-status">
@@ -396,7 +339,6 @@ export default function StaffingRequirements({
         <span className={pendingRequirements ? "status-pill warning" : "status-pill success"}>
           {pendingRequirements ? `${number.format(pendingRequirements)} pendientes` : "Completo"}
         </span>
-        {fileName && <span className="status-file">{fileName}</span>}
       </div>
 
       <section className="metric-grid staffing-metrics">
@@ -404,7 +346,7 @@ export default function StaffingRequirements({
         <MetricCard label="Campañas" value={number.format(campaignRows.length)} />
         <MetricCard label="Activo" value={number.format(totals.activo)} tone="success" />
         <MetricCard label="Requeridos" value={number.format(totals.requeridos)} />
-        <MetricCard label="Requeridos +5%" value={number.format(requiredWithBuffer)} />
+        <MetricCard label="Requeridos +5%" value={number.format(totalRequiredWithBuffer)} />
         <MetricCard label="Diferencia" value={number.format(totals.diferencia)} tone={totals.diferencia < 0 ? "danger" : "success"} />
         <MetricCard label="Diferencia +5%" value={number.format(bufferDifference)} tone={bufferDifference < 0 ? "danger" : "success"} />
         <MetricCard label="Bajas mes" value={number.format(totals.bajasMes)} />
@@ -442,6 +384,7 @@ export default function StaffingRequirements({
                     <td>{number.format(row.activo)}</td>
                     <td>{number.format(row.requeridos)}</td>
                     <td className={row.diferencia < 0 ? "negative-cell" : "positive-cell"}>{number.format(row.diferencia)}</td>
+                    <td className={row.diferenciaMasCinco < 0 ? "negative-cell" : "positive-cell"}>{number.format(row.diferenciaMasCinco)}</td>
                     <td>{number.format(row.bajasMes)}</td>
                     <td>{formatRotation(row.rotacionMes)}</td>
                     <td>{number.format(row.licencia)}</td>
@@ -463,6 +406,7 @@ export default function StaffingRequirements({
                       />
                     </td>
                     <td className={row.diferencia < 0 ? "negative-cell" : "positive-cell"}>{number.format(row.diferencia)}</td>
+                    <td className={row.diferenciaMasCinco < 0 ? "negative-cell" : "positive-cell"}>{number.format(row.diferenciaMasCinco)}</td>
                     <td>{number.format(row.bajasMes)}</td>
                     <td>{formatRotation(row.rotacionMes)}</td>
                     <td>{number.format(row.licencia)}</td>
@@ -472,7 +416,7 @@ export default function StaffingRequirements({
               )}
               {!visibleRows.length && (
                 <tr>
-                  <td colSpan="9" className="empty-cell">Sin datos para mostrar.</td>
+                  <td colSpan="10" className="empty-cell">Sin datos para mostrar.</td>
                 </tr>
               )}
             </tbody>
@@ -484,6 +428,7 @@ export default function StaffingRequirements({
                   <td>{number.format(totals.activo)}</td>
                   <td>{number.format(totals.requeridos)}</td>
                   <td className={totals.diferencia < 0 ? "negative-cell" : "positive-cell"}>{number.format(totals.diferencia)}</td>
+                  <td className={totals.diferenciaMasCinco < 0 ? "negative-cell" : "positive-cell"}>{number.format(totals.diferenciaMasCinco)}</td>
                   <td>{number.format(totals.bajasMes)}</td>
                   <td>{formatRotation(totals.rotacionMes)}</td>
                   <td>{number.format(totals.licencia)}</td>

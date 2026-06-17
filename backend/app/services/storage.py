@@ -67,6 +67,10 @@ def requirements_catalog_path() -> Path:
     return settings.export_dir.parent / "requirements_catalog.json"
 
 
+def requirements_history_path() -> Path:
+    return settings.export_dir.parent / "requirements_history.json"
+
+
 def available_requirement_months() -> list[str]:
     storage_dir = settings.export_dir.parent
     return sorted(
@@ -329,6 +333,28 @@ def save_requirements_catalog(payload: dict) -> dict:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     return data
+
+
+def load_requirements_history() -> dict:
+    path = requirements_history_path()
+    if not path.exists():
+        return {"items": []}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return {"items": data.get("items") or []}
+    except json.JSONDecodeError:
+        return {"items": []}
+
+
+def append_requirements_history(payload: dict) -> dict:
+    entries = payload.get("items") if isinstance(payload.get("items"), list) else [payload]
+    clean_entries = [entry for entry in entries if isinstance(entry, dict)]
+    current = load_requirements_history().get("items") or []
+    data = {"items": [*clean_entries, *current][:5000]}
+    path = requirements_history_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    return {"saved": len(clean_entries), "items": data["items"]}
 
 
 def load_holidays(year: str) -> dict:

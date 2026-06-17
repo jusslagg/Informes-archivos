@@ -110,6 +110,31 @@ export function saveSavedRequirements(month, payload) {
   });
 }
 
+const browserHistoryKey = "requirements-history";
+
+export function getRequirementsHistory() {
+  if (usesBrowserData) {
+    const items = JSON.parse(localStorage.getItem(browserHistoryKey) || "[]");
+    return Promise.resolve({ items });
+  }
+  return request("/requirements-history");
+}
+
+export function appendRequirementsHistory(items = []) {
+  const entries = Array.isArray(items) ? items : [items];
+  if (usesBrowserData) {
+    const current = JSON.parse(localStorage.getItem(browserHistoryKey) || "[]");
+    const next = [...entries, ...current].slice(0, 5000);
+    localStorage.setItem(browserHistoryKey, JSON.stringify(next));
+    return Promise.resolve({ saved: entries.length, items: next });
+  }
+  return request("/requirements-history", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ items: entries }),
+  });
+}
+
 export function getRequirementCatalog() {
   if (usesBrowserData) return Promise.resolve({ rows: [] });
   return request("/requirements-catalog");
