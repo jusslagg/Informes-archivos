@@ -127,6 +127,44 @@ function getImportValue(item, ...aliases) {
   return entry ? entry[1] : "";
 }
 
+function readTemplateStructure(item, carry = emptyForm) {
+  const next = {
+    gerente: clean(getImportValue(item, "Gerente")) || carry.gerente,
+    jefeSite: clean(getImportValue(item, "Jefe de site", "Jefe Site")) || carry.jefeSite,
+    cliente: clean(getImportValue(item, "Cliente")) || carry.cliente,
+    campana: clean(getImportValue(item, "CampaÃ±a", "Campana")) || carry.campana,
+    subcampana:
+      clean(getImportValue(item, "SubcampaÃ±a", "Subcampana", "Sub campaÃ±a", "Sub campana")) ||
+      carry.subcampana,
+  };
+  return next;
+}
+
+function parseTemplateRows(imported = [], selectedMonth) {
+  const carry = { ...emptyForm };
+  return imported
+    .map((item) => {
+      const rowMonth = parseMonthValue(getImportValue(item, "Mes", "Month") || selectedMonth, selectedMonth);
+      const monthDays = daysForMonth(rowMonth);
+      const dayByLabel = new Map(monthDays.map((day) => [day.label, day]));
+      const row = readTemplateStructure(item, carry);
+      Object.assign(carry, row);
+      if (!row.gerente || !row.jefeSite || !row.cliente || !row.campana || !row.subcampana) return null;
+      const daily = {};
+      Object.entries(item).forEach(([column, value]) => {
+        const dayNumber = String(column).match(/(\d{1,2})$/)?.[1]?.padStart(2, "0");
+        const day = dayByLabel.get(dayNumber);
+        if (day && String(value ?? "").trim() !== "") daily[day.key] = String(value).replace(/[^\d,.]/g, "");
+      });
+      return { ...row, id: makeId(row), active: true, month: rowMonth, daily };
+    })
+    .filter((row) => row && hasRequirementValues(row));
+}
+
+function hasRequirementValues(row = {}) {
+  return Object.values(row.daily || {}).some((value) => String(value ?? "").trim() !== "");
+}
+
 function parseNumber(value) {
   const parsed = Number(String(value ?? "").replace(",", "."));
   return Number.isFinite(parsed) ? parsed : 0;
@@ -224,7 +262,11 @@ function makeId(row) {
 }
 
 function campaignMatchKey(row) {
-  return [row.campana, row.subcampana].map(normalize).join("||");
+  return makeId(row);
+}
+
+function serviceMatchKey(row) {
+  return [row.cliente, row.campana, row.subcampana].map(normalize).join("||");
 }
 
 function structureOnly(row) {
@@ -314,6 +356,14 @@ function mergeCatalogWithMonth(monthRows = [], catalogRows = []) {
   });
 }
 
+function mergeCatalogWithImportedRows(catalogRows = [], importedRows = []) {
+  const importedServiceKeys = new Set(importedRows.map(serviceMatchKey));
+  return mergeRowsByCampaign([
+    ...catalogRows.filter((row) => !importedServiceKeys.has(serviceMatchKey(row))),
+    ...importedRows.map(structureOnly),
+  ]).map(structureOnly);
+}
+
 function buildMasterRequirements(rows = []) {
   return rows.filter((row) => row.active !== false).reduce((acc, row) => {
     const key = [row.cliente, row.campana, row.subcampana].map(normalize).join("||");
@@ -396,9 +446,10 @@ export default function RequeridosPage() {
     Promise.all([getSavedRequirements(selectedMonth), getRequirementCatalog()])
       .then(([saved, catalog]) => {
         const savedRows = mergeRowsByCampaign(saved.rows || []);
+        const savedRowsWithValues = savedRows.filter(hasRequirementValues);
         const storedCatalogRows = mergeRowsByCampaign(catalog.rows || []);
         const baseCatalogRows = storedCatalogRows.length ? storedCatalogRows : savedRows.map(structureOnly);
-        const nextRows = baseCatalogRows.length ? mergeCatalogWithMonth(savedRows, baseCatalogRows) : [];
+        const nextRows = savedRowsWithValues.length ? savedRowsWithValues : savedRows.length ? savedRows : baseCatalogRows.map(structureOnly);
         setRows(nextRows);
         setCatalogRows(baseCatalogRows);
         if (!storedCatalogRows.length && savedRows.length) {
@@ -406,7 +457,7 @@ export default function RequeridosPage() {
         } else if (storedCatalogRows.length !== (catalog.rows || []).length) {
           saveRequirementCatalog({ rows: baseCatalogRows.map(structureOnly) }).catch(() => {});
         }
-        if (nextRows.length || savedRows.length) {
+        if (!savedRows.length && nextRows.length) {
           saveSavedRequirements(selectedMonth, {
             rows: nextRows,
             draft: saved.draft || emptyForm,
@@ -582,6 +633,30 @@ export default function RequeridosPage() {
     const cleanRows = mergeRowsByCampaign(nextRows);
     setRows(cleanRows);
     persistState(cleanRows, form);
+  };
+
+  const clearMonthRequirements = () => {
+    const monthLabel = `${monthNames[selectedMonthIndex]} ${selectedYear}`;
+    if (!window.confirm(`¿Limpiar los requeridos de ${monthLabel}? Se conservan las cuentas para que puedas cargar el template de nuevo.`)) {
+      return;
+    }
+    const nextRows = rows.map((row) => ({
+      ...row,
+      daily: {},
+    }));
+    setRows(nextRows);
+    setSelectedCells(new Set());
+    setAnchorCell(null);
+    setConfirmedMonth("");
+    persistState(nextRows, form);
+    logHistory({
+      action: "Limpiar mes",
+      field: "Requeridos mes",
+      previousValue: number.format(totals.monthTotal),
+      nextValue: "0",
+      detail: `Se limpiaron los requeridos diarios de ${selectedMonth}`,
+    });
+    setStatus(`Requeridos de ${monthLabel} limpiados`);
   };
 
   const updateFormField = (field, value) => {
@@ -1097,37 +1172,12 @@ export default function RequeridosPage() {
       const workbook = XLSX.read(await file.arrayBuffer(), { type: "array", raw: false });
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
       const imported = XLSX.utils.sheet_to_json(sheet, { defval: "", raw: false });
-      const importedRows = imported
-        .map((item) => {
-          const rowMonth = parseMonthValue(item.Mes || item.MES || item.mes || item.Month, selectedMonth);
-          const monthDays = daysForMonth(rowMonth);
-          const dayByLabel = new Map(monthDays.map((day) => [day.label, day]));
-          const row = {
-            gerente: clean(item.Gerente),
-            jefeSite: clean(item["Jefe de site"] || item["Jefe Site"]),
-            cliente: clean(item.Cliente),
-            campana: clean(item.Campaña || item.Campana),
-            subcampana: clean(item.Subcampaña || item.Subcampana || item["Sub campaña"] || item["Sub campana"]),
-          };
-          if (!row.gerente || !row.jefeSite || !row.cliente || !row.campana || !row.subcampana) return null;
-          const daily = {};
-          Object.entries(item).forEach(([column, value]) => {
-            const dayNumber = String(column).match(/(\d{1,2})$/)?.[1]?.padStart(2, "0");
-            const day = dayByLabel.get(dayNumber);
-            if (day && String(value ?? "").trim() !== "") daily[day.key] = String(value).replace(/[^\d,.]/g, "");
-          });
-          return { ...row, id: makeId(row), active: true, month: rowMonth, daily };
-        })
-        .filter(Boolean);
+      const importedRows = parseTemplateRows(imported, selectedMonth);
       if (!importedRows.length) {
         setStatus("No se encontraron filas válidas para importar");
         return;
       }
-      const existingCatalogKeys = new Set(catalogRows.map(campaignMatchKey));
-      const newCatalogRows = importedRows
-        .filter((row) => !existingCatalogKeys.has(campaignMatchKey(row)))
-        .map(structureOnly);
-      const nextCatalogRows = mergeRowsByCampaign([...catalogRows, ...newCatalogRows]).map(structureOnly);
+      const nextCatalogRows = mergeCatalogWithImportedRows(catalogRows, importedRows);
       const rowsByMonth = importedRows.reduce((acc, row) => {
         const monthRows = acc[row.month] || [];
         const existingRow = monthRows.find((item) => campaignMatchKey(item) === campaignMatchKey(row));
@@ -1148,7 +1198,7 @@ export default function RequeridosPage() {
         Object.entries(rowsByMonth).map(async ([monthKey, monthImportedRows]) => {
           const saved = await getSavedRequirements(monthKey);
           const savedRows = mergeRowsByCampaign(saved.rows || []);
-          const baseRows = mergeCatalogWithMonth(savedRows, nextCatalogRows);
+          const baseRows = savedRows;
           savedByMonth[monthKey] = { saved, baseRows };
           monthImportedRows.forEach((importedRow) => {
             const existingRow = baseRows.find((row) => campaignMatchKey(row) === campaignMatchKey(importedRow));
@@ -1179,25 +1229,13 @@ export default function RequeridosPage() {
           return;
         }
       }
-      if (newCatalogRows.length) {
-        await saveRequirementCatalog({ rows: nextCatalogRows });
-        setCatalogRows(nextCatalogRows);
-      }
-      let selectedRows = mergeCatalogWithMonth(rows, nextCatalogRows);
+      await saveRequirementCatalog({ rows: nextCatalogRows });
+      setCatalogRows(nextCatalogRows);
+      let selectedRows = rows;
       await Promise.all(
         Object.entries(rowsByMonth).map(async ([monthKey, monthImportedRows]) => {
-          const { saved, baseRows } = savedByMonth[monthKey];
-          const mergedRows = mergeRowsByCampaign(baseRows.map((baseRow) => {
-            const importedRow = monthImportedRows.find((row) => campaignMatchKey(row) === campaignMatchKey(baseRow));
-            if (!importedRow) return baseRow;
-            return {
-              ...baseRow,
-              daily: {
-                ...(baseRow.daily || {}),
-                ...importedRow.daily,
-              },
-            };
-          }));
+          const { saved } = savedByMonth[monthKey];
+          const mergedRows = mergeRowsByCampaign(monthImportedRows);
           await saveSavedRequirements(monthKey, {
             rows: mergedRows,
             draft: monthKey === selectedMonth ? form : saved.draft || emptyForm,
@@ -1257,37 +1295,12 @@ export default function RequeridosPage() {
       const workbook = XLSX.read(await file.arrayBuffer(), { type: "array", raw: false });
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
       const imported = XLSX.utils.sheet_to_json(sheet, { defval: "", raw: false });
-      const importedRows = imported
-        .map((item) => {
-          const rowMonth = parseMonthValue(getImportValue(item, "Mes", "Month") || selectedMonth, selectedMonth);
-          const monthDays = daysForMonth(rowMonth);
-          const dayByLabel = new Map(monthDays.map((day) => [day.label, day]));
-          const row = {
-            gerente: clean(getImportValue(item, "Gerente")),
-            jefeSite: clean(getImportValue(item, "Jefe de site", "Jefe Site")),
-            cliente: clean(getImportValue(item, "Cliente")),
-            campana: clean(getImportValue(item, "Campaña", "Campana")),
-            subcampana: clean(getImportValue(item, "Subcampaña", "Subcampana", "Sub campaña", "Sub campana")),
-          };
-          if (!row.gerente || !row.jefeSite || !row.cliente || !row.campana || !row.subcampana) return null;
-          const daily = {};
-          Object.entries(item).forEach(([column, value]) => {
-            const dayNumber = String(column).match(/(\d{1,2})$/)?.[1]?.padStart(2, "0");
-            const day = dayByLabel.get(dayNumber);
-            if (day && String(value ?? "").trim() !== "") daily[day.key] = String(value).replace(/[^\d,.]/g, "");
-          });
-          return { ...row, id: makeId(row), active: true, month: rowMonth, daily };
-        })
-        .filter(Boolean);
+      const importedRows = parseTemplateRows(imported, selectedMonth);
       if (!importedRows.length) {
         setStatus("No se encontraron filas válidas para importar");
         return;
       }
-      const existingCatalogKeys = new Set(catalogRows.map(campaignMatchKey));
-      const newCatalogRows = importedRows
-        .filter((row) => !existingCatalogKeys.has(campaignMatchKey(row)))
-        .map(structureOnly);
-      const nextCatalogRows = mergeRowsByCampaign([...catalogRows, ...newCatalogRows]).map(structureOnly);
+      const nextCatalogRows = mergeCatalogWithImportedRows(catalogRows, importedRows);
       const rowsByMonth = importedRows.reduce((acc, row) => {
         const monthRows = acc[row.month] || [];
         const existingRow = monthRows.find((item) => campaignMatchKey(item) === campaignMatchKey(row));
@@ -1305,7 +1318,7 @@ export default function RequeridosPage() {
         Object.entries(rowsByMonth).map(async ([monthKey, monthImportedRows]) => {
           const saved = await getSavedRequirements(monthKey);
           const savedRows = mergeRowsByCampaign(saved.rows || []);
-          const baseRows = mergeCatalogWithMonth(savedRows, nextCatalogRows);
+          const baseRows = savedRows;
           savedByMonth[monthKey] = { saved, baseRows };
           monthImportedRows.forEach((importedRow) => {
             const existingRow = baseRows.find((row) => campaignMatchKey(row) === campaignMatchKey(importedRow));
@@ -1336,19 +1349,13 @@ export default function RequeridosPage() {
           return;
         }
       }
-      if (newCatalogRows.length) {
-        await saveRequirementCatalog({ rows: nextCatalogRows });
-        setCatalogRows(nextCatalogRows);
-      }
-      let selectedRows = mergeCatalogWithMonth(rows, nextCatalogRows);
+      await saveRequirementCatalog({ rows: nextCatalogRows });
+      setCatalogRows(nextCatalogRows);
+      let selectedRows = rows;
       await Promise.all(
         Object.entries(rowsByMonth).map(async ([monthKey, monthImportedRows]) => {
-          const { saved, baseRows } = savedByMonth[monthKey];
-          const mergedRows = mergeRowsByCampaign(baseRows.map((baseRow) => {
-            const importedRow = monthImportedRows.find((row) => campaignMatchKey(row) === campaignMatchKey(baseRow));
-            if (!importedRow) return baseRow;
-            return { ...baseRow, daily: { ...(baseRow.daily || {}), ...importedRow.daily } };
-          }));
+          const { saved } = savedByMonth[monthKey];
+          const mergedRows = mergeRowsByCampaign(monthImportedRows);
           await saveSavedRequirements(monthKey, {
             rows: mergedRows,
             draft: monthKey === selectedMonth ? form : saved.draft || emptyForm,
@@ -1419,6 +1426,9 @@ export default function RequeridosPage() {
           </button>
           <button className="icon-button" onClick={() => fileInputRef.current?.click()} title="Importar template">
             <Upload size={18} />
+          </button>
+          <button className="icon-button" onClick={clearMonthRequirements} title="Limpiar requeridos del mes">
+            <Eraser size={18} />
           </button>
           <button className="icon-button" onClick={() => persistState(rows, form)} title="Guardar">
             <Save size={18} />
@@ -1981,4 +1991,5 @@ export default function RequeridosPage() {
     </div>
   );
 }
+
 

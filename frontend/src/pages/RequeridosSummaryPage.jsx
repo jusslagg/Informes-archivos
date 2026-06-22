@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, CalendarDays, Clock3, Filter, RefreshCw, UsersRound } from "lucide-react";
+import { BriefcaseBusiness, CalendarDays, Filter, RefreshCw, UsersRound } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import {
   Bar,
@@ -17,7 +17,6 @@ import { Select } from "../components/ui/select.jsx";
 
 const monthFormatter = new Intl.DateTimeFormat("es-AR", { month: "long", year: "numeric", timeZone: "UTC" });
 const numberFormatter = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 2 });
-const integerFormatter = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 });
 const percentFormatter = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 1 });
 const palette = ["#2563eb", "#0f766e", "#7c3aed", "#db2777", "#ea580c", "#0891b2", "#65a30d", "#475569"];
 
@@ -30,10 +29,6 @@ function formatMonth(month) {
 
 function formatRequired(value) {
   return numberFormatter.format(Number(value) || 0);
-}
-
-function formatInteger(value) {
-  return integerFormatter.format(Number(value) || 0);
 }
 
 function formatPercent(value) {
@@ -75,7 +70,6 @@ function CustomTooltip({ active, payload }) {
     <div className="ops-tooltip">
       <strong>{item.name || item.label}</strong>
       <span>Dotacion: {formatRequired(item.required || item.size)}</span>
-      <span>Horas: {formatInteger(item.hours)}</span>
       {item.share !== undefined && <span>Participacion total: {formatPercent(item.share)}</span>}
     </div>
   );
@@ -404,12 +398,6 @@ export default function RequeridosSummaryPage() {
           helper="Sobre total general del mes"
           icon={UsersRound}
         />
-        <KpiCard
-          label="Horas objetivo"
-          value={formatInteger(scoped.hours)}
-          helper={`${formatInteger(scoped.displayItems.length)} ${scoped.level.toLowerCase()}`}
-          icon={Clock3}
-        />
       </section>
 
       <section className="ops-layout">
@@ -469,7 +457,7 @@ export default function RequeridosSummaryPage() {
             <div className="ops-panel-header">
               <div>
                 <h2>Mapa de {scoped.level.toLowerCase()}</h2>
-                <p>Dotacion de dia habil, horas objetivo y porcentaje sobre total general.</p>
+                <p>Dotacion de dia habil y porcentaje sobre total general.</p>
               </div>
             </div>
             <div className="ops-heatmap">
@@ -484,7 +472,6 @@ export default function RequeridosSummaryPage() {
                   >
                     <span className="account-name">{item.name}</span>
                     <span>{formatRequired(item.required)}</span>
-                    <span>{formatInteger(item.hours)}</span>
                     <strong>{formatPercent(item.share)}</strong>
                   </button>
                 ))
@@ -507,10 +494,6 @@ export default function RequeridosSummaryPage() {
                 <div>
                   <span>Dotacion</span>
                   <strong>{formatRequired(selectedItem.required)}</strong>
-                </div>
-                <div>
-                  <span>Horas</span>
-                  <strong>{formatInteger(selectedItem.hours)}</strong>
                 </div>
                 <div>
                   <span>Participacion</span>
