@@ -1,4 +1,4 @@
-import {
+﻿import {
   CalendarDays,
   ChevronLeft,
   ChevronRight,
@@ -34,6 +34,7 @@ import {
 import MetricCard from "../components/MetricCard.jsx";
 import { Button } from "../components/ui/button.jsx";
 import { Card } from "../components/ui/card.jsx";
+import { copyTableToClipboard } from "../lib/clipboardTable.js";
 
 const number = new Intl.NumberFormat("es-AR");
 const monthNames = [
@@ -110,7 +111,7 @@ function parseMonthValue(value, fallback = currentMonthValue()) {
 }
 
 function normalize(value) {
-  return String(value || "")
+  return repairText(value)
     .trim()
     .toUpperCase()
     .normalize("NFD")
@@ -118,7 +119,22 @@ function normalize(value) {
 }
 
 function clean(value) {
-  return String(value || "").trim();
+  return repairText(value).trim();
+}
+
+function repairText(value) {
+  let text = String(value || "");
+  for (let index = 0; index < 2 && /[\u00c2\u00c3]/.test(text); index += 1) {
+    try {
+      const bytes = Uint8Array.from([...text].map((char) => char.charCodeAt(0) & 0xff));
+      const decoded = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+      if (!decoded || decoded === text) break;
+      text = decoded;
+    } catch {
+      break;
+    }
+  }
+  return text;
 }
 
 function getImportValue(item, ...aliases) {
@@ -132,9 +148,9 @@ function readTemplateStructure(item, carry = emptyForm) {
     gerente: clean(getImportValue(item, "Gerente")) || carry.gerente,
     jefeSite: clean(getImportValue(item, "Jefe de site", "Jefe Site")) || carry.jefeSite,
     cliente: clean(getImportValue(item, "Cliente")) || carry.cliente,
-    campana: clean(getImportValue(item, "CampaÃ±a", "Campana")) || carry.campana,
+    campana: clean(getImportValue(item, "Campaña", "CampaÃƒÂ±a", "Campana")) || carry.campana,
     subcampana:
-      clean(getImportValue(item, "SubcampaÃ±a", "Subcampana", "Sub campaÃ±a", "Sub campana")) ||
+      clean(getImportValue(item, "Subcampaña", "SubcampaÃƒÂ±a", "Subcampana", "Sub campaña", "Sub campana")) ||
       carry.subcampana,
   };
   return next;
@@ -188,13 +204,13 @@ function fieldLabel(field) {
     gerente: "Gerente",
     jefeSite: "Jefe de site",
     cliente: "Cliente",
-    campana: "Campaña",
-    subcampana: "Subcampaña",
+    campana: "CampaÃ±a",
+    subcampana: "SubcampaÃ±a",
     active: "Estado",
     daily: "Requerido diario",
     holiday: "Feriado",
-    import: "Importación",
-    confirm: "Confirmación",
+    import: "ImportaciÃ³n",
+    confirm: "ConfirmaciÃ³n",
   };
   return labels[field] || field;
 }
@@ -415,7 +431,7 @@ export default function RequeridosPage() {
   const calendarTableWidth = (structureColumnWidth * 5) + (visibleDays.length * dayColumnWidth) + (totalColumnWidth * 4) + 88;
   const calendarTitle =
     filters.start || filters.end
-      ? `Proyección ${visibleDays[0]?.label || ""} a ${visibleDays.at(-1)?.label || ""}`
+      ? `ProyecciÃ³n ${visibleDays[0]?.label || ""} a ${visibleDays.at(-1)?.label || ""}`
       : `Calendario ${monthNames[selectedMonthIndex]} ${selectedYear}`;
 
   const holidayDates = useMemo(() => new Set(holidays.map((holiday) => holiday.date)), [holidays]);
@@ -637,7 +653,7 @@ export default function RequeridosPage() {
 
   const clearMonthRequirements = () => {
     const monthLabel = `${monthNames[selectedMonthIndex]} ${selectedYear}`;
-    if (!window.confirm(`¿Limpiar los requeridos de ${monthLabel}? Se conservan las cuentas para que puedas cargar el template de nuevo.`)) {
+    if (!window.confirm(`Â¿Limpiar los requeridos de ${monthLabel}? Se conservan las cuentas para que puedas cargar el template de nuevo.`)) {
       return;
     }
     const nextRows = rows.map((row) => ({
@@ -736,7 +752,7 @@ export default function RequeridosPage() {
   const removeRow = (id) => {
     const row = rows.find((item) => item.id === id);
     const label = row ? `${row.cliente} / ${row.campana} / ${row.subcampana}` : "esta cuenta";
-    if (window.confirm(`¿Eliminar ${label}? Esta acción quita también los requeridos cargados para el mes.`)) {
+    if (window.confirm(`Â¿Eliminar ${label}? Esta acciÃ³n quita tambiÃ©n los requeridos cargados para el mes.`)) {
       const nextRows = rows.filter((item) => item.id !== id);
       updateRows(nextRows);
       persistCatalog(nextRows).catch((err) => setStatus(err.message || "No se pudo eliminar la cuenta"));
@@ -812,7 +828,7 @@ export default function RequeridosPage() {
       cliente: row.cliente,
       campana: row.campana,
       subcampana: row.subcampana,
-      detail: `${rowLabel(row)} · ${dayKey}`,
+      detail: `${rowLabel(row)} Â· ${dayKey}`,
     };
   };
 
@@ -993,9 +1009,9 @@ export default function RequeridosPage() {
   };
 
   const validateLoad = () => {
-    if (totals.errorCellCount) setStatus(`Validación: ${totals.errorCellCount} error${totals.errorCellCount === 1 ? "" : "es"}`);
-    else if (totals.pendingCellCount) setStatus(`Validación: ${totals.pendingCellCount} celda${totals.pendingCellCount === 1 ? "" : "s"} pendiente${totals.pendingCellCount === 1 ? "" : "s"}`);
-    else setStatus("Validación correcta");
+    if (totals.errorCellCount) setStatus(`ValidaciÃ³n: ${totals.errorCellCount} error${totals.errorCellCount === 1 ? "" : "es"}`);
+    else if (totals.pendingCellCount) setStatus(`ValidaciÃ³n: ${totals.pendingCellCount} celda${totals.pendingCellCount === 1 ? "" : "s"} pendiente${totals.pendingCellCount === 1 ? "" : "s"}`);
+    else setStatus("ValidaciÃ³n correcta");
   };
 
   const confirmLoad = () => {
@@ -1004,10 +1020,10 @@ export default function RequeridosPage() {
     setStatus(`Carga confirmada ${monthNames[selectedMonthIndex]} ${selectedYear}`);
     logHistory({
       action: "Confirmar carga",
-      field: "Confirmación",
+      field: "ConfirmaciÃ³n",
       previousValue: "",
       nextValue: `Confirmado ${selectedMonth}`,
-      detail: `${number.format(totals.loadedCellCount)} celdas cargadas · ${number.format(totals.projectionTotal)} requerido`,
+      detail: `${number.format(totals.loadedCellCount)} celdas cargadas Â· ${number.format(totals.projectionTotal)} requerido`,
     });
   };
 
@@ -1089,7 +1105,7 @@ export default function RequeridosPage() {
       dayKey: nextHoliday.date,
       previousValue: previousHoliday?.label || "",
       nextValue: nextHoliday.label,
-      detail: `${nextHoliday.date} · ${nextHoliday.label}`,
+      detail: `${nextHoliday.date} Â· ${nextHoliday.label}`,
     });
     setHolidayForm({ date: "", label: "" });
   };
@@ -1104,7 +1120,7 @@ export default function RequeridosPage() {
         dayKey: previousHoliday.date,
         previousValue: previousHoliday.label,
         nextValue: "",
-        detail: `${previousHoliday.date} · ${previousHoliday.label}`,
+        detail: `${previousHoliday.date} Â· ${previousHoliday.label}`,
       });
     }
   };
@@ -1145,15 +1161,15 @@ export default function RequeridosPage() {
 
   const downloadTemplate = () => {
     const templateDays = daysForMonth(selectedMonth);
-    const headers = ["Mes", "Gerente", "Jefe de site", "Cliente", "Campaña", "Subcampaña", ...templateDays.map((day) => day.label)];
+    const headers = ["Mes", "Gerente", "Jefe de site", "Cliente", "CampaÃ±a", "SubcampaÃ±a", ...templateDays.map((day) => day.label)];
     const templateRows = rows.length
       ? rows.map((row) => ({
           Mes: selectedMonth,
           Gerente: row.gerente,
           "Jefe de site": row.jefeSite,
           Cliente: row.cliente,
-          Campaña: row.campana,
-          Subcampaña: row.subcampana,
+          "Campaña": row.campana,
+          "Subcampaña": row.subcampana,
           ...Object.fromEntries(templateDays.map((day) => [day.label, row.daily?.[day.key] || ""])),
         }))
       : [
@@ -1174,7 +1190,7 @@ export default function RequeridosPage() {
       const imported = XLSX.utils.sheet_to_json(sheet, { defval: "", raw: false });
       const importedRows = parseTemplateRows(imported, selectedMonth);
       if (!importedRows.length) {
-        setStatus("No se encontraron filas válidas para importar");
+        setStatus("No se encontraron filas vÃ¡lidas para importar");
         return;
       }
       const nextCatalogRows = mergeCatalogWithImportedRows(catalogRows, importedRows);
@@ -1222,10 +1238,10 @@ export default function RequeridosPage() {
           .slice(0, 8)
           .map((conflict) => `${conflict.month} ${conflict.day} - ${conflict.account}: ${conflict.currentValue} -> ${conflict.nextValue}`)
           .join("\n");
-        const extra = conflicts.length > 8 ? `\n...y ${conflicts.length - 8} coincidencia${conflicts.length - 8 === 1 ? "" : "s"} más.` : "";
-        const confirmed = window.confirm(`Se encontraron datos existentes que serán reemplazados:\n\n${preview}${extra}\n\n¿Querés pisar esos datos?`);
+        const extra = conflicts.length > 8 ? `\n...y ${conflicts.length - 8} coincidencia${conflicts.length - 8 === 1 ? "" : "s"} mÃ¡s.` : "";
+        const confirmed = window.confirm(`Se encontraron datos existentes que serÃ¡n reemplazados:\n\n${preview}${extra}\n\nÂ¿QuerÃ©s pisar esos datos?`);
         if (!confirmed) {
-          setStatus("Importación cancelada: no se pisaron datos existentes");
+          setStatus("ImportaciÃ³n cancelada: no se pisaron datos existentes");
           return;
         }
       }
@@ -1249,7 +1265,7 @@ export default function RequeridosPage() {
       setStatus(`Importado: ${importedRows.length} fila${importedRows.length === 1 ? "" : "s"} en ${Object.keys(rowsByMonth).length} mes${Object.keys(rowsByMonth).length === 1 ? "" : "es"}`);
       logHistory({
         action: "Importar template",
-        field: "Importación",
+        field: "ImportaciÃ³n",
         previousValue: "",
         nextValue: `${importedRows.length} filas`,
         detail: `${Object.keys(rowsByMonth).length} mes(es) importados`,
@@ -1263,7 +1279,7 @@ export default function RequeridosPage() {
 
   const downloadTemplateAccents = () => {
     const templateDays = daysForMonth(selectedMonth);
-    const headers = ["Mes", "Gerente", "Jefe de site", "Cliente", "Campaña", "Subcampaña", ...templateDays.map((day) => day.label)];
+    const headers = ["Mes", "Gerente", "Jefe de site", "Cliente", "CampaÃ±a", "SubcampaÃ±a", ...templateDays.map((day) => day.label)];
     const templateRows = rows.length
       ? rows.map((row) => {
           const item = {
@@ -1271,8 +1287,8 @@ export default function RequeridosPage() {
             Gerente: row.gerente,
             "Jefe de site": row.jefeSite,
             Cliente: row.cliente,
-            Campaña: row.campana,
-            Subcampaña: row.subcampana,
+            "Campaña": row.campana,
+            "Subcampaña": row.subcampana,
           };
           templateDays.forEach((day) => {
             item[day.label] = row.daily?.[day.key] || "";
@@ -1297,7 +1313,7 @@ export default function RequeridosPage() {
       const imported = XLSX.utils.sheet_to_json(sheet, { defval: "", raw: false });
       const importedRows = parseTemplateRows(imported, selectedMonth);
       if (!importedRows.length) {
-        setStatus("No se encontraron filas válidas para importar");
+        setStatus("No se encontraron filas vÃ¡lidas para importar");
         return;
       }
       const nextCatalogRows = mergeCatalogWithImportedRows(catalogRows, importedRows);
@@ -1342,10 +1358,10 @@ export default function RequeridosPage() {
           .slice(0, 8)
           .map((conflict) => `${conflict.month} ${conflict.day} - ${conflict.account}: ${conflict.currentValue} -> ${conflict.nextValue}`)
           .join("\n");
-        const extra = conflicts.length > 8 ? `\n...y ${conflicts.length - 8} coincidencia${conflicts.length - 8 === 1 ? "" : "s"} más.` : "";
-        const confirmed = window.confirm(`Se encontraron datos existentes que serán reemplazados:\n\n${preview}${extra}\n\n¿Querés pisar esos datos?`);
+        const extra = conflicts.length > 8 ? `\n...y ${conflicts.length - 8} coincidencia${conflicts.length - 8 === 1 ? "" : "s"} mÃ¡s.` : "";
+        const confirmed = window.confirm(`Se encontraron datos existentes que serÃ¡n reemplazados:\n\n${preview}${extra}\n\nÂ¿QuerÃ©s pisar esos datos?`);
         if (!confirmed) {
-          setStatus("Importación cancelada: no se pisaron datos existentes");
+          setStatus("ImportaciÃ³n cancelada: no se pisaron datos existentes");
           return;
         }
       }
@@ -1379,10 +1395,10 @@ export default function RequeridosPage() {
       "Gerente",
       "Jefe de site",
       "Cliente",
-      "Campaña",
-      "Subcampaña",
+      "CampaÃ±a",
+      "SubcampaÃ±a",
       ...visibleDays.map((day) => `${day.weekdayLabel} ${day.label}`),
-      "Total proyección",
+      "Total proyecciÃ³n",
     ];
     const body = filteredRows.map((row) => [
       row.gerente,
@@ -1393,18 +1409,18 @@ export default function RequeridosPage() {
       ...visibleDays.map((day) => row.daily?.[day.key] || ""),
       visibleDays.reduce((sum, day) => sum + parseNumber(row.daily?.[day.key]), 0),
     ]);
-    await navigator.clipboard.writeText([header, ...body].map((line) => line.join("\t")).join("\n"));
+    await copyTableToClipboard([header, ...body]);
   };
 
   return (
     <div className="page-stack requeridos-page">
       <header className="page-header">
         <div>
-          <p>Planificación</p>
+          <p>PlanificaciÃ³n</p>
           <h1>Requeridos</h1>
           <span className="autosave-status">
             {loading ? "Cargando..." : status || "Listo para cargar"}
-            {confirmedMonth === selectedMonth ? " · Confirmado" : ""}
+            {confirmedMonth === selectedMonth ? " Â· Confirmado" : ""}
           </span>
         </div>
         <div className="header-actions">
@@ -1466,7 +1482,7 @@ export default function RequeridosPage() {
         <div className="table-toolbar">
           <div>
             <h2>{editingId ? "Editar cuenta" : "Formulario"}</h2>
-            <span>Estos datos generan la fila calendario para cargar la dotación requerida por día.</span>
+            <span>Estos datos generan la fila calendario para cargar la dotaciÃ³n requerida por dÃ­a.</span>
           </div>
           <span className="status-file">{loading ? "Cargando..." : status}</span>
         </div>
@@ -1475,8 +1491,8 @@ export default function RequeridosPage() {
             ["gerente", "Gerente"],
             ["jefeSite", "Jefe de site"],
             ["cliente", "Cliente"],
-            ["campana", "Campaña"],
-            ["subcampana", "Subcampaña"],
+            ["campana", "CampaÃ±a"],
+            ["subcampana", "SubcampaÃ±a"],
           ].map(([field, label]) => (
             <label key={field}>
               <span>{label}</span>
@@ -1493,7 +1509,7 @@ export default function RequeridosPage() {
               {editingId ? "Actualizar" : "Agregar"}
             </button>
             {editingId && (
-              <button className="icon-button" onClick={cancelEdit} title="Cancelar edición">
+              <button className="icon-button" onClick={cancelEdit} title="Cancelar ediciÃ³n">
                 <X size={18} />
               </button>
             )}
@@ -1505,9 +1521,9 @@ export default function RequeridosPage() {
         <MetricCard label="Cuentas activas" value={number.format(totals.activeRows)} tone="success" />
         <MetricCard label="Inactivas" value={number.format(totals.inactiveRows)} />
         <MetricCard label="Clientes" value={number.format(totals.clients)} />
-        <MetricCard label="Campañas" value={number.format(totals.campaigns)} />
+        <MetricCard label="CampaÃ±as" value={number.format(totals.campaigns)} />
         <MetricCard label="Requeridos mes" value={number.format(totals.monthTotal)} tone="success" />
-        <MetricCard label="Proyección filtrada" value={number.format(totals.projectionTotal)} tone="success" />
+        <MetricCard label="ProyecciÃ³n filtrada" value={number.format(totals.projectionTotal)} tone="success" />
       </section>
 
         </>
@@ -1518,7 +1534,7 @@ export default function RequeridosPage() {
         <div className="table-toolbar">
           <div>
             <h2>Feriados {selectedYear}</h2>
-            <span>Declaralos una vez por año para que el calendario los reconozca.</span>
+            <span>Declaralos una vez por aÃ±o para que el calendario los reconozca.</span>
           </div>
         </div>
         <div className="required-form-grid holiday-form-grid">
@@ -1547,13 +1563,13 @@ export default function RequeridosPage() {
             <div key={holiday.date} className="holiday-list-row">
               <span className="holiday-date">{holiday.date.split("-").reverse().join("/")}</span>
               <span className="holiday-name">{holiday.label}</span>
-              {holiday.date} · {holiday.label}
+              {holiday.date} Â· {holiday.label}
               <button className="icon-button mini-icon-button danger-action" onClick={() => removeHoliday(holiday.date)} title="Eliminar feriado">
                 <Trash2 size={14} />
               </button>
             </div>
           ))}
-          {!holidays.length && <span className="muted">Sin feriados cargados para este año.</span>}
+          {!holidays.length && <span className="muted">Sin feriados cargados para este aÃ±o.</span>}
         </div>
       </section>
       )}
@@ -1564,7 +1580,7 @@ export default function RequeridosPage() {
             <div className="table-toolbar">
               <div>
                 <h2>Historial de cambios</h2>
-                <span>Registra cambios de cuentas, calendario, feriados, importaciones y confirmaciones con horario local de la máquina.</span>
+                <span>Registra cambios de cuentas, calendario, feriados, importaciones y confirmaciones con horario local de la mÃ¡quina.</span>
               </div>
               <button className="primary-button secondary-button" onClick={() => setHistoryFilters(emptyHistoryFilters)}>
                 Limpiar filtros
@@ -1583,7 +1599,7 @@ export default function RequeridosPage() {
                 </select>
               </label>
               <label>
-                <span>Acción</span>
+                <span>AcciÃ³n</span>
                 <select value={historyFilters.action} onChange={(event) => setHistoryFilters((current) => ({ ...current, action: event.target.value }))}>
                   <option value="">Todas</option>
                   {historyOptions.actions.map((option) => <option key={option} value={option}>{option}</option>)}
@@ -1597,14 +1613,14 @@ export default function RequeridosPage() {
                 </select>
               </label>
               <label>
-                <span>Campaña</span>
+                <span>CampaÃ±a</span>
                 <select value={historyFilters.campana} onChange={(event) => setHistoryFilters((current) => ({ ...current, campana: event.target.value }))}>
                   <option value="">Todas</option>
                   {historyOptions.campaigns.map((option) => <option key={option} value={option}>{option}</option>)}
                 </select>
               </label>
               <label>
-                <span>Subcampaña</span>
+                <span>SubcampaÃ±a</span>
                 <select value={historyFilters.subcampana} onChange={(event) => setHistoryFilters((current) => ({ ...current, subcampana: event.target.value }))}>
                   <option value="">Todas</option>
                   {historyOptions.subcampaigns.map((option) => <option key={option} value={option}>{option}</option>)}
@@ -1638,10 +1654,10 @@ export default function RequeridosPage() {
                   <tr>
                     <th>Fecha y hora</th>
                     <th>Usuario</th>
-                    <th>Acción</th>
+                    <th>AcciÃ³n</th>
                     <th>Campo</th>
                     <th>Cuenta</th>
-                    <th>Día</th>
+                    <th>DÃ­a</th>
                     <th>Anterior</th>
                     <th>Nuevo</th>
                   </tr>
@@ -1681,15 +1697,15 @@ export default function RequeridosPage() {
         </Card>
         <Card className="ops-kpi-card">
           <div className="ops-kpi-icon"><CalendarDays size={20} /></div>
-          <span>Días hábiles</span>
+          <span>DÃ­as hÃ¡biles</span>
           <strong>{number.format(totals.businessDays)}</strong>
-          <small>Sin sábados, domingos ni feriados</small>
+          <small>Sin sÃ¡bados, domingos ni feriados</small>
         </Card>
         <Card className="ops-kpi-card success">
           <div className="ops-kpi-icon"><CheckCircle2 size={20} /></div>
           <span>Total requerido</span>
           <strong>{number.format(totals.projectionTotal)}</strong>
-          <small>Según filtros y rango visible</small>
+          <small>SegÃºn filtros y rango visible</small>
         </Card>
         <Card className="ops-kpi-card">
           <div className="ops-kpi-icon"><Clipboard size={20} /></div>
@@ -1701,7 +1717,7 @@ export default function RequeridosPage() {
           <div className="ops-kpi-icon"><X size={20} /></div>
           <span>Errores</span>
           <strong>{number.format(totals.errorCellCount)}</strong>
-          <small>{number.format(totals.atypicalCellCount)} valores atípicos</small>
+          <small>{number.format(totals.atypicalCellCount)} valores atÃ­picos</small>
         </Card>
         <Card className="ops-kpi-card success">
           <div className="ops-kpi-icon"><Save size={20} /></div>
@@ -1716,8 +1732,8 @@ export default function RequeridosPage() {
       <section className="table-wrap required-filter-panel">
         <div className="table-toolbar">
           <div>
-            <h2>Filtros y proyección</h2>
-            <span>Filtrá por estructura y por rango de fechas calendario.</span>
+            <h2>Filtros y proyecciÃ³n</h2>
+            <span>FiltrÃ¡ por estructura y por rango de fechas calendario.</span>
           </div>
           <button className="primary-button secondary-button" onClick={() => setFilters(emptyFilters)}>
             Limpiar
@@ -1728,8 +1744,8 @@ export default function RequeridosPage() {
             ["gerente", "Gerente"],
             ["jefeSite", "Jefe de site"],
             ["cliente", "Cliente"],
-            ["campana", "Campaña"],
-            ["subcampana", "Subcampaña"],
+            ["campana", "CampaÃ±a"],
+            ["subcampana", "SubcampaÃ±a"],
           ].map(([field, label]) => (
             <label key={field}>
               <span>{label}</span>
@@ -1769,7 +1785,7 @@ export default function RequeridosPage() {
         </div>
         <div className="bulk-actions-grid">
           <label>
-            <span>Valor para selección</span>
+            <span>Valor para selecciÃ³n</span>
             <input value={bulkValue} onChange={(event) => setBulkValue(event.target.value.replace(/[^\d,.]/g, ""))} placeholder="Ej. 42" />
           </label>
           <Button onClick={applyValueToSelection} disabled={!selectedCells.size}>
@@ -1794,7 +1810,7 @@ export default function RequeridosPage() {
         <div className="table-toolbar">
           <div>
             <h2>Cuentas</h2>
-            <span>Administrá el estado de cada cuenta sin tocar el calendario de carga diaria.</span>
+            <span>AdministrÃ¡ el estado de cada cuenta sin tocar el calendario de carga diaria.</span>
           </div>
         </div>
         <div className="table-scroll">
@@ -1805,8 +1821,8 @@ export default function RequeridosPage() {
                 <th>Gerente</th>
                 <th>Jefe de site</th>
                 <th>Cliente</th>
-                <th>Campaña</th>
-                <th>Subcampaña</th>
+                <th>CampaÃ±a</th>
+                <th>SubcampaÃ±a</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -1861,7 +1877,7 @@ export default function RequeridosPage() {
         <div className="table-toolbar">
           <div>
             <h2>{calendarTitle}</h2>
-            <span>Cargá el requerido diario en cada celda.</span>
+            <span>CargÃ¡ el requerido diario en cada celda.</span>
           </div>
           <label className="search-field compact">
             <Search size={15} />
@@ -1895,8 +1911,8 @@ export default function RequeridosPage() {
                 <th className="sticky-col sticky-col-1">Gerente</th>
                 <th className="sticky-col sticky-col-2">Jefe de site</th>
                 <th className="sticky-col sticky-col-3">Cliente</th>
-                <th>Campaña</th>
-                <th>Subcampaña</th>
+                <th>CampaÃ±a</th>
+                <th>SubcampaÃ±a</th>
                 {visibleDays.map((day) => (
                   <th key={day.key} className={`calendar-day ${dayTone(day)}`}>
                     {day.label}
@@ -1904,7 +1920,7 @@ export default function RequeridosPage() {
                 ))}
                 <th>Total mes</th>
                 <th>Prom.</th>
-                <th>Días</th>
+                <th>DÃ­as</th>
                 <th>Estado</th>
                 <th>Acciones</th>
               </tr>
@@ -1991,5 +2007,6 @@ export default function RequeridosPage() {
     </div>
   );
 }
+
 
 

@@ -1,9 +1,10 @@
 import { Clipboard } from "lucide-react";
+import { copyTableToClipboard, setClipboardTableData } from "../lib/clipboardTable.js";
 
 const number = new Intl.NumberFormat("es-AR");
 
-export default function BajasTenureTable({ rows = [], total = 0, dateRange = { start: "", end: "" } }) {
-  const copyText = [
+export default function BajasTenureTable({ rows = [], total = 0, dateRange = { start: "", end: "" }, filterControl = null }) {
+  const copyLines = [
     ["Antigüedad", "Bajas", "Participación"],
     ...rows.map((row) => [
       row.Antigüedad,
@@ -11,17 +12,14 @@ export default function BajasTenureTable({ rows = [], total = 0, dateRange = { s
       total ? `${((row.Bajas / total) * 100).toFixed(1)}%` : "0%",
     ]),
     ["Total", total, "100%"],
-  ]
-    .map((line) => line.join("\t"))
-    .join("\n");
+  ];
 
   const copyTable = async () => {
-    await navigator.clipboard.writeText(copyText);
+    await copyTableToClipboard(copyLines);
   };
 
   const handleCopy = (event) => {
-    event.preventDefault();
-    event.clipboardData.setData("text/plain", copyText);
+    setClipboardTableData(event, copyLines);
   };
 
   return (
@@ -41,6 +39,7 @@ export default function BajasTenureTable({ rows = [], total = 0, dateRange = { s
           Copiar tabla
         </button>
       </div>
+      {filterControl}
       <div className="table-scroll">
         <table>
           <thead>

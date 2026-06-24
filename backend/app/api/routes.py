@@ -1,4 +1,4 @@
-from datetime import date, datetime
+﻿from datetime import date, datetime, timedelta
 from pathlib import Path
 import unicodedata
 
@@ -47,6 +47,16 @@ MONTH_LABELS = {
     11: "noviembre",
     12: "diciembre",
 }
+
+TENURE_BUCKETS = [
+    ("Menos de 1 mes", 0),
+    ("1 mes", 1),
+    ("2 meses", 2),
+    ("3 meses", 3),
+    ("4 meses", 4),
+    ("5 meses", 5),
+    ("6 meses", 6),
+]
 
 
 @router.get("/requirements/{month}")
@@ -128,6 +138,28 @@ def _apply_fecha_baja_range(df, date_range):
     return working
 
 
+def _month_end(day: date) -> date:
+    if day.month == 12:
+        return date(day.year, 12, 31)
+    return date(day.year, day.month + 1, 1) - timedelta(days=1)
+
+
+def _holiday_dates_for_year(year: int) -> set[str]:
+    return {str(holiday.get("date")) for holiday in load_holidays(str(year)).get("holidays", []) if holiday.get("date")}
+
+
+def _business_days_between(start: date, end: date, holiday_dates: set[str]) -> int:
+    if end < start:
+        return 0
+    total = 0
+    current = start
+    while current <= end:
+        if current.weekday() < 5 and current.isoformat() not in holiday_dates:
+            total += 1
+        current += timedelta(days=1)
+    return total
+
+
 def _normalize_column_name(value: str) -> str:
     return (
         unicodedata.normalize("NFD", str(value))
@@ -172,7 +204,7 @@ def _only_bajas(df):
 async def upload_payroll(file: UploadFile = File(...), db: Session = Depends(get_db)):
     suffix = Path(file.filename or "").suffix.lower()
     if suffix not in [".xlsx", ".xls", ".csv"]:
-        raise HTTPException(status_code=400, detail="Formato no soportado. Usá Excel o CSV.")
+        raise HTTPException(status_code=400, detail="Formato no soportado. UsÃ¡ Excel o CSV.")
 
     timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
     destination = settings.upload_dir / f"{timestamp}_{file.filename}"
@@ -285,11 +317,11 @@ def get_filtered_records(payload: DynamicAnalysisRequest):
         "NOMBRES",
         "DOCUMENTO",
         "ESTADO",
-        "ÁREA",
+        "ÃREA",
         "CLIENTE",
-        "CAMPAÑA",
+        "CAMPAÃ‘A",
         "PUESTO",
-        "MODALIDAD DE CONTRATACIÓN",
+        "MODALIDAD DE CONTRATACIÃ“N",
         "LOCALIDAD",
         "SITIO",
         "CARGA HORARIA SEMANAL",
@@ -316,7 +348,7 @@ def get_filtered_records(payload: DynamicAnalysisRequest):
 @router.post("/staffing-by-campaign")
 def get_staffing_by_campaign(payload: DynamicAnalysisRequest):
     df = _apply_filter_specs(_latest_df(), _exclude_filter_specs(payload.filters, "ESTADO"))
-    campaign_column = _find_column(df, "CAMPAÑA", "CAMPANA")
+    campaign_column = _find_column(df, "CAMPAÃ‘A", "CAMPANA")
     client_column = _find_column(df, "CLIENTE")
     estado_column = _find_column(df, "ESTADO")
     fecha_baja_column = _find_column(df, "FECHA BAJA")
@@ -336,7 +368,7 @@ def get_staffing_by_campaign(payload: DynamicAnalysisRequest):
         rows = [
             {
                 "campana": str(row["_campana"]),
-                "CAMPAÑA": str(row["_campana"]),
+                "CAMPAÃ‘A": str(row["_campana"]),
                 "cliente": str(row["_cliente"]),
                 "CLIENTE": str(row["_cliente"]),
                 "activo": int(row["activo"]),
@@ -376,7 +408,7 @@ def get_staffing_by_campaign(payload: DynamicAnalysisRequest):
         rows.append(
             {
                 "campana": str(campana),
-                "CAMPAÑA": str(campana),
+                "CAMPAÃ‘A": str(campana),
                 "cliente": cliente_value,
                 "CLIENTE": cliente_value,
                 "activo": int(group["_is_activo"].sum()),
@@ -397,8 +429,8 @@ def get_required_structure(payload: DynamicAnalysisRequest):
     site_column = _find_column(df, "SITE", "SITIO")
     responsible_column = _find_column(df, "RESPONSABLE", "FORMADOR ASIGNADO", "SUPERVISOR")
     client_column = _find_column(df, "CLIENTE")
-    campaign_column = _find_column(df, "CAMPAÑA", "CAMPANA")
-    subcampaign_column = _find_column(df, "SUB CAMPAÑA", "SUB CAMPANA", "SUBCAMPAÑA", "SUBCAMPANA")
+    campaign_column = _find_column(df, "CAMPAÃ‘A", "CAMPANA")
+    subcampaign_column = _find_column(df, "SUB CAMPAÃ‘A", "SUB CAMPANA", "SUBCAMPAÃ‘A", "SUBCAMPANA")
     estado_column = _find_column(df, "ESTADO")
     hours_column = _find_column(df, "CARGA HORARIA SEMANAL")
     if not client_column and not campaign_column:
@@ -459,13 +491,13 @@ def get_required_structure(payload: DynamicAnalysisRequest):
 @router.post("/staffing-by-campaign-legacy-disabled")
 def get_staffing_by_campaign_legacy(payload: DynamicAnalysisRequest):
     df = _apply_filter_specs(_latest_df(), payload.filters)
-    if "CAMPAÑA" not in df.columns:
+    if "CAMPAÃ‘A" not in df.columns:
         return {"rows": []}
 
     working = df.copy()
-    working["CAMPAÑA"] = working["CAMPAÑA"].astype(str).replace("", "Sin dato")
+    working["CAMPAÃ‘A"] = working["CAMPAÃ‘A"].astype(str).replace("", "Sin dato")
     if "ESTADO" not in working.columns:
-        counts = working.groupby("CAMPAÑA", dropna=False).size().reset_index(name="activo")
+        counts = working.groupby("CAMPAÃ‘A", dropna=False).size().reset_index(name="activo")
         rows = counts.sort_values("activo", ascending=False).to_dict(orient="records")
         return {"rows": rows}
 
@@ -482,13 +514,13 @@ def get_staffing_by_campaign_legacy(payload: DynamicAnalysisRequest):
         _is_licencia=is_licencia,
         _estado=estado.replace("", "Sin dato"),
     )
-    for campana, group in enriched.groupby("CAMPAÑA", dropna=False):
+    for campana, group in enriched.groupby("CAMPAÃ‘A", dropna=False):
         licencia_group = group[group["_is_licencia"]]
         license_counts = licencia_group["_estado"].replace("", "Sin dato").value_counts()
         observacion = ", ".join(f"{label}: {count}" for label, count in license_counts.items())
         rows.append(
             {
-                "CAMPAÑA": str(campana),
+                "CAMPAÃ‘A": str(campana),
                 "activo": int(group["_is_activo"].sum()),
                 "licencia": int(len(licencia_group)),
                 "observacion": observacion,
@@ -505,32 +537,33 @@ def get_bajas_by_month(payload: DynamicAnalysisRequest):
         _only_bajas(_apply_filter_specs(_latest_df(), _exclude_filter_specs(payload.filters, "ESTADO"))),
         payload.date_range,
     )
-    if "FECHA BAJA" not in df.columns or "CAMPAÑA" not in df.columns:
-        return {"months": [], "rows": [], "totals": {}}
+    campaign_column = _find_column(df, "CAMPAÑA", "CAMPANA")
+    if "FECHA BAJA" not in df.columns or not campaign_column:
+        return {"months": [], "rows": [], "totals": {}, "hourRows": [], "hourTotals": {}, "hourEvents": [], "holidayDates": [], "hoursPerBusinessDay": 6}
 
     working = df.copy()
     working["FECHA BAJA"] = pd.to_datetime(working["FECHA BAJA"], errors="coerce")
     working = working[working["FECHA BAJA"].notna()].copy()
     if working.empty:
-        return {"months": [], "rows": [], "totals": {}}
+        return {"months": [], "rows": [], "totals": {}, "hourRows": [], "hourTotals": {}, "hourEvents": [], "holidayDates": [], "hoursPerBusinessDay": 6}
 
-    working["CAMPAÑA"] = working["CAMPAÑA"].astype(str).replace("", "Sin dato")
+    working["_campana"] = working[campaign_column].astype(str).replace("", "Sin dato")
     working["_period"] = working["FECHA BAJA"].dt.to_period("M")
     periods = sorted(working["_period"].dropna().unique())
     month_keys = [str(period) for period in periods]
     month_labels = {
-        str(period): MONTH_LABELS[int(period.month)]
+        str(period): f"{MONTH_LABELS[int(period.month)]} {int(period.year)}"
         for period in periods
     }
 
     grouped = (
-        working.groupby(["CAMPAÑA", "_period"], dropna=False)
+        working.groupby(["_campana", "_period"], dropna=False)
         .size()
         .reset_index(name="cantidad")
     )
 
     rows = []
-    for campana, group in grouped.groupby("CAMPAÑA", dropna=False):
+    for campana, group in grouped.groupby("_campana", dropna=False):
         row = {"Campaña": str(campana)}
         total = 0
         for period_key in month_keys:
@@ -547,8 +580,60 @@ def get_bajas_by_month(payload: DynamicAnalysisRequest):
         )
     totals["Total"] = int(sum(totals.values()))
     rows = sorted(rows, key=lambda item: item["Total"], reverse=True)
-    return {"months": [month_labels[key] for key in month_keys], "rows": rows, "totals": totals}
 
+    holidays_by_year: dict[int, set[str]] = {}
+    hour_groups: dict[tuple[str, str], dict] = {}
+    hour_events = []
+    for _, item in working.iterrows():
+        fecha_baja = item["FECHA BAJA"].date()
+        period_key = str(item["_period"])
+        campana = str(item["_campana"] or "Sin dato")
+        holiday_dates = holidays_by_year.setdefault(fecha_baja.year, _holiday_dates_for_year(fecha_baja.year))
+        start = date(fecha_baja.year, fecha_baja.month, 1)
+        end = _month_end(fecha_baja)
+        business_days_month = _business_days_between(start, end, holiday_dates)
+        worked_days = _business_days_between(start, fecha_baja, holiday_dates)
+        missing_days = max(business_days_month - worked_days, 0)
+        key = (campana, period_key)
+        current = hour_groups.setdefault(
+            key,
+            {
+                "Campaña": campana,
+                "Mes": month_labels[period_key],
+                "Bajas": 0,
+                "Días hábiles mes": business_days_month,
+                "Días hábiles trabajados": 0,
+                "Días diferencia": 0,
+                "Horas trabajadas": 0,
+                "Diferencia horas": 0,
+            },
+        )
+        current["Bajas"] += 1
+        current["Días hábiles trabajados"] += worked_days
+        current["Días diferencia"] += missing_days
+        current["Horas trabajadas"] += worked_days * 6
+        current["Diferencia horas"] += missing_days * 6
+        hour_events.append({"Campaña": campana, "Mes": month_labels[period_key], "Fecha baja": fecha_baja.isoformat()})
+
+    hour_rows = sorted(hour_groups.values(), key=lambda item: (item["Mes"], -item["Diferencia horas"], item["Campaña"]))
+    hour_totals = {
+        "Bajas": int(sum(row["Bajas"] for row in hour_rows)),
+        "Días hábiles trabajados": int(sum(row["Días hábiles trabajados"] for row in hour_rows)),
+        "Días diferencia": int(sum(row["Días diferencia"] for row in hour_rows)),
+        "Horas trabajadas": int(sum(row["Horas trabajadas"] for row in hour_rows)),
+        "Diferencia horas": int(sum(row["Diferencia horas"] for row in hour_rows)),
+    }
+
+    return {
+        "months": [month_labels[key] for key in month_keys],
+        "rows": rows,
+        "totals": totals,
+        "hourRows": hour_rows,
+        "hourTotals": hour_totals,
+        "hourEvents": hour_events,
+        "holidayDates": sorted(date for dates in holidays_by_year.values() for date in dates),
+        "hoursPerBusinessDay": 6,
+    }
 
 @router.post("/bajas-by-tenure")
 def get_bajas_by_tenure(payload: DynamicAnalysisRequest):
@@ -574,25 +659,151 @@ def get_bajas_by_tenure(payload: DynamicAnalysisRequest):
     working.loc[working["FECHA BAJA"].dt.day < working["FECHA ALTA"].dt.day, "_meses"] -= 1
     working["_meses"] = working["_meses"].clip(lower=0).astype(int)
 
-    buckets = [
-        ("Menos de 1 mes", working["_meses"].eq(0)),
-        ("1 mes", working["_meses"].eq(1)),
-        ("2 meses", working["_meses"].eq(2)),
-        ("3 meses", working["_meses"].eq(3)),
-        ("4 meses", working["_meses"].eq(4)),
-        ("5 meses", working["_meses"].eq(5)),
-        ("6 meses", working["_meses"].eq(6)),
+    buckets = [(label, working["_meses"].eq(month)) for label, month in TENURE_BUCKETS] + [
         ("Mayor a 6 meses", working["_meses"].gt(6)),
     ]
     rows = [
         {
-            "Antigüedad": label,
+            "AntigÃ¼edad": label,
             "Bajas": int(mask.sum()),
         }
         for label, mask in buckets
     ]
     total = sum(row["Bajas"] for row in rows)
     return {"rows": rows, "total": int(total)}
+
+
+@router.post("/bajas-tenure-by-month")
+def get_bajas_tenure_by_month(payload: DynamicAnalysisRequest):
+    df = _apply_fecha_baja_range(
+        _only_bajas(_apply_filter_specs(_latest_df(), _exclude_filter_specs(payload.filters, "ESTADO"))),
+        payload.date_range,
+    )
+    if "FECHA ALTA" not in df.columns or "FECHA BAJA" not in df.columns:
+        return {"months": [], "rows": [], "totals": {}}
+
+    working = df.copy()
+    working["FECHA ALTA"] = pd.to_datetime(working["FECHA ALTA"], errors="coerce")
+    working["FECHA BAJA"] = pd.to_datetime(working["FECHA BAJA"], errors="coerce")
+    working = working[working["FECHA ALTA"].notna() & working["FECHA BAJA"].notna()].copy()
+    if working.empty:
+        return {"months": [], "rows": [], "totals": {}}
+
+    tenure_days = (working["FECHA BAJA"] - working["FECHA ALTA"]).dt.days
+    working = working[tenure_days >= 0].copy()
+    if working.empty:
+        return {"months": [], "rows": [], "totals": {}}
+
+    working["_meses"] = ((working["FECHA BAJA"].dt.year - working["FECHA ALTA"].dt.year) * 12) + (
+        working["FECHA BAJA"].dt.month - working["FECHA ALTA"].dt.month
+    )
+    working.loc[working["FECHA BAJA"].dt.day < working["FECHA ALTA"].dt.day, "_meses"] -= 1
+    working["_meses"] = working["_meses"].clip(lower=0).astype(int)
+    working["_tramo"] = working["_meses"].apply(lambda value: TENURE_BUCKETS[value][0] if value <= 6 else "Mayor a 6 meses")
+    working["_period"] = working["FECHA BAJA"].dt.to_period("M")
+
+    periods = sorted(working["_period"].dropna().unique())
+    month_keys = [str(period) for period in periods]
+    month_labels = {str(period): f"{MONTH_LABELS[int(period.month)]} {int(period.year)}" for period in periods}
+    bucket_labels = [label for label, _ in TENURE_BUCKETS] + ["Mayor a 6 meses"]
+
+    rows = []
+    totals = {month_labels[key]: 0 for key in month_keys}
+    totals["Total"] = 0
+    for label in bucket_labels:
+        group = working[working["_tramo"].eq(label)]
+        row = {"Antigüedad": label}
+        total = 0
+        for period_key in month_keys:
+            value = int(group["_period"].astype(str).eq(period_key).sum())
+            row[month_labels[period_key]] = value
+            totals[month_labels[period_key]] += value
+            total += value
+        row["Total"] = total
+        totals["Total"] += total
+        rows.append(row)
+
+    return {"months": [month_labels[key] for key in month_keys], "rows": rows, "totals": totals}
+
+
+@router.post("/bajas-reason-by-tenure")
+def get_bajas_reason_by_tenure(payload: DynamicAnalysisRequest):
+    df = _apply_fecha_baja_range(
+        _only_bajas(_apply_filter_specs(_latest_df(), _exclude_filter_specs(payload.filters, "ESTADO"))),
+        payload.date_range,
+    )
+    reason_column = _find_column(df, "MOTIVO BAJA")
+    campaign_column = _find_column(df, "CAMPAÃ‘A", "CAMPANA")
+    if "FECHA ALTA" not in df.columns or "FECHA BAJA" not in df.columns or not reason_column:
+        return {"reasons": [], "rows": [], "totals": {}, "campaigns": [], "byCampaign": {}}
+
+    working = df.copy()
+    working["FECHA ALTA"] = pd.to_datetime(working["FECHA ALTA"], errors="coerce")
+    working["FECHA BAJA"] = pd.to_datetime(working["FECHA BAJA"], errors="coerce")
+    working = working[working["FECHA ALTA"].notna() & working["FECHA BAJA"].notna()].copy()
+    if working.empty:
+        return {"reasons": [], "rows": [], "totals": {}, "campaigns": [], "byCampaign": {}}
+
+    tenure_days = (working["FECHA BAJA"] - working["FECHA ALTA"]).dt.days
+    working = working[tenure_days >= 0].copy()
+    if working.empty:
+        return {"reasons": [], "rows": [], "totals": {}, "campaigns": [], "byCampaign": {}}
+
+    working["_meses"] = ((working["FECHA BAJA"].dt.year - working["FECHA ALTA"].dt.year) * 12) + (
+        working["FECHA BAJA"].dt.month - working["FECHA ALTA"].dt.month
+    )
+    working.loc[working["FECHA BAJA"].dt.day < working["FECHA ALTA"].dt.day, "_meses"] -= 1
+    working["_meses"] = working["_meses"].clip(lower=0).astype(int)
+    working["_tramo"] = working["_meses"].apply(lambda value: TENURE_BUCKETS[value][0] if value <= 6 else "Mayor a 6 meses")
+    working["_motivo"] = working[reason_column].astype(str).str.strip().replace("", "Sin dato")
+    if campaign_column:
+        working["_campana"] = working[campaign_column].astype(str).str.strip().replace("", "Sin dato")
+    else:
+        working["_campana"] = "Sin dato"
+
+    reason_totals = working["_motivo"].value_counts()
+    reasons = [str(reason) for reason in reason_totals.index]
+    totals = {str(reason): int(count) for reason, count in reason_totals.items()}
+    totals["Total"] = int(reason_totals.sum())
+
+    bucket_labels = [label for label, _ in TENURE_BUCKETS] + ["Mayor a 6 meses"]
+
+    def build_tenure_rows(scope):
+        scope_rows = []
+        for label in bucket_labels:
+            group = scope[scope["_tramo"].eq(label)]
+            row = {"AntigÃ¼edad": label, "Total": int(len(group))}
+            counts = group["_motivo"].value_counts()
+            for reason in reasons:
+                row[reason] = int(counts.get(reason, 0))
+            scope_rows.append(row)
+        return scope_rows
+
+    def build_totals(scope):
+        counts = scope["_motivo"].value_counts()
+        scope_totals = {str(reason): int(counts.get(reason, 0)) for reason in reasons}
+        scope_totals["Total"] = int(counts.sum())
+        return scope_totals
+
+    by_campaign = {}
+    campaigns = []
+    for campana, group in working.groupby("_campana", dropna=False):
+        campaign_name = str(campana)
+        campaign_total = int(len(group))
+        campaigns.append({"name": campaign_name, "total": campaign_total})
+        by_campaign[campaign_name] = {
+            "rows": build_tenure_rows(group),
+            "totals": build_totals(group),
+        }
+    campaigns = sorted(campaigns, key=lambda item: item["total"], reverse=True)
+
+    return {
+        "reasons": reasons,
+        "rows": build_tenure_rows(working),
+        "totals": totals,
+        "campaigns": campaigns,
+        "byCampaign": by_campaign,
+    }
 
 
 @router.post("/bajas-by-reason")
@@ -634,7 +845,7 @@ def get_bajas_reason_by_campaign(payload: DynamicAnalysisRequest):
         _only_bajas(_apply_filter_specs(_latest_df(), _exclude_filter_specs(payload.filters, "ESTADO"))),
         payload.date_range,
     )
-    campaign_column = _find_column(df, "CAMPAÑA", "CAMPANA")
+    campaign_column = _find_column(df, "CAMPAÃ‘A", "CAMPANA")
     reason_column = _find_column(df, "MOTIVO BAJA")
     fecha_baja_column = _find_column(df, "FECHA BAJA")
     if not campaign_column or not reason_column or not fecha_baja_column:
@@ -657,7 +868,7 @@ def get_bajas_reason_by_campaign(payload: DynamicAnalysisRequest):
 
     rows = []
     for campana, group in grouped.groupby("_campana", dropna=False):
-        row = {"Campaña": str(campana)}
+        row = {"CampaÃ±a": str(campana)}
         total = 0
         for reason in reasons:
             value = int(group.loc[group["_motivo"].eq(reason), "cantidad"].sum())
@@ -695,3 +906,4 @@ def get_columns_config():
         "user": USER_COLUMNS,
         "include_user_columns": INCLUDE_USER_COLUMNS,
     }
+

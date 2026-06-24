@@ -1,24 +1,6 @@
-INFO:     Started server process [24160]
+INFO:     Started server process [25112]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-C:\Users\jegil\Desktop\Analisis Nomina\backend\app\api\routes.py:361: UserWarning: Parsing dates in %Y-%m-%d format when dayfirst=True was specified. Pass `dayfirst=False` or specify a format to silence this warning.
-  fecha_baja = pd.to_datetime(working[fecha_baja_column], errors="coerce", dayfirst=True)
-C:\Users\jegil\Desktop\Analisis Nomina\backend\app\api\routes.py:361: UserWarning: Parsing dates in %Y-%m-%d format when dayfirst=True was specified. Pass `dayfirst=False` or specify a format to silence this warning.
-  fecha_baja = pd.to_datetime(working[fecha_baja_column], errors="coerce", dayfirst=True)
-C:\Users\jegil\Desktop\Analisis Nomina\backend\app\api\routes.py:361: UserWarning: Parsing dates in %Y-%m-%d format when dayfirst=True was specified. Pass `dayfirst=False` or specify a format to silence this warning.
-  fecha_baja = pd.to_datetime(working[fecha_baja_column], errors="coerce", dayfirst=True)
-C:\Users\jegil\Desktop\Analisis Nomina\backend\app\api\routes.py:361: UserWarning: Parsing dates in %Y-%m-%d format when dayfirst=True was specified. Pass `dayfirst=False` or specify a format to silence this warning.
-  fecha_baja = pd.to_datetime(working[fecha_baja_column], errors="coerce", dayfirst=True)
-C:\Users\jegil\Desktop\Analisis Nomina\backend\app\api\routes.py:361: UserWarning: Parsing dates in %Y-%m-%d format when dayfirst=True was specified. Pass `dayfirst=False` or specify a format to silence this warning.
-  fecha_baja = pd.to_datetime(working[fecha_baja_column], errors="coerce", dayfirst=True)
-C:\Users\jegil\Desktop\Analisis Nomina\backend\app\api\routes.py:361: UserWarning: Parsing dates in %Y-%m-%d format when dayfirst=True was specified. Pass `dayfirst=False` or specify a format to silence this warning.
-  fecha_baja = pd.to_datetime(working[fecha_baja_column], errors="coerce", dayfirst=True)
-C:\Users\jegil\Desktop\Analisis Nomina\backend\app\api\routes.py:361: UserWarning: Parsing dates in %Y-%m-%d format when dayfirst=True was specified. Pass `dayfirst=False` or specify a format to silence this warning.
-  fecha_baja = pd.to_datetime(working[fecha_baja_column], errors="coerce", dayfirst=True)
-C:\Users\jegil\Desktop\Analisis Nomina\backend\app\api\routes.py:361: UserWarning: Parsing dates in %Y-%m-%d format when dayfirst=True was specified. Pass `dayfirst=False` or specify a format to silence this warning.
-  fecha_baja = pd.to_datetime(working[fecha_baja_column], errors="coerce", dayfirst=True)
-C:\Users\jegil\Desktop\Analisis Nomina\backend\app\api\routes.py:361: UserWarning: Parsing dates in %Y-%m-%d format when dayfirst=True was specified. Pass `dayfirst=False` or specify a format to silence this warning.
-  fecha_baja = pd.to_datetime(working[fecha_baja_column], errors="coerce", dayfirst=True)
-C:\Users\jegil\Desktop\Analisis Nomina\backend\app\api\routes.py:361: UserWarning: Parsing dates in %Y-%m-%d format when dayfirst=True was specified. Pass `dayfirst=False` or specify a format to silence this warning.
+C:\Users\jegil\Desktop\Analisis Nomina\backend\app\api\routes.py:371: UserWarning: Parsing dates in %Y-%m-%d format when dayfirst=True was specified. Pass `dayfirst=False` or specify a format to silence this warning.
   fecha_baja = pd.to_datetime(working[fecha_baja_column], errors="coerce", dayfirst=True)

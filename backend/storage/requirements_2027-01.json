@@ -1,0 +1,2517 @@
+{
+  "month": "2027-01",
+  "requirements": {},
+  "holidays": {},
+  "manualRows": [],
+  "masterRequirements": {
+    "SMB||SMB||CONVERGENTE NO UNIFICADO": {
+      "total": 0,
+      "daily": {}
+    },
+    "SMB||SMB||CONVERGENTE NO FAN": {
+      "total": 0,
+      "daily": {}
+    },
+    "SMB||SMB||VENTAS": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||PERSONAL||COBRANZAS": {
+      "total": 0,
+      "daily": {}
+    },
+    "ASSURANT||ASSURANT||BBVA HOT": {
+      "total": 0,
+      "daily": {}
+    },
+    "ASSURANT||ASSURANT||BBVA STOCK": {
+      "total": 0,
+      "daily": {}
+    },
+    "ASSURANT||ASSURANT||ICBC STOCK": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY||NATURGY BAN COMERCIAL": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY||NATURGY URGENCIAS BAN": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY||NATURGY NOA COMERCIAL": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY||NATURGY URGENCIAS NOA": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY||NATURGY ENERGIA SAN JUAN": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY||NATURGY BO SAN JUAN": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY||NATURGY - VENTAS": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER||TELECOBRANZAS": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER||GETNET AGRUPADOR": {
+      "total": 0,
+      "daily": {}
+    },
+    "SHIPNOW||SHIPNOW||ATENCION DE COMPRADORES": {
+      "total": 0,
+      "daily": {}
+    },
+    "INVERTIRONLINE SA||INVERTIRONLINE SA||VENTAS": {
+      "total": 0,
+      "daily": {}
+    },
+    "LEIVA JOYAS||LEIVA JOYAS||LEIVA JOYAS SALIENTE": {
+      "total": 0,
+      "daily": {}
+    },
+    "MIRGOR SAMSUNG||MIRGOR SAMSUNG||JBL": {
+      "total": 0,
+      "daily": {}
+    },
+    "MIRGOR SAMSUNG||MIRGOR SAMSUNG||SAMSUNG CARE": {
+      "total": 0,
+      "daily": {}
+    },
+    "MIRGOR SAMSUNG||MIRGOR SAMSUNG||TRADE IN": {
+      "total": 0,
+      "daily": {}
+    },
+    "MIRGOR SAMSUNG||MIRGOR SAMSUNG||TV QUINT": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||PERSONAL||SMB - ACCOUNT EXECUTIVE - YOIZEN": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||PERSONAL||SMB - ASEGURAMIENTO": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||PERSONAL||SMB - INBOUND DIGITAL": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||PERSONAL||SMB - SDR - YOIZEN": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||PERSONAL||SMB - ACCOUNT EXECUTIVE - PIC": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||PERSONAL||SMB - SDR - PIC": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||PERSONAL||SMB - INBOUND": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||PERSONAL||SMB - BACK OFFICE": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||PERSONAL||SMB - OUT IND": {
+      "total": 0,
+      "daily": {}
+    },
+    "UNICEF||UNICEF||MK": {
+      "total": 0,
+      "daily": {}
+    },
+    "UNICEF||UNICEF||UP": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||PERSONAL||CAT": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||PERSONAL||CX": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||PERSONAL||PERSONAL - COBRANZAS": {
+      "total": 0,
+      "daily": {}
+    },
+    "QUALIA||QUALIA||VENTAS": {
+      "total": 0,
+      "daily": {}
+    },
+    "QUALIA||QUALIA||QUALIA CENCOSUD": {
+      "total": 0,
+      "daily": {}
+    },
+    "BIBANK||BIBANK||ATENCION": {
+      "total": 0,
+      "daily": {}
+    },
+    "CARREFOUR||CARREFOUR||VENTAS": {
+      "total": 0,
+      "daily": {}
+    },
+    "ASSURANT||ASSURANT||BBVA PRESTAMOS": {
+      "total": 0,
+      "daily": {}
+    },
+    "ASSURANT||ASSURANT||BBVA HW": {
+      "total": 0,
+      "daily": {}
+    },
+    "ASSURANT||ASSURANT||BBVA DESEMPLEO": {
+      "total": 0,
+      "daily": {}
+    },
+    "ASSURANT||ASSURANT||ICBC DESEMPLEO": {
+      "total": 0,
+      "daily": {}
+    },
+    "SPAZIOS||SPAZIOS||ATENCION": {
+      "total": 0,
+      "daily": {}
+    },
+    "BANCO COMAFI||BANCO COMAFI||PREVENCION DEL FRAUDE": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY||BAN COMERCIAL": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY||URGENCIAS BAN": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY||NOA COMERCIAL": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY||URGENCIAS NOA": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY||BACKOFFICE NOA": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY||ENERGIA SAN JUAN": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY||BO SAN JUAN": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER||MIXTO RETENCION": {
+      "total": 0,
+      "daily": {}
+    },
+    "SUPERVIELLE SEGUROS||SUPERVIELLE SEGUROS||SEGUROS": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER||CHAT": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY||VENTAS": {
+      "total": 0,
+      "daily": {}
+    },
+    "BNA||BNA||ATENCION": {
+      "total": 0,
+      "daily": {}
+    },
+    "RIVER PLATE||RIVER PLATE||ATENCION AL SOCIO": {
+      "total": 0,
+      "daily": {}
+    },
+    "GALICIA||GALICIA||SEGUROS": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER||PRESTAMOS": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER||MIXTO CAT ESTABLES": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER||MIXTO CAT INGRESOS": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER||MIXTO GETNET": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER||SEGUROS": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER||RETENCION": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER||LEADS": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER||CONSUMER": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER||COBRANZAS": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER||GETNET STANDARD": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER||GETNET ON BOARDING": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER||ISLA PREVENCION DE FRAUDES": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER||GETNET GOLD ANALISTA VIP": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER||GETNET ADQUIRIENCIA": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER||GETNET GOLD": {
+      "total": 0,
+      "daily": {}
+    },
+    "OPENPAY||OPENPAY||RRSS": {
+      "total": 0,
+      "daily": {}
+    },
+    "YAMAHA||YAMAHA||COBRANZAS": {
+      "total": 0,
+      "daily": {}
+    },
+    "OPENPAY||OPENPAY||ONBOARDING": {
+      "total": 0,
+      "daily": {}
+    },
+    "SUPERVIELLE||SUPERVIELLE||OUTBOUND": {
+      "total": 0,
+      "daily": {}
+    },
+    "BBVA||BBVA||SEGUROS": {
+      "total": 0,
+      "daily": {}
+    },
+    "YAMAHA||YAMAHA||ATENCION": {
+      "total": 0,
+      "daily": {}
+    },
+    "BANCO PIANO||BANCO PIANO||PRESTAMOS": {
+      "total": 0,
+      "daily": {}
+    },
+    "BANCO PIANO||BANCO PIANO||ACCION REFERIDOS": {
+      "total": 0,
+      "daily": {}
+    },
+    "OPENPAY||OPENPAY||CUSTOMER": {
+      "total": 0,
+      "daily": {}
+    },
+    "OPENPAY||OPENPAY||COMERCIAL": {
+      "total": 0,
+      "daily": {}
+    },
+    "BICE||BICE||ATENCION": {
+      "total": 0,
+      "daily": {}
+    },
+    "FARMAPAY||FARMAPAY||ATENCION": {
+      "total": 0,
+      "daily": {}
+    },
+    "LEIVA JOYAS||LEIVA JOYAS||EL TASADOR": {
+      "total": 0,
+      "daily": {}
+    },
+    "JOHNSON  & JOHNSON||JOHNSON  & JOHNSON||ATENCION": {
+      "total": 0,
+      "daily": {}
+    },
+    "METROGAS||METROGAS||ATENCION": {
+      "total": 0,
+      "daily": {}
+    },
+    "GIRE||GIRE||DESBORDE": {
+      "total": 0,
+      "daily": {}
+    },
+    "GIRE||GIRE||CLIENTES": {
+      "total": 0,
+      "daily": {}
+    },
+    "OMINT||OMINT||PREPAGA": {
+      "total": 0,
+      "daily": {}
+    },
+    "OMINT||OMINT||TURNOS": {
+      "total": 0,
+      "daily": {}
+    },
+    "MIRGOR||MIRGOR||JBL": {
+      "total": 0,
+      "daily": {}
+    },
+    "MIRGOR||MIRGOR||SAMSUNG CARE": {
+      "total": 0,
+      "daily": {}
+    },
+    "MIRGOR||MIRGOR||TRADE IN": {
+      "total": 0,
+      "daily": {}
+    },
+    "MIRGOR||MIRGOR||TV QUINT": {
+      "total": 0,
+      "daily": {}
+    },
+    "CACHAMAI||CACHAMAI||ATENCION": {
+      "total": 0,
+      "daily": {}
+    },
+    "QUALIA||QUALIA CENCOSUD||VENTAS SEGUROS": {
+      "total": 0,
+      "daily": {}
+    },
+    "BIBANK||ATENCION||VENTAS SEGUROS": {
+      "total": 0,
+      "daily": {}
+    },
+    "ASSURANT||ICBC DESEMPLEO||BBVA HOT + BBVA STOCK": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||GETNET ADQUIRIENCIA||GOLD ANALISTA VIP": {
+      "total": 0,
+      "daily": {}
+    },
+    "OMINT||OMINT TURNOS||OMINT TURNOS": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||SMB - ACCOUNT EXECUTIVE - PIC||SMB - ACCOUNT EXECUTIVE - PIC": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||SMB - ASEGURAMIENTO||SMB - ASEGURAMIENTO": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||SMB - INBOUND DIGITAL||SMB - INBOUND DIGITAL": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||SMB - SDR - YOIZEN||SMB - SDR - YOIZEN": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||SMB - ACCOUNT EXECUTIVE - YOIZEN||SMB - ACCOUNT EXECUTIVE - YOIZEN": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||SMB - SDR - PIC||SMB - SDR - PIC": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||SMB - INBOUND||SMB - INBOUND": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||SMB - BACK OFFICE||SMB - BACK OFFICE": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||SMB - OUT IND||SMB - OUT IND": {
+      "total": 0,
+      "daily": {}
+    },
+    "UNICEF||UNICEF MK||UNICEF MK": {
+      "total": 0,
+      "daily": {}
+    },
+    "UNICEF||UNICEF UPGRADE||UP GRADE": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||CAT||UP GRADE": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||CX||UP GRADE": {
+      "total": 0,
+      "daily": {}
+    },
+    "PERSONAL||COBRANZAS||TELECOM COBRANZAS": {
+      "total": 0,
+      "daily": {}
+    },
+    "QUALIA||QUALIA VENTAS||VENTAS SEGUROS": {
+      "total": 0,
+      "daily": {}
+    },
+    "BSF||BSF CARREFOUR||SEGUROS": {
+      "total": 0,
+      "daily": {}
+    },
+    "ASSURANT||BBVA PRESTAMOS||BBVA PRESTAMOS": {
+      "total": 0,
+      "daily": {}
+    },
+    "ASSURANT||BBVA HW||BBVA HW": {
+      "total": 0,
+      "daily": {}
+    },
+    "ASSURANT||BBVA DESEMPLEO||BBVA HOT + BBVA STOCK": {
+      "total": 0,
+      "daily": {}
+    },
+    "SPAZIOS||SPAZIOS||SPAZIOS": {
+      "total": 0,
+      "daily": {}
+    },
+    "BANCO COMAFI||PREVENCION DEL FRAUDE||SPAZIOS": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY BAN COMERCIAL||NATURGY BAN COMERCIAL": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY BAN CAU||NATURGY BAN CAU": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY NOA COMERCIAL||NATURGY NOA COMERCIAL": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY NOA CAU||NATURGY NOA CAU": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY BO NOA||BACKOFFICE NOA": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY ENERGIA SAN JUAN||NATURGY ESJ": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY BO SAN JUAN||BACKOFFICE SAN JUAN": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER RETENCION MIX||RETENCION MIX": {
+      "total": 0,
+      "daily": {}
+    },
+    "SUPERVIELLE SEGUROS||SUPERVIELLE SEGUROS||SUPERVIELLE SEGUROS": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER CHAT||CHAT": {
+      "total": 0,
+      "daily": {}
+    },
+    "NATURGY||NATURGY VENTAS||QUIERO GAS": {
+      "total": 0,
+      "daily": {}
+    },
+    "BNA||BNA - ATENCION AL CLIENTE||BNA - ATENCION AL CLIENTE": {
+      "total": 0,
+      "daily": {}
+    },
+    "RIVER PLATE||RIVER PLATE ATENCION AL SOCIO||RIVER PLATE ATENCION AL SOCIO": {
+      "total": 0,
+      "daily": {}
+    },
+    "GALICIA SEGUROS||GALICIA SEGUROS - BACKOFFICE||GALICIA SEGUROS - BACKOFFICE": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER PRESTAMOS||PRESTAMOS": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||MIXTO CAT ESTABLES||MIXTO CAT ESTABLES": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||MIXTO CAT INGRESOS||MIXTO CAT INGRESOS": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||MIXTO GETNET||MIXTO GETNET": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||MIXTO COBRANZAS||MIXTO COBRANZAS": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER SEGUROS||SANTANDER SEGUROS": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||SANTANDER RETENCION||RETENCION": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||LEADS||LEADS": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||CONSUMER||CONSUMER": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||TELECOBRANZAS||SANTANDER COBRANZAS": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||GETNET STANDARD||STANDARD": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||GETNET ONBOARDING||GETNET ON BOARDING": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||ISLA DE PREVENCION||ISLA DE PREVENCION": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||GOLD ANALISTA VIP||GOLD ANALISTA VIP": {
+      "total": 0,
+      "daily": {}
+    },
+    "SANTANDER||GETNET GOLD||GETNET GOLD": {
+      "total": 0,
+      "daily": {}
+    },
+    "BBVA OPENPAY||OPENPAY RRSS||OPENPAY RRSS": {
+      "total": 0,
+      "daily": {}
+    },
+    "YAMAHA||YAMAHA COBRANZAS||YAMAHA COBRANZAS": {
+      "total": 0,
+      "daily": {}
+    },
+    "BBVA OPENPAY||OPENPAY ONBOARDING||OPENPAY ONBOARDING": {
+      "total": 0,
+      "daily": {}
+    },
+    "SUPERVIELLE||OUTBOUND||PRESTAMOS MINORISTA": {
+      "total": 0,
+      "daily": {}
+    },
+    "BBVA||BBVA SEGUROS||BBVA SEGUROS": {
+      "total": 0,
+      "daily": {}
+    },
+    "YAMAHA||YAMAHA||YAMAHA": {
+      "total": 0,
+      "daily": {}
+    },
+    "BANCO PIANO||BANCO PIANO||BANCO PIANO PRESTAMOS": {
+      "total": 0,
+      "daily": {}
+    },
+    "BANCO PIANO||BANCO PIANO ACCION REFERIDOS||REFERIDOS": {
+      "total": 0,
+      "daily": {}
+    },
+    "BBVA OPENPAY||OPENPAY||OPENPAY CUSTOMER": {
+      "total": 0,
+      "daily": {}
+    },
+    "BBVA OPENPAY||OPENPAY COMERCIALES||OPENPAY COMERCIALES": {
+      "total": 0,
+      "daily": {}
+    },
+    "BANCO BICE||BANCO BICE||BANCO BICE": {
+      "total": 0,
+      "daily": {}
+    },
+    "FARMAPAY||FARMAPAY||FARMAPAY": {
+      "total": 0,
+      "daily": {}
+    },
+    "LEIVA JOYAS||LEIVA JOYAS||LEIVA JOYAS": {
+      "total": 0,
+      "daily": {}
+    },
+    "LEIVA JOYAS||EL TASADOR||EL TASADOR": {
+      "total": 0,
+      "daily": {}
+    },
+    "JONHSON & JONHSON||J&J||ACUVUE": {
+      "total": 0,
+      "daily": {}
+    },
+    "METROGAS||METROGAS||METROGAS": {
+      "total": 0,
+      "daily": {}
+    },
+    "GIRE||GIRE DESBORDE||DESBORDE": {
+      "total": 0,
+      "daily": {}
+    },
+    "GIRE||GIRE CLIENTES||CLIENTES": {
+      "total": 0,
+      "daily": {}
+    },
+    "OMINT||OMINT PREPAGA||OMINT PREPAGA": {
+      "total": 0,
+      "daily": {}
+    },
+    "MIRGOR||JBL||JBL": {
+      "total": 0,
+      "daily": {}
+    },
+    "MIRGOR||SAMSUNG CARE||SAMSUNG CARE": {
+      "total": 0,
+      "daily": {}
+    },
+    "MIRGOR||TRADE IN||TRADE IN": {
+      "total": 0,
+      "daily": {}
+    },
+    "MIRGOR||TV QUINT||TV QUINT": {
+      "total": 0,
+      "daily": {}
+    },
+    "CACHAMAI||CACHAMAI||CACHAMAI": {
+      "total": 0,
+      "daily": {}
+    }
+  },
+  "rows": [
+    {
+      "id": "LUCAS CAAMANO||CAMPANAS PERSONAL||SMB||SMB||CONVERGENTE NO UNIFICADO",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Campañas Personal",
+      "cliente": "SMB",
+      "campana": "SMB",
+      "subcampana": "Convergente no unificado",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||CAMPANAS PERSONAL||SMB||SMB||CONVERGENTE NO FAN",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Campañas Personal",
+      "cliente": "SMB",
+      "campana": "SMB",
+      "subcampana": "Convergente no fan",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||CAMPANAS PERSONAL||SMB||SMB||VENTAS",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Campañas Personal",
+      "cliente": "SMB",
+      "campana": "SMB",
+      "subcampana": "Ventas",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||CAMPANAS PERSONAL||PERSONAL||PERSONAL||COBRANZAS",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Campañas Personal",
+      "cliente": "Personal",
+      "campana": "Personal",
+      "subcampana": "Cobranzas",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||CAROLINA SURACE||ASSURANT||ASSURANT||BBVA HOT",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Carolina Surace",
+      "cliente": "Assurant",
+      "campana": "Assurant",
+      "subcampana": "BBVA Hot",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||CAROLINA SURACE||ASSURANT||ASSURANT||BBVA STOCK",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Carolina Surace",
+      "cliente": "Assurant",
+      "campana": "Assurant",
+      "subcampana": "BBVA Stock",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||CAROLINA SURACE||ASSURANT||ASSURANT||ICBC STOCK",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Carolina Surace",
+      "cliente": "Assurant",
+      "campana": "Assurant",
+      "subcampana": "ICBC Stock",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||ISMAEL RISSI||NATURGY||NATURGY||NATURGY BAN COMERCIAL",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "Naturgy",
+      "campana": "Naturgy",
+      "subcampana": "Naturgy BAN Comercial",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||ISMAEL RISSI||NATURGY||NATURGY||NATURGY URGENCIAS BAN",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "Naturgy",
+      "campana": "Naturgy",
+      "subcampana": "Naturgy Urgencias BAN",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||ISMAEL RISSI||NATURGY||NATURGY||NATURGY NOA COMERCIAL",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "Naturgy",
+      "campana": "Naturgy",
+      "subcampana": "Naturgy NOA Comercial",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||ISMAEL RISSI||NATURGY||NATURGY||NATURGY URGENCIAS NOA",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "Naturgy",
+      "campana": "Naturgy",
+      "subcampana": "Naturgy Urgencias NOA",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||ISMAEL RISSI||NATURGY||NATURGY||NATURGY ENERGIA SAN JUAN",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "Naturgy",
+      "campana": "Naturgy",
+      "subcampana": "Naturgy Energía San Juan",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||ISMAEL RISSI||NATURGY||NATURGY||NATURGY BO SAN JUAN",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "Naturgy",
+      "campana": "Naturgy",
+      "subcampana": "Naturgy BO San Juan",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||ISMAEL RISSI||NATURGY||NATURGY||NATURGY - VENTAS",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "Naturgy",
+      "campana": "Naturgy",
+      "subcampana": "Naturgy - Ventas",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||MARIELA DITTO||SANTANDER||SANTANDER||TELECOBRANZAS",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "Santander",
+      "campana": "Santander",
+      "subcampana": "Telecobranzas",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||ROXANA LOPEZ DE LA VEGA||SANTANDER||SANTANDER||GETNET AGRUPADOR",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "Santander",
+      "campana": "Santander",
+      "subcampana": "Getnet Agrupador",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||CAROLINA SURACE||SHIPNOW||SHIPNOW||ATENCION DE COMPRADORES",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Carolina Surace",
+      "cliente": "Shipnow",
+      "campana": "Shipnow",
+      "subcampana": "Atención de compradores",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||ROXANA LOPEZ DE LA VEGA||INVERTIRONLINE SA||INVERTIRONLINE SA||VENTAS",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "Invertironline SA",
+      "campana": "Invertironline SA",
+      "subcampana": "Ventas",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||SALVADOR ALMEIRA||LEIVA JOYAS||LEIVA JOYAS||LEIVA JOYAS SALIENTE",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "Leiva Joyas",
+      "campana": "Leiva Joyas",
+      "subcampana": "Leiva Joyas Saliente",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||SALVADOR ALMEIRA||MIRGOR SAMSUNG||MIRGOR SAMSUNG||JBL",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "MIRGOR Samsung",
+      "campana": "MIRGOR Samsung",
+      "subcampana": "JBL",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||SALVADOR ALMEIRA||MIRGOR SAMSUNG||MIRGOR SAMSUNG||SAMSUNG CARE",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "MIRGOR Samsung",
+      "campana": "MIRGOR Samsung",
+      "subcampana": "SAMSUNG CARE",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||SALVADOR ALMEIRA||MIRGOR SAMSUNG||MIRGOR SAMSUNG||TRADE IN",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "MIRGOR Samsung",
+      "campana": "MIRGOR Samsung",
+      "subcampana": "TRADE IN",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||SALVADOR ALMEIRA||MIRGOR SAMSUNG||MIRGOR SAMSUNG||TV QUINT",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "MIRGOR Samsung",
+      "campana": "MIRGOR Samsung",
+      "subcampana": "TV QUINT",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||WALTER CANALINI||PERSONAL||PERSONAL||SMB - ACCOUNT EXECUTIVE - YOIZEN",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Walter Canalini",
+      "cliente": "PERSONAL",
+      "campana": "PERSONAL",
+      "subcampana": "SMB - ACCOUNT EXECUTIVE - YOIZEN",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||WALTER CANALINI||PERSONAL||PERSONAL||SMB - ASEGURAMIENTO",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Walter Canalini",
+      "cliente": "PERSONAL",
+      "campana": "PERSONAL",
+      "subcampana": "SMB - ASEGURAMIENTO",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||WALTER CANALINI||PERSONAL||PERSONAL||SMB - INBOUND DIGITAL",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Walter Canalini",
+      "cliente": "PERSONAL",
+      "campana": "PERSONAL",
+      "subcampana": "SMB - INBOUND DIGITAL",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||WALTER CANALINI||PERSONAL||PERSONAL||SMB - SDR - YOIZEN",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Walter Canalini",
+      "cliente": "PERSONAL",
+      "campana": "PERSONAL",
+      "subcampana": "SMB - SDR - YOIZEN",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||WALTER CANALINI||PERSONAL||PERSONAL||SMB - ACCOUNT EXECUTIVE - PIC",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Walter Canalini",
+      "cliente": "PERSONAL",
+      "campana": "PERSONAL",
+      "subcampana": "SMB - ACCOUNT EXECUTIVE - PIC",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||WALTER CANALINI||PERSONAL||PERSONAL||SMB - SDR - PIC",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Walter Canalini",
+      "cliente": "PERSONAL",
+      "campana": "PERSONAL",
+      "subcampana": "SMB - SDR - PIC",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||WALTER CANALINI||PERSONAL||PERSONAL||SMB - INBOUND",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Walter Canalini",
+      "cliente": "PERSONAL",
+      "campana": "PERSONAL",
+      "subcampana": "SMB - INBOUND",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||WALTER CANALINI||PERSONAL||PERSONAL||SMB - BACK OFFICE",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Walter Canalini",
+      "cliente": "PERSONAL",
+      "campana": "PERSONAL",
+      "subcampana": "SMB - BACK OFFICE",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||WALTER CANALINI||PERSONAL||PERSONAL||SMB - OUT IND",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Walter Canalini",
+      "cliente": "PERSONAL",
+      "campana": "PERSONAL",
+      "subcampana": "SMB - OUT IND",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||UNICEF||UNICEF||MK",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "Unicef",
+      "campana": "Unicef",
+      "subcampana": "MK",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||UNICEF||UNICEF||UP",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "Unicef",
+      "campana": "Unicef",
+      "subcampana": "UP",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||CAMPANAS PERSONAL||PERSONAL||PERSONAL||CAT",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Campañas Personal",
+      "cliente": "Personal",
+      "campana": "Personal",
+      "subcampana": "CAT",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||CAMPANAS PERSONAL||PERSONAL||PERSONAL||CX",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Campañas Personal",
+      "cliente": "Personal",
+      "campana": "Personal",
+      "subcampana": "CX",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||PABLO CHANAMPA||PERSONAL||PERSONAL||PERSONAL - COBRANZAS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Pablo Chanampa",
+      "cliente": "Personal",
+      "campana": "Personal",
+      "subcampana": "Personal - Cobranzas",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||SALVADOR ALMEIRA||QUALIA||QUALIA||VENTAS",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "Qualia",
+      "campana": "Qualia",
+      "subcampana": "Ventas",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||SALVADOR ALMEIRA||QUALIA||QUALIA||QUALIA CENCOSUD",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "Qualia",
+      "campana": "Qualia",
+      "subcampana": "Qualia Cencosud",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||BIBANK||BIBANK||ATENCION",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "BiBank",
+      "campana": "BiBank",
+      "subcampana": "Atención",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||CARREFOUR||CARREFOUR||VENTAS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "Carrefour",
+      "campana": "Carrefour",
+      "subcampana": "Ventas",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||ASSURANT||ASSURANT||BBVA PRESTAMOS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "Assurant",
+      "campana": "Assurant",
+      "subcampana": "BBVA Prestamos",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||ASSURANT||ASSURANT||BBVA HW",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "Assurant",
+      "campana": "Assurant",
+      "subcampana": "BBVA HW",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||ASSURANT||ASSURANT||BBVA DESEMPLEO",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "Assurant",
+      "campana": "Assurant",
+      "subcampana": "BBVA Desempleo",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||ASSURANT||ASSURANT||ICBC DESEMPLEO",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "Assurant",
+      "campana": "Assurant",
+      "subcampana": "ICBC Desempleo",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||SPAZIOS||SPAZIOS||ATENCION",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "Spazios",
+      "campana": "Spazios",
+      "subcampana": "Atención",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||SALVADOR ALMEIRA||BANCO COMAFI||BANCO COMAFI||PREVENCION DEL FRAUDE",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "Banco Comafi",
+      "campana": "Banco Comafi",
+      "subcampana": "Prevención del fraude",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||NATURGY||NATURGY||BAN COMERCIAL",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "Naturgy",
+      "campana": "Naturgy",
+      "subcampana": "BAN Comercial",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||NATURGY||NATURGY||URGENCIAS BAN",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "Naturgy",
+      "campana": "Naturgy",
+      "subcampana": "Urgencias BAN",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||NATURGY||NATURGY||NOA COMERCIAL",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "Naturgy",
+      "campana": "Naturgy",
+      "subcampana": "NOA Comercial",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||NATURGY||NATURGY||URGENCIAS NOA",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "Naturgy",
+      "campana": "Naturgy",
+      "subcampana": "Urgencias NOA",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||NATURGY||NATURGY||BACKOFFICE NOA",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "Naturgy",
+      "campana": "Naturgy",
+      "subcampana": "Backoffice NOA",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||NATURGY||NATURGY||ENERGIA SAN JUAN",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "Naturgy",
+      "campana": "Naturgy",
+      "subcampana": "Energía San Juan",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||NATURGY||NATURGY||BO SAN JUAN",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "Naturgy",
+      "campana": "Naturgy",
+      "subcampana": "BO San Juan",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||SANTANDER||MIXTO RETENCION",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "Santander",
+      "campana": "Santander",
+      "subcampana": "Mixto Retención",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||SUPERVIELLE SEGUROS||SUPERVIELLE SEGUROS||SEGUROS",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "Supervielle Seguros",
+      "campana": "Supervielle Seguros",
+      "subcampana": "Seguros",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||SANTANDER||SANTANDER||CHAT",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "Santander",
+      "campana": "Santander",
+      "subcampana": "Chat",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||NATURGY||NATURGY||VENTAS",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "Naturgy",
+      "campana": "Naturgy",
+      "subcampana": "Ventas",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||BNA||BNA||ATENCION",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "BNA",
+      "campana": "BNA",
+      "subcampana": "Atención",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||RIVER PLATE||RIVER PLATE||ATENCION AL SOCIO",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "River Plate",
+      "campana": "River Plate",
+      "subcampana": "Atención al Socio",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||GALICIA||GALICIA||SEGUROS",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "Galicia",
+      "campana": "Galicia",
+      "subcampana": "Seguros",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||SANTANDER||PRESTAMOS",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "Santander",
+      "campana": "Santander",
+      "subcampana": "Prestamos",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||SANTANDER||MIXTO CAT ESTABLES",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "Santander",
+      "campana": "Santander",
+      "subcampana": "Mixto CAT Estables",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||SANTANDER||MIXTO CAT INGRESOS",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "Santander",
+      "campana": "Santander",
+      "subcampana": "Mixto CAT Ingresos",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||SANTANDER||MIXTO GETNET",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "Santander",
+      "campana": "Santander",
+      "subcampana": "Mixto Getnet",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||SANTANDER||SEGUROS",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "Santander",
+      "campana": "Santander",
+      "subcampana": "Seguros",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||SANTANDER||RETENCION",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "Santander",
+      "campana": "Santander",
+      "subcampana": "Retención",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||SANTANDER||LEADS",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "Santander",
+      "campana": "Santander",
+      "subcampana": "Leads",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||SANTANDER||CONSUMER",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "Santander",
+      "campana": "Santander",
+      "subcampana": "Consumer",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||SANTANDER||COBRANZAS",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "Santander",
+      "campana": "Santander",
+      "subcampana": "Cobranzas",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ROXANA LOPEZ DE LA VEGA||SANTANDER||SANTANDER||GETNET STANDARD",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "Santander",
+      "campana": "Santander",
+      "subcampana": "Getnet Standard",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ROXANA LOPEZ DE LA VEGA||SANTANDER||SANTANDER||GETNET ON BOARDING",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "Santander",
+      "campana": "Santander",
+      "subcampana": "Getnet on boarding",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||SANTANDER||ISLA PREVENCION DE FRAUDES",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "Santander",
+      "campana": "Santander",
+      "subcampana": "Isla Prevención de Fraudes",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ROXANA LOPEZ DE LA VEGA||SANTANDER||SANTANDER||GETNET GOLD ANALISTA VIP",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "Santander",
+      "campana": "Santander",
+      "subcampana": "Getnet Gold Analista VIP",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ROXANA LOPEZ DE LA VEGA||SANTANDER||SANTANDER||GETNET ADQUIRIENCIA",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "Santander",
+      "campana": "Santander",
+      "subcampana": "Getnet Adquiriencia",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ROXANA LOPEZ DE LA VEGA||SANTANDER||SANTANDER||GETNET GOLD",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "Santander",
+      "campana": "Santander",
+      "subcampana": "Getnet Gold",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||ROXANA LOPEZ DE LA VEGA||OPENPAY||OPENPAY||RRSS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "Openpay",
+      "campana": "Openpay",
+      "subcampana": "RRSS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||ROXANA LOPEZ DE LA VEGA||YAMAHA||YAMAHA||COBRANZAS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "Yamaha",
+      "campana": "Yamaha",
+      "subcampana": "Cobranzas",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||ROXANA LOPEZ DE LA VEGA||OPENPAY||OPENPAY||ONBOARDING",
+      "gerente": "Multicuentas",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "Openpay",
+      "campana": "Openpay",
+      "subcampana": "Onboarding",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||SUPERVIELLE||SUPERVIELLE||OUTBOUND",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "Supervielle",
+      "campana": "Supervielle",
+      "subcampana": "Outbound",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||ROXANA LOPEZ DE LA VEGA||BBVA||BBVA||SEGUROS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "BBVA",
+      "campana": "BBVA",
+      "subcampana": "Seguros",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||ROXANA LOPEZ DE LA VEGA||YAMAHA||YAMAHA||ATENCION",
+      "gerente": "Multicuentas",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "Yamaha",
+      "campana": "Yamaha",
+      "subcampana": "Atención",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||ROXANA LOPEZ DE LA VEGA||BANCO PIANO||BANCO PIANO||PRESTAMOS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "Banco Piano",
+      "campana": "Banco Piano",
+      "subcampana": "Préstamos",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||ROXANA LOPEZ DE LA VEGA||BANCO PIANO||BANCO PIANO||ACCION REFERIDOS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "Banco Piano",
+      "campana": "Banco Piano",
+      "subcampana": "Acción Referidos",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||ROXANA LOPEZ DE LA VEGA||OPENPAY||OPENPAY||CUSTOMER",
+      "gerente": "Multicuentas",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "Openpay",
+      "campana": "Openpay",
+      "subcampana": "Customer",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||ROXANA LOPEZ DE LA VEGA||OPENPAY||OPENPAY||COMERCIAL",
+      "gerente": "Multicuentas",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "Openpay",
+      "campana": "Openpay",
+      "subcampana": "Comercial",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||BICE||BICE||ATENCION",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "Bice",
+      "campana": "Bice",
+      "subcampana": "Atención",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||SALVADOR ALMEIRA||FARMAPAY||FARMAPAY||ATENCION",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "Farmapay",
+      "campana": "Farmapay",
+      "subcampana": "Atención",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||SALVADOR ALMEIRA||LEIVA JOYAS||LEIVA JOYAS||EL TASADOR",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "Leiva Joyas",
+      "campana": "Leiva Joyas",
+      "subcampana": "El Tasador",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||SALVADOR ALMEIRA||JOHNSON  & JOHNSON||JOHNSON  & JOHNSON||ATENCION",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "Johnson  & Johnson",
+      "campana": "Johnson  & Johnson",
+      "subcampana": "Atención",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||SALVADOR ALMEIRA||METROGAS||METROGAS||ATENCION",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "Metrogas",
+      "campana": "Metrogas",
+      "subcampana": "Atención",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||SALVADOR ALMEIRA||GIRE||GIRE||DESBORDE",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "Gire",
+      "campana": "Gire",
+      "subcampana": "Desborde",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||SALVADOR ALMEIRA||GIRE||GIRE||CLIENTES",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "Gire",
+      "campana": "Gire",
+      "subcampana": "Clientes",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||OMINT||OMINT||PREPAGA",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "Omint",
+      "campana": "Omint",
+      "subcampana": "Prepaga",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||OMINT||OMINT||TURNOS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "Omint",
+      "campana": "Omint",
+      "subcampana": "Turnos",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||SALVADOR ALMEIRA||MIRGOR||MIRGOR||JBL",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "MIRGOR",
+      "campana": "MIRGOR",
+      "subcampana": "JBL",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||SALVADOR ALMEIRA||MIRGOR||MIRGOR||SAMSUNG CARE",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "MIRGOR",
+      "campana": "MIRGOR",
+      "subcampana": "SAMSUNG CARE",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||SALVADOR ALMEIRA||MIRGOR||MIRGOR||TRADE IN",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "MIRGOR",
+      "campana": "MIRGOR",
+      "subcampana": "TRADE IN",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||SALVADOR ALMEIRA||MIRGOR||MIRGOR||TV QUINT",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "MIRGOR",
+      "campana": "MIRGOR",
+      "subcampana": "TV QUINT",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||SALVADOR ALMEIRA||CACHAMAI||CACHAMAI||ATENCION",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "Cachamai",
+      "campana": "Cachamai",
+      "subcampana": "Atención",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||SALVADOR ALMEIRA||QUALIA||QUALIA CENCOSUD||VENTAS SEGUROS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "Qualia",
+      "campana": "Qualia Cencosud",
+      "subcampana": "VENTAS SEGUROS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||BIBANK||ATENCION||VENTAS SEGUROS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "BiBank",
+      "campana": "Atención",
+      "subcampana": "VENTAS SEGUROS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||ASSURANT||ICBC DESEMPLEO||BBVA HOT + BBVA STOCK",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "ASSURANT",
+      "campana": "ICBC Desempleo",
+      "subcampana": "BBVA HOT + BBVA STOCK",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ROXANA LOPEZ DE LA VEGA||SANTANDER||GETNET ADQUIRIENCIA||GOLD ANALISTA VIP",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "SANTANDER",
+      "campana": "Getnet Adquiriencia",
+      "subcampana": "GOLD ANALISTA VIP",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||OMINT||OMINT TURNOS||OMINT TURNOS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "OMINT",
+      "campana": "OMINT TURNOS",
+      "subcampana": "OMINT TURNOS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||WALTER CANALINI||PERSONAL||SMB - ACCOUNT EXECUTIVE - PIC||SMB - ACCOUNT EXECUTIVE - PIC",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Walter Canalini",
+      "cliente": "PERSONAL",
+      "campana": "SMB - Account Executive - PIC",
+      "subcampana": "SMB - Account Executive - PIC",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||WALTER CANALINI||PERSONAL||SMB - ASEGURAMIENTO||SMB - ASEGURAMIENTO",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Walter Canalini",
+      "cliente": "PERSONAL",
+      "campana": "SMB - Aseguramiento",
+      "subcampana": "SMB - Aseguramiento",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||WALTER CANALINI||PERSONAL||SMB - INBOUND DIGITAL||SMB - INBOUND DIGITAL",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Walter Canalini",
+      "cliente": "PERSONAL",
+      "campana": "SMB - Inbound digital",
+      "subcampana": "SMB - Inbound digital",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||WALTER CANALINI||PERSONAL||SMB - SDR - YOIZEN||SMB - SDR - YOIZEN",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Walter Canalini",
+      "cliente": "PERSONAL",
+      "campana": "SMB - SDR - Yoizen",
+      "subcampana": "SMB - SDR - Yoizen",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||WALTER CANALINI||PERSONAL||SMB - ACCOUNT EXECUTIVE - YOIZEN||SMB - ACCOUNT EXECUTIVE - YOIZEN",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Walter Canalini",
+      "cliente": "PERSONAL",
+      "campana": "SMB - Account Executive - Yoizen",
+      "subcampana": "SMB - Account Executive - Yoizen",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||WALTER CANALINI||PERSONAL||SMB - SDR - PIC||SMB - SDR - PIC",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Walter Canalini",
+      "cliente": "PERSONAL",
+      "campana": "SMB - SDR - PIC",
+      "subcampana": "SMB - SDR - PIC",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||WALTER CANALINI||PERSONAL||SMB - INBOUND||SMB - INBOUND",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Walter Canalini",
+      "cliente": "PERSONAL",
+      "campana": "SMB - Inbound",
+      "subcampana": "SMB - Inbound",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||WALTER CANALINI||PERSONAL||SMB - BACK OFFICE||SMB - BACK OFFICE",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Walter Canalini",
+      "cliente": "PERSONAL",
+      "campana": "SMB - Back Office",
+      "subcampana": "SMB - Back Office",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||WALTER CANALINI||PERSONAL||SMB - OUT IND||SMB - OUT IND",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Walter Canalini",
+      "cliente": "PERSONAL",
+      "campana": "SMB - OUT IND",
+      "subcampana": "SMB - OUT IND",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||UNICEF||UNICEF MK||UNICEF MK",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "UNICEF",
+      "campana": "UNICEF MK",
+      "subcampana": "UNICEF MK",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||UNICEF||UNICEF UPGRADE||UP GRADE",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "UNICEF",
+      "campana": "UNICEF UPGRADE",
+      "subcampana": "UP GRADE",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||CAMPANAS PERSONAL||PERSONAL||CAT||UP GRADE",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Campañas Personal",
+      "cliente": "PERSONAL",
+      "campana": "CAT",
+      "subcampana": "UP GRADE",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||CAMPANAS PERSONAL||PERSONAL||CX||UP GRADE",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Campañas Personal",
+      "cliente": "PERSONAL",
+      "campana": "CX",
+      "subcampana": "UP GRADE",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "LUCAS CAAMANO||PABLO CHANAMPA||PERSONAL||COBRANZAS||TELECOM COBRANZAS",
+      "gerente": "Lucas Caamaño",
+      "jefeSite": "Pablo Chanampa",
+      "cliente": "PERSONAL",
+      "campana": "COBRANZAS",
+      "subcampana": "TELECOM COBRANZAS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||SALVADOR ALMEIRA||QUALIA||QUALIA VENTAS||VENTAS SEGUROS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "QUALIA",
+      "campana": "QUALIA VENTAS",
+      "subcampana": "VENTAS SEGUROS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||BSF||BSF CARREFOUR||SEGUROS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "BSF",
+      "campana": "BSF CARREFOUR",
+      "subcampana": "SEGUROS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||ASSURANT||BBVA PRESTAMOS||BBVA PRESTAMOS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "ASSURANT",
+      "campana": "BBVA PRESTAMOS",
+      "subcampana": "BBVA PRESTAMOS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||ASSURANT||BBVA HW||BBVA HW",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "ASSURANT",
+      "campana": "BBVA HW",
+      "subcampana": "BBVA HW",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||ASSURANT||BBVA DESEMPLEO||BBVA HOT + BBVA STOCK",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "ASSURANT",
+      "campana": "BBVA DESEMPLEO",
+      "subcampana": "BBVA HOT + BBVA STOCK",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||SPAZIOS||SPAZIOS||SPAZIOS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "SPAZIOS",
+      "campana": "SPAZIOS",
+      "subcampana": "SPAZIOS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||SALVADOR ALMEIRA||BANCO COMAFI||PREVENCION DEL FRAUDE||SPAZIOS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "Banco Comafi",
+      "campana": "Prevención del fraude",
+      "subcampana": "SPAZIOS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||NATURGY||NATURGY BAN COMERCIAL||NATURGY BAN COMERCIAL",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "NATURGY",
+      "campana": "NATURGY BAN COMERCIAL",
+      "subcampana": "NATURGY BAN COMERCIAL",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||NATURGY||NATURGY BAN CAU||NATURGY BAN CAU",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "NATURGY",
+      "campana": "NATURGY BAN CAU",
+      "subcampana": "NATURGY BAN CAU",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||NATURGY||NATURGY NOA COMERCIAL||NATURGY NOA COMERCIAL",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "NATURGY",
+      "campana": "NATURGY NOA COMERCIAL",
+      "subcampana": "NATURGY NOA COMERCIAL",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||NATURGY||NATURGY NOA CAU||NATURGY NOA CAU",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "NATURGY",
+      "campana": "NATURGY NOA CAU",
+      "subcampana": "NATURGY NOA CAU",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||NATURGY||NATURGY BO NOA||BACKOFFICE NOA",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "NATURGY",
+      "campana": "NATURGY BO NOA",
+      "subcampana": "BACKOFFICE NOA",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||NATURGY||NATURGY ENERGIA SAN JUAN||NATURGY ESJ",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "NATURGY",
+      "campana": "NATURGY ENERGIA SAN JUAN",
+      "subcampana": "NATURGY ESJ",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||NATURGY||NATURGY BO SAN JUAN||BACKOFFICE SAN JUAN",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "NATURGY",
+      "campana": "NATURGY BO SAN JUAN",
+      "subcampana": "BACKOFFICE SAN JUAN",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||SANTANDER RETENCION MIX||RETENCION MIX",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "SANTANDER",
+      "campana": "SANTANDER RETENCION MIX",
+      "subcampana": "Retencion MiX",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||SUPERVIELLE SEGUROS||SUPERVIELLE SEGUROS||SUPERVIELLE SEGUROS",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "SUPERVIELLE SEGUROS",
+      "campana": "SUPERVIELLE SEGUROS",
+      "subcampana": "SUPERVIELLE SEGUROS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||SANTANDER||SANTANDER CHAT||CHAT",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "SANTANDER",
+      "campana": "SANTANDER CHAT",
+      "subcampana": "CHAT",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||NATURGY||NATURGY VENTAS||QUIERO GAS",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "NATURGY",
+      "campana": "NATURGY VENTAS",
+      "subcampana": "QUIERO GAS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||BNA||BNA - ATENCION AL CLIENTE||BNA - ATENCION AL CLIENTE",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "BNA",
+      "campana": "BNA - ATENCION AL CLIENTE",
+      "subcampana": "BNA - ATENCION AL CLIENTE",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ISMAEL RISSI||RIVER PLATE||RIVER PLATE ATENCION AL SOCIO||RIVER PLATE ATENCION AL SOCIO",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Ismael Rissi",
+      "cliente": "RIVER PLATE",
+      "campana": "RIVER PLATE ATENCION AL SOCIO",
+      "subcampana": "RIVER PLATE ATENCION AL SOCIO",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||GALICIA SEGUROS||GALICIA SEGUROS - BACKOFFICE||GALICIA SEGUROS - BACKOFFICE",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "GALICIA SEGUROS",
+      "campana": "GALICIA SEGUROS - BACKOFFICE",
+      "subcampana": "GALICIA SEGUROS - BACKOFFICE",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||SANTANDER PRESTAMOS||PRESTAMOS",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "SANTANDER",
+      "campana": "SANTANDER PRESTAMOS",
+      "subcampana": "PRESTAMOS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||MIXTO CAT ESTABLES||MIXTO CAT ESTABLES",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "SANTANDER",
+      "campana": "MIXTO CAT ESTABLES",
+      "subcampana": "MIXTO CAT ESTABLES",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||MIXTO CAT INGRESOS||MIXTO CAT INGRESOS",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "SANTANDER",
+      "campana": "MIXTO CAT INGRESOS",
+      "subcampana": "MIXTO CAT INGRESOS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||MIXTO GETNET||MIXTO GETNET",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "SANTANDER",
+      "campana": "MIXTO GETNET",
+      "subcampana": "MIXTO GETNET",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||MIXTO COBRANZAS||MIXTO COBRANZAS",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "SANTANDER",
+      "campana": "MIXTO COBRANZAS",
+      "subcampana": "MIXTO COBRANZAS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||SANTANDER SEGUROS||SANTANDER SEGUROS",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "SANTANDER",
+      "campana": "SANTANDER SEGUROS",
+      "subcampana": "SANTANDER SEGUROS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||SANTANDER RETENCION||RETENCION",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "SANTANDER",
+      "campana": "SANTANDER RETENCION",
+      "subcampana": "RETENCION",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||LEADS||LEADS",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "SANTANDER",
+      "campana": "LEADS",
+      "subcampana": "LEADS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||CONSUMER||CONSUMER",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "SANTANDER",
+      "campana": "CONSUMER",
+      "subcampana": "CONSUMER",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||TELECOBRANZAS||SANTANDER COBRANZAS",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "SANTANDER",
+      "campana": "TELECOBRANZAS",
+      "subcampana": "SANTANDER COBRANZAS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ROXANA LOPEZ DE LA VEGA||SANTANDER||GETNET STANDARD||STANDARD",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "SANTANDER",
+      "campana": "GETNET STANDARD",
+      "subcampana": "STANDARD",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ROXANA LOPEZ DE LA VEGA||SANTANDER||GETNET ONBOARDING||GETNET ON BOARDING",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "SANTANDER",
+      "campana": "GETNET ONBOARDING",
+      "subcampana": "GETNET ON BOARDING",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||MARIELA DITTO||SANTANDER||ISLA DE PREVENCION||ISLA DE PREVENCION",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Mariela Ditto",
+      "cliente": "SANTANDER",
+      "campana": "ISLA DE PREVENCIÓN",
+      "subcampana": "ISLA DE PREVENCIÓN",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ROXANA LOPEZ DE LA VEGA||SANTANDER||GOLD ANALISTA VIP||GOLD ANALISTA VIP",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "SANTANDER",
+      "campana": "GOLD ANALISTA VIP",
+      "subcampana": "GOLD ANALISTA VIP",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MARIANO QUESADA||ROXANA LOPEZ DE LA VEGA||SANTANDER||GETNET GOLD||GETNET GOLD",
+      "gerente": "Mariano Quesada",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "SANTANDER",
+      "campana": "GETNET GOLD",
+      "subcampana": "GETNET GOLD",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||ROXANA LOPEZ DE LA VEGA||BBVA OPENPAY||OPENPAY RRSS||OPENPAY RRSS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "BBVA OPENPAY",
+      "campana": "OPENPAY RRSS",
+      "subcampana": "OPENPAY RRSS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||ROXANA LOPEZ DE LA VEGA||YAMAHA||YAMAHA COBRANZAS||YAMAHA COBRANZAS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "YAMAHA",
+      "campana": "YAMAHA COBRANZAS",
+      "subcampana": "YAMAHA COBRANZAS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||ROXANA LOPEZ DE LA VEGA||BBVA OPENPAY||OPENPAY ONBOARDING||OPENPAY ONBOARDING",
+      "gerente": "Multicuentas",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "BBVA OPENPAY",
+      "campana": "OPENPAY ONBOARDING",
+      "subcampana": "OPENPAY ONBOARDING",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||SUPERVIELLE||OUTBOUND||PRESTAMOS MINORISTA",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "SUPERVIELLE",
+      "campana": "OUTBOUND",
+      "subcampana": "PRÉSTAMOS MINORISTA",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||ROXANA LOPEZ DE LA VEGA||BBVA||BBVA SEGUROS||BBVA SEGUROS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "BBVA",
+      "campana": "BBVA SEGUROS",
+      "subcampana": "BBVA SEGUROS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||ROXANA LOPEZ DE LA VEGA||YAMAHA||YAMAHA||YAMAHA",
+      "gerente": "Multicuentas",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "YAMAHA",
+      "campana": "YAMAHA",
+      "subcampana": "YAMAHA",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||ROXANA LOPEZ DE LA VEGA||BANCO PIANO||BANCO PIANO||BANCO PIANO PRESTAMOS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "BANCO PIANO",
+      "campana": "BANCO PIANO",
+      "subcampana": "BANCO PIANO PRESTAMOS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||ROXANA LOPEZ DE LA VEGA||BANCO PIANO||BANCO PIANO ACCION REFERIDOS||REFERIDOS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "BANCO PIANO",
+      "campana": "BANCO PIANO ACCION REFERIDOS",
+      "subcampana": "REFERIDOS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||ROXANA LOPEZ DE LA VEGA||BBVA OPENPAY||OPENPAY||OPENPAY CUSTOMER",
+      "gerente": "Multicuentas",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "BBVA OPENPAY",
+      "campana": "OPENPAY",
+      "subcampana": "OPENPAY CUSTOMER",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||ROXANA LOPEZ DE LA VEGA||BBVA OPENPAY||OPENPAY COMERCIALES||OPENPAY COMERCIALES",
+      "gerente": "Multicuentas",
+      "jefeSite": "Roxana Lopez de la Vega",
+      "cliente": "BBVA OPENPAY",
+      "campana": "OPENPAY COMERCIALES",
+      "subcampana": "OPENPAY COMERCIALES",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||BANCO BICE||BANCO BICE||BANCO BICE",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "BANCO BICE",
+      "campana": "BANCO BICE",
+      "subcampana": "BANCO BICE",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||SALVADOR ALMEIRA||FARMAPAY||FARMAPAY||FARMAPAY",
+      "gerente": "Multicuentas",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "FARMAPAY",
+      "campana": "FARMAPAY",
+      "subcampana": "FARMAPAY",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||SALVADOR ALMEIRA||LEIVA JOYAS||LEIVA JOYAS||LEIVA JOYAS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "LEIVA JOYAS",
+      "campana": "Leiva Joyas",
+      "subcampana": "Leiva Joyas",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||SALVADOR ALMEIRA||LEIVA JOYAS||EL TASADOR||EL TASADOR",
+      "gerente": "Multicuentas",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "Leiva Joyas",
+      "campana": "El Tasador",
+      "subcampana": "El Tasador",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||SALVADOR ALMEIRA||JONHSON & JONHSON||J&J||ACUVUE",
+      "gerente": "Multicuentas",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "JONHSON & JONHSON",
+      "campana": "J&J",
+      "subcampana": "ACUVUE",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||SALVADOR ALMEIRA||METROGAS||METROGAS||METROGAS",
+      "gerente": "Multicuentas",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "METROGAS",
+      "campana": "METROGAS",
+      "subcampana": "METROGAS",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||SALVADOR ALMEIRA||GIRE||GIRE DESBORDE||DESBORDE",
+      "gerente": "Multicuentas",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "GIRE",
+      "campana": "GIRE DESBORDE",
+      "subcampana": "DESBORDE",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||SALVADOR ALMEIRA||GIRE||GIRE CLIENTES||CLIENTES",
+      "gerente": "Multicuentas",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "GIRE",
+      "campana": "GIRE CLIENTES",
+      "subcampana": "CLIENTES",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||CAROLINA SURACE||OMINT||OMINT PREPAGA||OMINT PREPAGA",
+      "gerente": "Multicuentas",
+      "jefeSite": "Carolina Surace",
+      "cliente": "OMINT",
+      "campana": "OMINT PREPAGA",
+      "subcampana": "OMINT PREPAGA",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||SALVADOR ALMEIRA||MIRGOR||JBL||JBL",
+      "gerente": "Multicuentas",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "MIRGOR",
+      "campana": "JBL",
+      "subcampana": "JBL",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||SALVADOR ALMEIRA||MIRGOR||SAMSUNG CARE||SAMSUNG CARE",
+      "gerente": "Multicuentas",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "MIRGOR",
+      "campana": "SAMSUNG CARE",
+      "subcampana": "SAMSUNG CARE",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||SALVADOR ALMEIRA||MIRGOR||TRADE IN||TRADE IN",
+      "gerente": "Multicuentas",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "MIRGOR",
+      "campana": "TRADE IN",
+      "subcampana": "TRADE IN",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||SALVADOR ALMEIRA||MIRGOR||TV QUINT||TV QUINT",
+      "gerente": "Multicuentas",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "MIRGOR",
+      "campana": "TV QUINT",
+      "subcampana": "TV QUINT",
+      "active": true,
+      "daily": {}
+    },
+    {
+      "id": "MULTICUENTAS||SALVADOR ALMEIRA||CACHAMAI||CACHAMAI||CACHAMAI",
+      "gerente": "Multicuentas",
+      "jefeSite": "Salvador Almeira",
+      "cliente": "CACHAMAI",
+      "campana": "CACHAMAI",
+      "subcampana": "CACHAMAI",
+      "active": true,
+      "daily": {}
+    }
+  ],
+  "draft": {}
+}

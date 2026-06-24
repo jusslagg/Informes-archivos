@@ -2172,6 +2172,210 @@ tbody tr:hover {
   padding-bottom: 8px;
 }
 
+.bajas-table-filters {
+  display: grid;
+  grid-template-columns: minmax(280px, auto) minmax(320px, 1fr);
+  gap: 10px;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  margin: 0 0 10px;
+  padding: 10px;
+  background: #f8fafc;
+}
+
+.bajas-date-controls {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bajas-campaign-filter {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.bajas-campaign-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  max-height: 112px;
+  overflow: auto;
+}
+
+.bajas-campaign-list .check-row,
+.bajas-campaign-filter .select-all-row {
+  min-height: 28px;
+  border: 1px solid #e2e8f0;
+  border-radius: 7px;
+  padding: 5px 8px;
+  background: #ffffff;
+}
+
+.tenure-month-table table {
+  min-width: 920px;
+  table-layout: fixed;
+}
+
+.tenure-month-table td:first-child,
+.tenure-month-table th:first-child {
+  width: 170px;
+}
+
+.tenure-month-table th:not(:first-child),
+.tenure-month-table td:not(:first-child) {
+  width: 78px;
+  text-align: center;
+}
+
+.hours-impact-block {
+  display: grid;
+  gap: 10px;
+  border-top: 1px solid #e2e8f0;
+  margin-top: 12px;
+  padding-top: 12px;
+}
+
+.compact-toolbar {
+  min-height: auto;
+}
+
+.compact-toolbar h2 {
+  font-size: 0.98rem;
+}
+
+.hours-toolbar {
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.hours-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hours-controls label {
+  display: grid;
+  gap: 3px;
+  min-width: 92px;
+  color: #64748b;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.hours-controls input[type="number"] {
+  width: 92px;
+  height: 34px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0 9px;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.hours-controls .campaign-multi-field {
+  min-width: 220px;
+}
+
+.hours-controls .campaign-multi-field select {
+  min-width: 220px;
+  height: 58px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 4px 8px;
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 800;
+  outline: 0;
+}
+
+.hours-controls .toggle-field {
+  display: flex;
+  align-items: center;
+  min-width: 150px;
+  min-height: 34px;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  padding: 0 10px;
+  background: #f8fafc;
+  color: #334155;
+  text-transform: none;
+}
+
+.hours-controls .toggle-field input {
+  width: 15px;
+  height: 15px;
+}
+
+.compact-hours-table table {
+  min-width: 980px;
+  table-layout: auto;
+}
+
+.compact-hours-table th,
+.compact-hours-table td,
+.compact-hours-table tfoot td {
+  padding: 6px 8px;
+  font-size: 0.7rem;
+}
+
+.monthly-table .compact-hours-table th,
+.monthly-table .compact-hours-table td {
+  width: auto;
+  min-width: 96px;
+}
+
+.monthly-table .compact-hours-table th:first-child,
+.monthly-table .compact-hours-table td:first-child {
+  width: 220px;
+  min-width: 220px;
+}
+
+.hour-summary-row td {
+  background: #f8fafc;
+  color: #0f172a;
+  font-weight: 900;
+}
+
+.hour-detail-row td {
+  background: #ffffff;
+  color: #334155;
+  font-weight: 700;
+}
+
+.hour-detail-row td:first-child {
+  padding-left: 34px;
+  color: #0f172a;
+}
+
+.row-expander {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #0f172a;
+  font: inherit;
+  font-weight: 900;
+  text-align: left;
+  cursor: pointer;
+}
+
+.row-expander svg {
+  color: #2563eb;
+  transition: transform 160ms ease;
+}
+
+.row-expander svg.open {
+  transform: rotate(180deg);
+}
+
 .reason-campaign-table table {
   min-width: 980px;
   table-layout: fixed;
@@ -2279,6 +2483,201 @@ tbody tr:hover {
 
 .reason-table tfoot td {
   border-top: 1px solid #cbd5e1;
+}
+
+.reason-tenure-explorer {
+  display: grid;
+  gap: 14px;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  padding: 16px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+}
+
+.reason-tenure-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.reason-tenure-header h2 {
+  margin: 4px 0;
+  color: #0f172a;
+  font-size: 1.05rem;
+}
+
+.reason-tenure-header p {
+  max-width: 720px;
+  margin: 0;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.reason-tenure-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.reason-tenure-actions label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0 10px;
+  background: #f8fafc;
+  color: #475569;
+}
+
+.reason-tenure-actions select {
+  min-width: 190px;
+  max-width: 260px;
+  border: 0;
+  background: transparent;
+  color: #0f172a;
+  font-weight: 800;
+  outline: 0;
+}
+
+.reason-tenure-kpis {
+  display: grid;
+  grid-template-columns: 1.15fr 1.15fr 1fr 1fr;
+  gap: 10px;
+}
+
+.reason-tenure-kpis article {
+  display: grid;
+  gap: 5px;
+  min-height: 92px;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  padding: 12px;
+  background: #f8fafc;
+}
+
+.reason-tenure-kpis span,
+.reason-tenure-row-foot,
+.reason-tenure-note {
+  color: #64748b;
+  font-size: 0.76rem;
+}
+
+.reason-tenure-kpis span {
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.reason-tenure-kpis strong {
+  color: #0f172a;
+  font-size: 1.2rem;
+}
+
+.reason-tenure-kpis small {
+  color: #334155;
+  font-weight: 800;
+}
+
+.reason-tenure-map {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.reason-tenure-map article {
+  display: grid;
+  gap: 10px;
+  border: 1px solid rgba(37, 99, 235, calc(0.18 + (var(--weight) * 0.32)));
+  border-radius: 8px;
+  padding: 12px;
+  background:
+    linear-gradient(135deg, rgba(37, 99, 235, calc(0.05 + (var(--weight) * 0.12))), rgba(20, 184, 166, 0.05)),
+    #ffffff;
+}
+
+.reason-tenure-row-head,
+.reason-tenure-row-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.reason-tenure-row-head span {
+  color: #0f172a;
+  font-weight: 900;
+}
+
+.reason-tenure-row-head strong {
+  color: #2563eb;
+  font-size: 1.25rem;
+}
+
+.reason-tenure-bars {
+  display: grid;
+  gap: 8px;
+}
+
+.reason-tenure-bars div {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+  overflow: hidden;
+  border-radius: 7px;
+  padding: 3px 7px;
+  background: #eef2f7;
+}
+
+.reason-tenure-bars small,
+.reason-tenure-bars b {
+  position: relative;
+  z-index: 1;
+  font-size: 0.68rem;
+  line-height: 1;
+}
+
+.reason-tenure-bars small {
+  color: #334155;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.reason-tenure-bars b {
+  color: #0f172a;
+}
+
+.reason-tenure-bars span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: block;
+  min-width: 2px;
+  border-radius: inherit;
+  opacity: 0.28;
+}
+
+.reason-tenure-bars div:first-child span {
+  background: #2563eb;
+}
+
+.reason-tenure-bars div:last-child span {
+  background: #14b8a6;
+}
+
+.reason-tenure-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 12px;
+  font-weight: 800;
 }
 
 .tenure-table {
@@ -2754,7 +3153,17 @@ tbody tr:hover {
   }
 
   .dashboard-kpi-grid,
-  .dashboard-insight-grid {
+  .dashboard-insight-grid,
+  .reason-tenure-kpis,
+  .reason-tenure-map {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .bajas-table-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .bajas-campaign-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -2778,7 +3187,8 @@ tbody tr:hover {
   }
 
   .filter-column-list,
-  .option-list {
+  .option-list,
+  .bajas-campaign-list {
     grid-template-columns: 1fr;
   }
 
@@ -2794,8 +3204,22 @@ tbody tr:hover {
   .summary-grid,
   .dashboard-kpi-grid,
   .dashboard-insight-grid,
-  .ops-kpi-grid {
+  .ops-kpi-grid,
+  .reason-tenure-kpis,
+  .reason-tenure-map {
     grid-template-columns: 1fr;
+  }
+
+  .reason-tenure-header,
+  .reason-tenure-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .reason-tenure-actions label,
+  .reason-tenure-actions select,
+  .reason-tenure-actions .icon-button {
+    width: 100%;
   }
 
   .monthly-load-kpis,

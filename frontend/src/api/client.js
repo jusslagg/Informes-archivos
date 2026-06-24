@@ -2,7 +2,9 @@ import {
   getBajasByMonthBrowser,
   getBajasByReasonBrowser,
   getBajasByTenureBrowser,
+  getBajasTenureByMonthBrowser,
   getBajasReasonByCampaignBrowser,
+  getBajasReasonByTenureBrowser,
   getDashboardBrowser,
   getDatasetMetadataBrowser,
   getFilteredRecordsBrowser,
@@ -62,6 +64,7 @@ export function getDatasetMetadata() {
 }
 
 export function getFilterOptions(filters = []) {
+  if (usesBrowserData) return Promise.resolve(getDatasetMetadataBrowser());
   return request("/filter-options", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -195,6 +198,15 @@ export function getBajasByTenure(filters = [], dateRange = {}) {
   });
 }
 
+export function getBajasTenureByMonth(filters = [], dateRange = {}) {
+  if (usesBrowserData) return Promise.resolve(getBajasTenureByMonthBrowser(filters, dateRange));
+  return request("/bajas-tenure-by-month", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ filters, date_range: dateRange }),
+  });
+}
+
 export function getBajasByReason(filters = [], dateRange = {}) {
   if (usesBrowserData) return Promise.resolve(getBajasByReasonBrowser(filters, dateRange));
   return request("/bajas-by-reason", {
@@ -207,6 +219,15 @@ export function getBajasByReason(filters = [], dateRange = {}) {
 export function getBajasReasonByCampaign(filters = [], dateRange = {}) {
   if (usesBrowserData) return Promise.resolve(getBajasReasonByCampaignBrowser(filters, dateRange));
   return request("/bajas-reason-by-campaign", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ filters, date_range: dateRange }),
+  });
+}
+
+export function getBajasReasonByTenure(filters = [], dateRange = {}) {
+  if (usesBrowserData) return Promise.resolve(getBajasReasonByTenureBrowser(filters, dateRange));
+  return request("/bajas-reason-by-tenure", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ filters, date_range: dateRange }),

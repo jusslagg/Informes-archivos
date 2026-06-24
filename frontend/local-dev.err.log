@@ -1,0 +1,268 @@
+[2m12:18:53[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\jegil\Desktop\Analisis Nomina\frontend\src\pages\RequeridosPage.jsx: Unexpected character '±'. (1171:16)
+
+[0m [90m 1169 |[31m           [32m"Jefe de site"[31m[33m:[31m row[33m.[31mjefeSite[33m,[31m
+ [90m 1170 |[31m           [33mCliente[31m[33m:[31m row[33m.[31mcliente[33m,[31m
+[31m[1m>[22m[31m[90m 1171 |[31m           [33mCampaÃ±a[31m[33m:[31m row[33m.[31mcampana[33m,[31m
+ [90m      |[31m                 [31m[1m^[22m[31m
+ [90m 1172 |[31m           [33mSubcampaÃ±a[31m[33m:[31m row[33m.[31msubcampana[33m,[31m
+ [90m 1173 |[31m           [33m...[31m[33mObject[31m[33m.[31mfromEntries(templateDays[33m.[31mmap((day) [33m=>[31m [day[33m.[31mlabel[33m,[31m row[33m.[31mdaily[33m?[31m[33m.[31m[day[33m.[31mkey] [33m||[31m [32m""[31m]))[33m,[31m
+ [90m 1174 |[31m         }))[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/jegil/Desktop/Analisis Nomina/frontend/src/pages/RequeridosPage.jsx[39m:1171:16
+[33m  1194|          return;
+  1195|        }
+  1196|        const nextCatalogRows = mergeCatalogWithImportedRows(catalogRows, importedRows);
+     |                                   ^
+  1197|        const rowsByMonth = importedRows.reduce((acc, row) => {
+  1198|          const monthRows = acc[row.month] || [];[39m
+      at constructor (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:6616:19)
+      at JSXParserMixin.getTokenFromCode (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:6323:16)
+      at JSXParserMixin.getTokenFromCode (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:4809:11)
+      at JSXParserMixin.nextToken (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:5799:10)
+      at JSXParserMixin.next (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:5709:10)
+      at JSXParserMixin.parseIdentifierName (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12230:10)
+      at JSXParserMixin.parseIdentifier (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12198:23)
+      at JSXParserMixin.parsePropertyName (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12011:20)
+      at JSXParserMixin.parsePropertyDefinition (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11906:10)
+      at JSXParserMixin.parseObjectLike (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11849:21)
+      at JSXParserMixin.parseExprAtom (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11356:23)
+      at JSXParserMixin.parseExprAtom (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:4776:20)
+      at JSXParserMixin.parseExprSubscripts (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11098:23)
+      at JSXParserMixin.parseUpdate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOps (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10921:23)
+      at JSXParserMixin.parseMaybeConditional (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10817:39
+      at JSXParserMixin.allowInAnd (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12443:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10817:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12510:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11692:28)
+      at JSXParserMixin.parseExprAtom (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11348:23)
+      at JSXParserMixin.parseExprAtom (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:4776:20)
+      at JSXParserMixin.parseExprSubscripts (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11098:23)
+      at JSXParserMixin.parseUpdate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOps (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10921:23)
+      at JSXParserMixin.parseMaybeConditional (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10848:21)
+      at JSXParserMixin.parseFunctionBody (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12110:24)
+      at JSXParserMixin.parseArrowExpression (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12092:10)
+      at JSXParserMixin.parseParenAndDistinguishExpression (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11704:12)
+      at JSXParserMixin.parseExprAtom (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11348:23)
+      at JSXParserMixin.parseExprAtom (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:4776:20)
+      at JSXParserMixin.parseExprSubscripts (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11098:23)
+      at JSXParserMixin.parseUpdate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOps (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10921:23)
+      at JSXParserMixin.parseMaybeConditional (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10817:39
+      at JSXParserMixin.allowInAnd (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12443:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10817:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12510:17)
+[2m12:19:05[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\jegil\Desktop\Analisis Nomina\frontend\src\pages\RequeridosPage.jsx: Unexpected character '±'. (1171:16)
+
+[0m [90m 1169 |[31m           [32m"Jefe de site"[31m[33m:[31m row[33m.[31mjefeSite[33m,[31m
+ [90m 1170 |[31m           [33mCliente[31m[33m:[31m row[33m.[31mcliente[33m,[31m
+[31m[1m>[22m[31m[90m 1171 |[31m           [33mCampaÃ±a[31m[33m:[31m row[33m.[31mcampana[33m,[31m
+ [90m      |[31m                 [31m[1m^[22m[31m
+ [90m 1172 |[31m           [33mSubcampaÃ±a[31m[33m:[31m row[33m.[31msubcampana[33m,[31m
+ [90m 1173 |[31m           [33m...[31m[33mObject[31m[33m.[31mfromEntries(templateDays[33m.[31mmap((day) [33m=>[31m [day[33m.[31mlabel[33m,[31m row[33m.[31mdaily[33m?[31m[33m.[31m[day[33m.[31mkey] [33m||[31m [32m""[31m]))[33m,[31m
+ [90m 1174 |[31m         }))[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/jegil/Desktop/Analisis Nomina/frontend/src/pages/RequeridosPage.jsx[39m:1171:16
+[33m  1194|          return;
+  1195|        }
+  1196|        const nextCatalogRows = mergeCatalogWithImportedRows(catalogRows, importedRows);
+     |                                   ^
+  1197|        const rowsByMonth = importedRows.reduce((acc, row) => {
+  1198|          const monthRows = acc[row.month] || [];[39m
+      at constructor (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:6616:19)
+      at JSXParserMixin.getTokenFromCode (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:6323:16)
+      at JSXParserMixin.getTokenFromCode (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:4809:11)
+      at JSXParserMixin.nextToken (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:5799:10)
+      at JSXParserMixin.next (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:5709:10)
+      at JSXParserMixin.parseIdentifierName (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12230:10)
+      at JSXParserMixin.parseIdentifier (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12198:23)
+      at JSXParserMixin.parsePropertyName (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12011:20)
+      at JSXParserMixin.parsePropertyDefinition (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11906:10)
+      at JSXParserMixin.parseObjectLike (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11849:21)
+      at JSXParserMixin.parseExprAtom (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11356:23)
+      at JSXParserMixin.parseExprAtom (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:4776:20)
+      at JSXParserMixin.parseExprSubscripts (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11098:23)
+      at JSXParserMixin.parseUpdate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOps (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10921:23)
+      at JSXParserMixin.parseMaybeConditional (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10817:39
+      at JSXParserMixin.allowInAnd (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12443:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10817:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12510:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11692:28)
+      at JSXParserMixin.parseExprAtom (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11348:23)
+      at JSXParserMixin.parseExprAtom (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:4776:20)
+      at JSXParserMixin.parseExprSubscripts (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11098:23)
+      at JSXParserMixin.parseUpdate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOps (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10921:23)
+      at JSXParserMixin.parseMaybeConditional (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10848:21)
+      at JSXParserMixin.parseFunctionBody (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12110:24)
+      at JSXParserMixin.parseArrowExpression (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12092:10)
+      at JSXParserMixin.parseParenAndDistinguishExpression (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11704:12)
+      at JSXParserMixin.parseExprAtom (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11348:23)
+      at JSXParserMixin.parseExprAtom (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:4776:20)
+      at JSXParserMixin.parseExprSubscripts (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11098:23)
+      at JSXParserMixin.parseUpdate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOps (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10921:23)
+      at JSXParserMixin.parseMaybeConditional (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10817:39
+      at JSXParserMixin.allowInAnd (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12443:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10817:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12510:17)
+[2m01:30:54[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\jegil\Desktop\Analisis Nomina\frontend\src\pages\DashboardPage.jsx: Unexpected character '‘'. (269:91)
+
+[0m [90m 267 |[31m       setRecords(recordsResponse)[33m;[31m
+ [90m 268 |[31m       setScopedCampaignOptions(
+[31m[1m>[22m[31m[90m 269 |[31m         [[33m...[31m[36mnew[31m [33mSet[31m((recordsResponse[33m.[31mrows [33m||[31m [])[33m.[31mmap((row) [33m=>[31m row[[32m"CAMPAÃ‘A"[31m] [33m||[31m row[33m.[31m[33mCAMPAÃ‘A[31m [33m||[31m row[33m.[31m[33mCAMPANA[31m [33m||[31m row[[32m"CampaÃ±a"[31m])[33m.[31mfilter([33mBoolean[31m))]
+ [90m     |[31m                                                                                            [31m[1m^[22m[31m
+ [90m 270 |[31m           [33m.[31msort((a[33m,[31m b) [33m=>[31m [33mString[31m(a)[33m.[31mlocaleCompare([33mString[31m(b)))[33m,[31m
+ [90m 271 |[31m       )[33m;[31m
+ [90m 272 |[31m       setStaffingRows(staffingResponse[33m.[31mrows [33m||[31m [])[33m;[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/jegil/Desktop/Analisis Nomina/frontend/src/pages/DashboardPage.jsx[39m:269:91
+[33m  273|        setBajasByMonth(bajasResponse);
+  274|        setBajasByTenure(tenureResponse);
+  275|        setBajasTenureByMonth(tenureByMonthResponse);
+     |            ^
+  276|        setBajasByReason(reasonResponse);
+  277|        setBajasReasonByCampaign(reasonByCampaignResponse);[39m
+      at constructor (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:6616:19)
+      at JSXParserMixin.getTokenFromCode (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:6323:16)
+      at JSXParserMixin.getTokenFromCode (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:4809:11)
+      at JSXParserMixin.nextToken (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:5799:10)
+      at JSXParserMixin.next (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:5709:10)
+      at JSXParserMixin.parseIdentifierName (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12230:10)
+      at JSXParserMixin.parseIdentifier (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12198:23)
+      at JSXParserMixin.parseMember (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11165:28)
+      at JSXParserMixin.parseSubscript (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11141:21)
+      at JSXParserMixin.parseSubscripts (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11111:19)
+      at JSXParserMixin.parseExprSubscripts (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11102:17)
+      at JSXParserMixin.parseUpdate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOpBaseRightExpr (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11003:34)
+      at JSXParserMixin.parseExprOpRightExpr (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10998:21)
+      at JSXParserMixin.parseExprOp (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10964:27)
+      at JSXParserMixin.parseExprOps (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10925:17)
+      at JSXParserMixin.parseMaybeConditional (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10848:21)
+      at JSXParserMixin.parseFunctionBody (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12110:24)
+      at JSXParserMixin.parseArrowExpression (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12092:10)
+      at JSXParserMixin.parseParenAndDistinguishExpression (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11704:12)
+      at JSXParserMixin.parseExprAtom (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11348:23)
+      at JSXParserMixin.parseExprAtom (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:4776:20)
+      at JSXParserMixin.parseExprSubscripts (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11098:23)
+      at JSXParserMixin.parseUpdate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOps (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10921:23)
+      at JSXParserMixin.parseMaybeConditional (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10817:39
+      at JSXParserMixin.allowInAnd (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12443:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10817:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12510:17)
+      at JSXParserMixin.parseExprListItem (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12192:18)
+      at JSXParserMixin.parseCallExpressionArguments (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11269:22)
+      at JSXParserMixin.parseCoverCallAndAsyncArrowHead (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11203:29)
+      at JSXParserMixin.parseSubscript (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11137:19)
+      at JSXParserMixin.parseSubscripts (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11111:19)
+      at JSXParserMixin.parseExprSubscripts (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11102:17)
+      at JSXParserMixin.parseUpdate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOps (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10921:23)
+      at JSXParserMixin.parseMaybeConditional (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10817:39
+[2m01:31:56[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\jegil\Desktop\Analisis Nomina\frontend\src\pages\DashboardPage.jsx: Unexpected character '‘'. (273:91)
+
+[0m [90m 271 |[31m       setRecords(recordsResponse)[33m;[31m
+ [90m 272 |[31m       setScopedCampaignOptions(
+[31m[1m>[22m[31m[90m 273 |[31m         [[33m...[31m[36mnew[31m [33mSet[31m((recordsResponse[33m.[31mrows [33m||[31m [])[33m.[31mmap((row) [33m=>[31m row[[32m"CAMPAÃ‘A"[31m] [33m||[31m row[33m.[31m[33mCAMPAÃ‘A[31m [33m||[31m row[33m.[31m[33mCAMPANA[31m [33m||[31m row[[32m"CampaÃ±a"[31m])[33m.[31mfilter([33mBoolean[31m))]
+ [90m     |[31m                                                                                            [31m[1m^[22m[31m
+ [90m 274 |[31m           [33m.[31msort((a[33m,[31m b) [33m=>[31m [33mString[31m(a)[33m.[31mlocaleCompare([33mString[31m(b)))[33m,[31m
+ [90m 275 |[31m       )[33m;[31m
+ [90m 276 |[31m       setStaffingRows(staffingResponse[33m.[31mrows [33m||[31m [])[33m;[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/jegil/Desktop/Analisis Nomina/frontend/src/pages/DashboardPage.jsx[39m:273:91
+[33m  277|        setBajasByMonth(bajasResponse);
+  278|        setBajasByTenure(tenureResponse);
+  279|        setBajasTenureByMonth(tenureByMonthResponse);
+     |       ^
+  280|        setBajasByReason(reasonResponse);
+  281|        setBajasReasonByCampaign(reasonByCampaignResponse);[39m
+      at constructor (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:6616:19)
+      at JSXParserMixin.getTokenFromCode (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:6323:16)
+      at JSXParserMixin.getTokenFromCode (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:4809:11)
+      at JSXParserMixin.nextToken (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:5799:10)
+      at JSXParserMixin.next (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:5709:10)
+      at JSXParserMixin.parseIdentifierName (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12230:10)
+      at JSXParserMixin.parseIdentifier (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12198:23)
+      at JSXParserMixin.parseMember (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11165:28)
+      at JSXParserMixin.parseSubscript (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11141:21)
+      at JSXParserMixin.parseSubscripts (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11111:19)
+      at JSXParserMixin.parseExprSubscripts (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11102:17)
+      at JSXParserMixin.parseUpdate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOpBaseRightExpr (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11003:34)
+      at JSXParserMixin.parseExprOpRightExpr (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10998:21)
+      at JSXParserMixin.parseExprOp (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10964:27)
+      at JSXParserMixin.parseExprOps (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10925:17)
+      at JSXParserMixin.parseMaybeConditional (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10848:21)
+      at JSXParserMixin.parseFunctionBody (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12110:24)
+      at JSXParserMixin.parseArrowExpression (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12092:10)
+      at JSXParserMixin.parseParenAndDistinguishExpression (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11704:12)
+      at JSXParserMixin.parseExprAtom (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11348:23)
+      at JSXParserMixin.parseExprAtom (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:4776:20)
+      at JSXParserMixin.parseExprSubscripts (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11098:23)
+      at JSXParserMixin.parseUpdate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOps (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10921:23)
+      at JSXParserMixin.parseMaybeConditional (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10817:39
+      at JSXParserMixin.allowInAnd (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12443:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10817:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12510:17)
+      at JSXParserMixin.parseExprListItem (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:12192:18)
+      at JSXParserMixin.parseCallExpressionArguments (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11269:22)
+      at JSXParserMixin.parseCoverCallAndAsyncArrowHead (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11203:29)
+      at JSXParserMixin.parseSubscript (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11137:19)
+      at JSXParserMixin.parseSubscripts (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11111:19)
+      at JSXParserMixin.parseExprSubscripts (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11102:17)
+      at JSXParserMixin.parseUpdate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOps (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10921:23)
+      at JSXParserMixin.parseMaybeConditional (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\jegil\Desktop\Analisis Nomina\frontend\node_modules\@babel\parser\lib\index.js:10817:39

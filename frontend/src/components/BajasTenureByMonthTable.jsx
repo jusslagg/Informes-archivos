@@ -3,18 +3,22 @@ import { copyTableToClipboard, setClipboardTableData } from "../lib/clipboardTab
 
 const number = new Intl.NumberFormat("es-AR");
 
-export default function BajasReasonByCampaignTable({
-  reasons = [],
+function tenureLabel(row = {}) {
+  return row.Antigüedad || row["AntigÃ¼edad"] || row["AntigÃƒÂ¼edad"] || "";
+}
+
+export default function BajasTenureByMonthTable({
+  months = [],
   rows = [],
   totals = {},
-  dateRange = { start: "", end: "" },
   filterControl = null,
+  dateRange = { start: "", end: "" },
 }) {
-  const columns = ["Campaña", ...reasons, "Total"];
+  const columns = ["Antigüedad", ...months, "Total"];
   const copyLines = [
     columns,
-    ...rows.map((row) => columns.map((column) => row[column] || "")),
-    ["Total", ...reasons.map((reason) => totals[reason] || ""), totals.Total || ""],
+    ...rows.map((row) => columns.map((column) => (column === "Antigüedad" ? tenureLabel(row) : row[column] || ""))),
+    ["Total", ...months.map((month) => totals[month] || ""), totals.Total || ""],
   ];
 
   const copyTable = async () => {
@@ -26,15 +30,13 @@ export default function BajasReasonByCampaignTable({
   };
 
   return (
-    <section className="table-wrap compact-a4 reason-campaign-table" onCopy={handleCopy}>
+    <section className="table-wrap compact-a4 tenure-month-table" onCopy={handleCopy}>
       <div className="table-toolbar">
         <div>
-          <h2>Motivos de baja por campaña</h2>
+          <h2>Permanencia por mes de baja</h2>
           <span>
-            Calculado por CAMPAÑA y MOTIVO BAJA, respetando filtros
-            {dateRange.start || dateRange.end
-              ? ` (${dateRange.start || "inicio"} a ${dateRange.end || "hoy"})`
-              : ""}
+            Cruza antigüedad con el mes de FECHA BAJA
+            {dateRange.start || dateRange.end ? ` (${dateRange.start || "inicio"} a ${dateRange.end || "hoy"})` : ""}
           </span>
         </div>
         <button className="primary-button secondary-button" onClick={copyTable}>
@@ -55,10 +57,10 @@ export default function BajasReasonByCampaignTable({
           <tbody>
             {rows.length ? (
               rows.map((row) => (
-                <tr key={row.Campaña}>
-                  <td>{row.Campaña}</td>
-                  {reasons.map((reason) => (
-                    <td key={reason}>{row[reason] ? number.format(row[reason]) : ""}</td>
+                <tr key={tenureLabel(row)}>
+                  <td>{tenureLabel(row)}</td>
+                  {months.map((month) => (
+                    <td key={month}>{row[month] ? number.format(row[month]) : ""}</td>
                   ))}
                   <td>{number.format(row.Total || 0)}</td>
                 </tr>
@@ -66,7 +68,7 @@ export default function BajasReasonByCampaignTable({
             ) : (
               <tr>
                 <td colSpan={columns.length} className="empty-cell">
-                  Sin bajas por motivo para mostrar.
+                  Sin bajas con permanencia para mostrar.
                 </td>
               </tr>
             )}
@@ -75,8 +77,8 @@ export default function BajasReasonByCampaignTable({
             <tfoot>
               <tr>
                 <td>Total</td>
-                {reasons.map((reason) => (
-                  <td key={reason}>{totals[reason] ? number.format(totals[reason]) : ""}</td>
+                {months.map((month) => (
+                  <td key={month}>{totals[month] ? number.format(totals[month]) : ""}</td>
                 ))}
                 <td>{number.format(totals.Total || 0)}</td>
               </tr>

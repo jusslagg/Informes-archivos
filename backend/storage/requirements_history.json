@@ -1,6 +1,36 @@
 {
   "items": [
     {
+      "id": "1782229902414-cc9e85e5a7d8a",
+      "month": "2026-11",
+      "actor": "Usuario local",
+      "at": "2026-06-23T15:51:42.414Z",
+      "localAt": "23/6/2026, 12:51:42",
+      "timezone": "America/Buenos_Aires",
+      "action": "Limpiar mes",
+      "field": "Requeridos mes",
+      "previousValue": "0",
+      "nextValue": "0",
+      "detail": "Se limpiaron los requeridos diarios de 2026-11"
+    },
+    {
+      "id": "1782229865641-a33c021100594",
+      "month": "2026-12",
+      "actor": "Usuario local",
+      "at": "2026-06-23T15:51:05.638Z",
+      "localAt": "23/6/2026, 12:51:05",
+      "timezone": "America/Buenos_Aires",
+      "action": "Carga masiva",
+      "field": "Requerido diario",
+      "dayKey": "2026-12-02",
+      "previousValue": "10",
+      "nextValue": "",
+      "cliente": "ad",
+      "campana": "ad",
+      "subcampana": "ad",
+      "detail": "ad / ad / ad · 2026-12-02"
+    },
+    {
       "id": "1781896940012-5d0b27c28d6968",
       "month": "2026-06",
       "actor": "Usuario local",
@@ -84857,40 +84887,6 @@
       "campana": "Naturgy",
       "subcampana": "Urgencias NOA",
       "detail": "Naturgy / Naturgy / Urgencias NOA · 2026-04-21"
-    },
-    {
-      "id": "1779997241154-f99e8b4f6c048",
-      "month": "2026-04",
-      "actor": "Usuario local",
-      "at": "2026-05-28T19:40:41.152Z",
-      "localAt": "28/5/2026, 04:40:41",
-      "timezone": "America/Buenos_Aires",
-      "action": "Carga masiva",
-      "field": "Requerido diario",
-      "dayKey": "2026-04-22",
-      "previousValue": "",
-      "nextValue": "4",
-      "cliente": "Naturgy",
-      "campana": "Naturgy",
-      "subcampana": "Urgencias NOA",
-      "detail": "Naturgy / Naturgy / Urgencias NOA · 2026-04-22"
-    },
-    {
-      "id": "1779997241154-b6ee18b8f8563",
-      "month": "2026-04",
-      "actor": "Usuario local",
-      "at": "2026-05-28T19:40:41.152Z",
-      "localAt": "28/5/2026, 04:40:41",
-      "timezone": "America/Buenos_Aires",
-      "action": "Carga masiva",
-      "field": "Requerido diario",
-      "dayKey": "2026-04-23",
-      "previousValue": "",
-      "nextValue": "7",
-      "cliente": "Naturgy",
-      "campana": "Naturgy",
-      "subcampana": "Urgencias NOA",
-      "detail": "Naturgy / Naturgy / Urgencias NOA · 2026-04-23"
     }
   ]
 }

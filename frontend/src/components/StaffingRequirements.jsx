@@ -1,6 +1,7 @@
 import { ChevronDown, ChevronRight, Clipboard, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { getSavedRequirements } from "../api/client.js";
+import { copyTableToClipboard, setClipboardTableData } from "../lib/clipboardTable.js";
 import MetricCard from "./MetricCard.jsx";
 
 const number = new Intl.NumberFormat("es-AR");
@@ -312,11 +313,9 @@ export default function StaffingRequirements({
     ];
   }, [totals, visibleRows]);
 
-  const copyText = tableLines.map((line) => line.join("\t")).join("\n");
-  const copyTable = async () => navigator.clipboard.writeText(copyText);
+  const copyTable = async () => copyTableToClipboard(tableLines);
   const handleCopy = (event) => {
-    event.preventDefault();
-    event.clipboardData.setData("text/plain", copyText);
+    setClipboardTableData(event, tableLines);
   };
 
   return (

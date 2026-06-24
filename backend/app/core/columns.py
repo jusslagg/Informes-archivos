@@ -49,11 +49,26 @@ INCLUDE_USER_COLUMNS = False
 
 
 def normalize_column_name(value: str) -> str:
-    text = str(value).strip().upper()
+    text = repair_text(value).strip().upper()
     text = " ".join(text.replace("_", " ").replace("-", " ").split())
     return "".join(
         char for char in unicodedata.normalize("NFKD", text) if not unicodedata.combining(char)
     )
+
+
+def repair_text(value: str) -> str:
+    text = str(value or "")
+    for _ in range(2):
+        if "Ã" not in text and "Â" not in text:
+            break
+        try:
+            decoded = text.encode("latin1").decode("utf-8")
+        except UnicodeError:
+            break
+        if not decoded or decoded == text:
+            break
+        text = decoded
+    return text
 
 
 def active_columns() -> list[str]:

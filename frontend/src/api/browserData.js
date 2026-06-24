@@ -1,4 +1,4 @@
-import * as XLSX from "xlsx";
+﻿import * as XLSX from "xlsx";
 
 const C = {
   area: "\u00c1REA",
@@ -86,6 +86,27 @@ const MONTH_LABELS = {
   12: "diciembre",
 };
 
+const DEFAULT_HOLIDAY_DATES = {
+  2026: new Set([
+    "2026-01-01",
+    "2026-02-16",
+    "2026-02-17",
+    "2026-03-24",
+    "2026-04-02",
+    "2026-04-03",
+    "2026-05-01",
+    "2026-05-25",
+    "2026-06-15",
+    "2026-06-20",
+    "2026-07-09",
+    "2026-08-17",
+    "2026-10-12",
+    "2026-11-23",
+    "2026-12-08",
+    "2026-12-25",
+  ]),
+};
+
 const state = {
   rows: [],
   missingCore: [],
@@ -94,13 +115,28 @@ const state = {
 };
 
 function normalizeColumnName(value) {
-  return String(value || "")
+  return repairText(value)
     .trim()
     .toUpperCase()
     .replace(/[_-]/g, " ")
     .replace(/\s+/g, " ")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
+}
+
+function repairText(value) {
+  let text = String(value || "");
+  for (let index = 0; index < 2 && /[\u00c2\u00c3]/.test(text); index += 1) {
+    try {
+      const bytes = Uint8Array.from([...text].map((char) => char.charCodeAt(0) & 0xff));
+      const decoded = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+      if (!decoded || decoded === text) break;
+      text = decoded;
+    } catch {
+      break;
+    }
+  }
+  return text;
 }
 
 const ALIASES = new Map();
@@ -114,28 +150,28 @@ function addAlias(source, target) {
 [
   ["AREA", C.area],
   ["\u00c1REA", C.area],
-  ["ÃREA", C.area],
   ["ÃƒÂREA", C.area],
+  ["ÃƒÆ’Ã‚ÂREA", C.area],
   ["SUB AREA", C.subArea],
   ["SUB \u00c1REA", C.subArea],
-  ["SUB ÃREA", C.subArea],
   ["SUB ÃƒÂREA", C.subArea],
+  ["SUB ÃƒÆ’Ã‚ÂREA", C.subArea],
   ["CAMPANA", C.campaign],
   ["CAMPA\u00d1A", C.campaign],
-  ["CAMPAÃ‘A", C.campaign],
   ["CAMPAÃƒâ€˜A", C.campaign],
+  ["CAMPAÃƒÆ’Ã¢â‚¬ËœA", C.campaign],
   ["SUB CAMPANA", C.subCampaign],
   ["SUB CAMPA\u00d1A", C.subCampaign],
-  ["SUB CAMPAÃ‘A", C.subCampaign],
   ["SUB CAMPAÃƒâ€˜A", C.subCampaign],
+  ["SUB CAMPAÃƒÆ’Ã¢â‚¬ËœA", C.subCampaign],
   ["MULTICAMPANA", C.multiCampaign],
   ["MULTICAMPA\u00d1A", C.multiCampaign],
-  ["MULTICAMPAÃ‘A", C.multiCampaign],
   ["MULTICAMPAÃƒâ€˜A", C.multiCampaign],
+  ["MULTICAMPAÃƒÆ’Ã¢â‚¬ËœA", C.multiCampaign],
   ["MODALIDAD DE CONTRATACION", C.modality],
   ["MODALIDAD DE CONTRATACI\u00d3N", C.modality],
-  ["MODALIDAD DE CONTRATACIÃ“N", C.modality],
   ["MODALIDAD DE CONTRATACIÃƒâ€œN", C.modality],
+  ["MODALIDAD DE CONTRATACIÃƒÆ’Ã¢â‚¬Å“N", C.modality],
   ["CLIENTES", "CLIENTE"],
 ].forEach(([source, target]) => addAlias(source, target));
 
@@ -165,7 +201,7 @@ function looseValue(row, ...columns) {
 }
 
 function campaignValue(row) {
-  return looseValue(row, C.campaign, "CAMPANA", "CAMPAÑA") || "Sin dato";
+  return looseValue(row, C.campaign, "CAMPANA", "CAMPAÃ‘A") || "Sin dato";
 }
 
 function clientValue(row) {
@@ -236,6 +272,23 @@ function formatDate(input) {
   return `${date.getFullYear()}-${month}-${day}`;
 }
 
+function monthEnd(date) {
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0);
+}
+
+function businessDaysBetween(start, end) {
+  if (!start || !end || end < start) return 0;
+  const holidays = DEFAULT_HOLIDAY_DATES[start.getFullYear()] || new Set();
+  let total = 0;
+  const current = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  while (current <= end) {
+    const iso = formatDate(current);
+    if (current.getDay() !== 0 && current.getDay() !== 6 && !holidays.has(iso)) total += 1;
+    current.setDate(current.getDate() + 1);
+  }
+  return total;
+}
+
 function cleanPayroll(rawRows) {
   const renamedRows = rawRows.map((row) => {
     const next = {};
@@ -246,8 +299,8 @@ function cleanPayroll(rawRows) {
       }
     });
     if (!next.CLIENTE) next.CLIENTE = looseValue(row, "CLIENTE", "CLIENTES");
-    if (!next[C.campaign]) next[C.campaign] = looseValue(row, C.campaign, "CAMPANA", "CAMPAÑA");
-    if (!next[C.subCampaign]) next[C.subCampaign] = looseValue(row, C.subCampaign, "SUB CAMPANA", "SUB CAMPAÑA");
+    if (!next[C.campaign]) next[C.campaign] = looseValue(row, C.campaign, "CAMPANA", "CAMPAÃ‘A");
+    if (!next[C.subCampaign]) next[C.subCampaign] = looseValue(row, C.subCampaign, "SUB CAMPANA", "SUB CAMPAÃ‘A");
     return next;
   });
 
@@ -386,8 +439,8 @@ function seriesCounts(rows, column, limit = 12) {
 function campaignRow(campana, extra = {}) {
   return {
     [C.campaignLabel]: campana,
-    "CampaÃ±a": campana,
     "CampaÃƒÂ±a": campana,
+    "CampaÃƒÆ’Ã‚Â±a": campana,
     CAMPANA: campana,
     ...extra,
   };
@@ -396,8 +449,8 @@ function campaignRow(campana, extra = {}) {
 function tenureRow(label, bajas = 0) {
   return {
     [C.tenure]: label,
-    "AntigÃ¼edad": label,
     "AntigÃƒÂ¼edad": label,
+    "AntigÃƒÆ’Ã‚Â¼edad": label,
     Bajas: bajas,
   };
 }
@@ -589,7 +642,7 @@ export function getRequiredStructureBrowser(filters = []) {
     const responsable = looseValue(row, "RESPONSABLE", "FORMADOR ASIGNADO", "SUPERVISOR") || "Sin dato";
     const cliente = clientValue(row);
     const campana = campaignValue(row);
-    const subcampana = looseValue(row, C.subCampaign, "SUB CAMPANA", "SUB CAMPAÑA") || "Sin dato";
+    const subcampana = looseValue(row, C.subCampaign, "SUB CAMPANA", "SUB CAMPAÃ‘A") || "Sin dato";
     const key = [pcia, site, responsable, cliente, campana, subcampana].map(normalizeColumnName).join("||");
     const estado = normalizeColumnName(value(row, "ESTADO"));
     const isActivo = estado === "ACTIVO";
@@ -620,6 +673,8 @@ export function getBajasByMonthBrowser(filters = [], dateRange = {}) {
   ensureRows();
   const rows = applyFechaBajaRange(applyFilters(state.rows, withoutEstadoFilter(filters)), dateRange);
   const grouped = new Map();
+  const hourGrouped = new Map();
+  const hourEvents = [];
   const months = new Map();
   rows.forEach((row) => {
     const fecha = dateValue(row["FECHA BAJA"]);
@@ -632,6 +687,30 @@ export function getBajasByMonthBrowser(filters = [], dateRange = {}) {
     current[label] = (current[label] || 0) + 1;
     current.Total += 1;
     grouped.set(campana, current);
+
+    const start = new Date(fecha.getFullYear(), fecha.getMonth(), 1);
+    const end = monthEnd(fecha);
+    const businessDaysMonth = businessDaysBetween(start, end);
+    const workedDays = businessDaysBetween(start, fecha);
+    const missingDays = Math.max(businessDaysMonth - workedDays, 0);
+    const hourKey = `${campana}||${monthKey}`;
+    const hourRow = hourGrouped.get(hourKey) || {
+      [C.campaignLabel]: campana,
+      Mes: label,
+      Bajas: 0,
+      "Días hábiles mes": businessDaysMonth,
+      "Días hábiles trabajados": 0,
+      "Días diferencia": 0,
+      "Horas trabajadas": 0,
+      "Diferencia horas": 0,
+    };
+    hourRow.Bajas += 1;
+    hourRow["Días hábiles trabajados"] += workedDays;
+    hourRow["Días diferencia"] += missingDays;
+    hourRow["Horas trabajadas"] += workedDays * 6;
+    hourRow["Diferencia horas"] += missingDays * 6;
+    hourGrouped.set(hourKey, hourRow);
+    hourEvents.push({ [C.campaignLabel]: campana, Mes: label, "Fecha baja": formatDate(fecha) });
   });
   const labels = [...months.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([, label]) => label);
   const totals = { Total: 0 };
@@ -639,10 +718,23 @@ export function getBajasByMonthBrowser(filters = [], dateRange = {}) {
     totals[label] = [...grouped.values()].reduce((sum, row) => sum + (row[label] || 0), 0);
     totals.Total += totals[label];
   });
+  const hourRows = [...hourGrouped.values()].sort((a, b) => `${a.Mes} ${a[C.campaignLabel]}`.localeCompare(`${b.Mes} ${b[C.campaignLabel]}`));
+  const hourTotals = {
+    Bajas: hourRows.reduce((sum, row) => sum + row.Bajas, 0),
+    "Días hábiles trabajados": hourRows.reduce((sum, row) => sum + row["Días hábiles trabajados"], 0),
+    "Días diferencia": hourRows.reduce((sum, row) => sum + row["Días diferencia"], 0),
+    "Horas trabajadas": hourRows.reduce((sum, row) => sum + row["Horas trabajadas"], 0),
+    "Diferencia horas": hourRows.reduce((sum, row) => sum + row["Diferencia horas"], 0),
+  };
   return {
     months: labels,
     rows: [...grouped.values()].sort((a, b) => b.Total - a.Total),
     totals,
+    hourRows,
+    hourTotals,
+    hourEvents,
+    holidayDates: Object.values(DEFAULT_HOLIDAY_DATES).flatMap((dates) => [...dates]),
+    hoursPerBusinessDay: 6,
   };
 }
 
@@ -672,6 +764,118 @@ export function getBajasByTenureBrowser(filters = [], dateRange = {}) {
   return { rows: buckets, total: buckets.reduce((sum, row) => sum + row.Bajas, 0) };
 }
 
+export function getBajasTenureByMonthBrowser(filters = [], dateRange = {}) {
+  ensureRows();
+  const rows = applyFechaBajaRange(applyFilters(state.rows, withoutEstadoFilter(filters)), dateRange);
+  const bucketLabels = [
+    "Menos de 1 mes",
+    "1 mes",
+    "2 meses",
+    "3 meses",
+    "4 meses",
+    "5 meses",
+    "6 meses",
+    "Mayor a 6 meses",
+  ];
+  const grouped = new Map(bucketLabels.map((label) => [label, { [C.tenure]: label, Total: 0 }]));
+  const months = new Map();
+
+  rows.forEach((row) => {
+    const alta = dateValue(row["FECHA ALTA"]);
+    const baja = dateValue(row["FECHA BAJA"]);
+    if (!alta || !baja || baja < alta) return;
+    let tenureMonths = (baja.getFullYear() - alta.getFullYear()) * 12 + (baja.getMonth() - alta.getMonth());
+    if (baja.getDate() < alta.getDate()) tenureMonths -= 1;
+    const bucketIndex = Math.max(0, Math.min(tenureMonths, 7));
+    const bucket = grouped.get(bucketLabels[bucketIndex === 7 ? 7 : bucketIndex]);
+    const monthKey = `${baja.getFullYear()}-${String(baja.getMonth() + 1).padStart(2, "0")}`;
+    const label = `${MONTH_LABELS[baja.getMonth() + 1]} ${baja.getFullYear()}`;
+    months.set(monthKey, label);
+    bucket[label] = (bucket[label] || 0) + 1;
+    bucket.Total += 1;
+  });
+
+  const labels = [...months.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([, label]) => label);
+  const totals = { Total: 0 };
+  labels.forEach((label) => {
+    totals[label] = [...grouped.values()].reduce((sum, row) => sum + (row[label] || 0), 0);
+    totals.Total += totals[label];
+  });
+  return { months: labels, rows: [...grouped.values()], totals };
+}
+
+export function getBajasReasonByTenureBrowser(filters = [], dateRange = {}) {
+  ensureRows();
+  const rows = applyFechaBajaRange(applyFilters(state.rows, withoutEstadoFilter(filters)), dateRange);
+  const bucketLabels = [
+    "Menos de 1 mes",
+    "1 mes",
+    "2 meses",
+    "3 meses",
+    "4 meses",
+    "5 meses",
+    "6 meses",
+    "Mayor a 6 meses",
+  ];
+  const groupedRows = bucketLabels.map((label) => ({ [C.tenure]: label, Total: 0 }));
+  const reasonTotals = new Map();
+  const campaignBuckets = new Map();
+
+  rows.forEach((row) => {
+    const alta = dateValue(row["FECHA ALTA"]);
+    const baja = dateValue(row["FECHA BAJA"]);
+    if (!alta || !baja || baja < alta) return;
+    let months = (baja.getFullYear() - alta.getFullYear()) * 12 + (baja.getMonth() - alta.getMonth());
+    if (baja.getDate() < alta.getDate()) months -= 1;
+    const index = Math.max(0, Math.min(months, 7));
+    const motivo = value(row, "MOTIVO BAJA") || "Sin dato";
+    const campana = campaignValue(row);
+    const bucketIndex = index === 7 ? 7 : index;
+    const bucket = groupedRows[bucketIndex];
+    bucket[motivo] = (bucket[motivo] || 0) + 1;
+    bucket.Total += 1;
+    reasonTotals.set(motivo, (reasonTotals.get(motivo) || 0) + 1);
+
+    if (!campaignBuckets.has(campana)) {
+      campaignBuckets.set(campana, bucketLabels.map((label) => ({ [C.tenure]: label, Total: 0 })));
+    }
+    const campaignBucket = campaignBuckets.get(campana)[bucketIndex];
+    campaignBucket[motivo] = (campaignBucket[motivo] || 0) + 1;
+    campaignBucket.Total += 1;
+  });
+
+  const reasons = [...reasonTotals.entries()].sort((a, b) => b[1] - a[1]).map(([reason]) => reason);
+  const totals = Object.fromEntries(reasonTotals);
+  totals.Total = [...reasonTotals.values()].reduce((sum, count) => sum + count, 0);
+
+  const buildScopeTotals = (scopeRows) => {
+    const scopeTotals = Object.fromEntries(reasons.map((reason) => [reason, 0]));
+    scopeRows.forEach((row) => {
+      reasons.forEach((reason) => {
+        scopeTotals[reason] += row[reason] || 0;
+      });
+    });
+    scopeTotals.Total = scopeRows.reduce((sum, row) => sum + row.Total, 0);
+    return scopeTotals;
+  };
+
+  const byCampaign = {};
+  const campaigns = [...campaignBuckets.entries()].map(([name, scopeRows]) => {
+    byCampaign[name] = {
+      rows: scopeRows,
+      totals: buildScopeTotals(scopeRows),
+    };
+    return { name, total: byCampaign[name].totals.Total };
+  });
+
+  return {
+    reasons,
+    rows: groupedRows,
+    totals,
+    campaigns: campaigns.sort((a, b) => b.total - a.total),
+    byCampaign,
+  };
+}
 export function getBajasByReasonBrowser(filters = [], dateRange = {}) {
   ensureRows();
   const rows = applyFechaBajaRange(applyFilters(state.rows, withoutEstadoFilter(filters)), dateRange);
@@ -738,3 +942,4 @@ export function runDynamicAnalysisBrowser(payload) {
   });
   return { rows: resultRows.sort((a, b) => Number(b.value || 0) - Number(a.value || 0)).slice(0, 500) };
 }
+

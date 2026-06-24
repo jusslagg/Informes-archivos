@@ -1,4 +1,4 @@
-from datetime import date
+﻿from datetime import date
 from pathlib import Path
 import json
 import re
@@ -10,7 +10,7 @@ from app.core.settings import settings
 
 DEFAULT_HOLIDAYS = {
     "2026": [
-        {"date": "2026-01-01", "label": "Año nuevo"},
+        {"date": "2026-01-01", "label": "Año Nuevo"},
         {"date": "2026-02-16", "label": "Carnaval"},
         {"date": "2026-02-17", "label": "Carnaval"},
         {"date": "2026-03-24", "label": "Día Nacional de la Memoria por la Verdad y la Justicia"},
@@ -49,7 +49,7 @@ def save_latest_dataset(df: pd.DataFrame) -> None:
 
 def load_latest_dataset() -> pd.DataFrame:
     if not Path(settings.latest_dataset).exists():
-        raise FileNotFoundError("Todavía no se importó ninguna nómina.")
+        raise FileNotFoundError("TodavÃ­a no se importÃ³ ninguna nÃ³mina.")
     return pd.read_csv(settings.latest_dataset, dtype=str).fillna("")
 
 
