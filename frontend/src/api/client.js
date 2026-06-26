@@ -7,6 +7,7 @@ import {
   getBajasReasonByTenureBrowser,
   getDashboardBrowser,
   getDatasetMetadataBrowser,
+  getFilterOptionsBrowser,
   getFilteredRecordsBrowser,
   getRequiredStructureBrowser,
   getStaffingByCampaignBrowser,
@@ -64,7 +65,7 @@ export function getDatasetMetadata() {
 }
 
 export function getFilterOptions(filters = []) {
-  if (usesBrowserData) return Promise.resolve(getDatasetMetadataBrowser());
+  if (usesBrowserData) return Promise.resolve(getFilterOptionsBrowser(filters));
   return request("/filter-options", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

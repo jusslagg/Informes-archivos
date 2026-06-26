@@ -77,6 +77,13 @@ function campaignMetaFromColumns(columns = []) {
   });
 }
 
+function campaignOptionsFromColumns(columns = []) {
+  const campaignMeta = campaignMetaFromColumns(columns);
+  return [...(campaignMeta?.values || [])]
+    .filter((value) => value && value !== "Sin dato")
+    .sort((a, b) => String(a).localeCompare(String(b)));
+}
+
 function getDashboardMode(filters = {}) {
   const estadoEntry = Object.entries(filters).find(([column]) => normalizeText(column) === "ESTADO");
   const selectedStates = (estadoEntry?.[1] || []).map(normalizeText);
@@ -326,7 +333,10 @@ export default function DashboardPage() {
       .catch((err) => setError(err.message));
   }, []);
 
-  const campaignOptions = useMemo(() => scopedCampaignOptions, [scopedCampaignOptions]);
+  const campaignOptions = useMemo(
+    () => (scopedCampaignOptions.length ? scopedCampaignOptions : campaignOptionsFromColumns(metadata)),
+    [metadata, scopedCampaignOptions],
+  );
   const baseFilterKey = JSON.stringify(filters);
   const tableFilterSpecs = (tableFilter) => {
     const specs = toFilterSpecs(filters);
@@ -349,11 +359,7 @@ export default function DashboardPage() {
       .then((response) => {
         const campaignMeta = campaignMetaFromColumns(response.columns || []);
         setCampaignColumnName(campaignMeta?.name || "CAMPAÑA");
-        setScopedCampaignOptions(
-          [...(campaignMeta?.values || [])]
-            .filter((value) => value && value !== "Sin dato")
-            .sort((a, b) => String(a).localeCompare(String(b))),
-        );
+        setScopedCampaignOptions(campaignOptionsFromColumns(response.columns || []));
       })
       .catch((err) => setError(err.message));
     // eslint-disable-next-line react-hooks/exhaustive-deps

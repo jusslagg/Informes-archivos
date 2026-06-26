@@ -549,6 +549,20 @@ export function getDatasetMetadataBrowser() {
   };
 }
 
+export function getFilterOptionsBrowser(filters = []) {
+  ensureRows();
+  const rows = applyFilters(state.rows, filters);
+  return {
+    columns: ACTIVE_COLUMNS.map((column) => {
+      const values = [...new Set(rows.map((row) => value(row, column) || "Sin dato"))]
+        .sort((a, b) => a.localeCompare(b))
+        .slice(0, 5000);
+      return { name: column, values, available_count: values.length, unique_count: values.length };
+    }),
+    rows: rows.length,
+  };
+}
+
 export function getFilteredRecordsBrowser(filters = []) {
   ensureRows();
   const rows = applyFilters(state.rows, filters);
