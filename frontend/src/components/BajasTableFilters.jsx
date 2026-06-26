@@ -15,6 +15,9 @@ export default function BajasTableFilters({
   );
   const selected = new Set(selectedCampaigns);
   const allSelected = campaignOptions.length > 0 && selectedCampaigns.length === campaignOptions.length;
+  const selectedLabel = selectedCampaigns.length
+    ? `${selectedCampaigns.length} de ${campaignOptions.length} servicios`
+    : `${campaignOptions.length} servicios disponibles`;
 
   const toggleCampaign = (campaign) => {
     const next = selected.has(campaign)
@@ -61,10 +64,13 @@ export default function BajasTableFilters({
             </button>
           )}
         </label>
-        <label className="check-row select-all-row">
-          <input type="checkbox" checked={allSelected} onChange={toggleAll} />
-          <span>{selectedCampaigns.length ? `${selectedCampaigns.length} seleccionadas` : "Todo el filtro actual"}</span>
-        </label>
+        <div className="bajas-selection-summary">
+          <label className="check-row select-all-row">
+            <input type="checkbox" checked={allSelected} onChange={toggleAll} />
+            <span>{selectedCampaigns.length ? "Seleccionadas" : "Todo el filtro actual"}</span>
+          </label>
+          <strong>{selectedLabel}</strong>
+        </div>
         <div className="bajas-campaign-list">
           {options.map((campaign) => (
             <label key={campaign} className="check-row">

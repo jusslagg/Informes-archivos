@@ -18,8 +18,8 @@ import UploadPage from "./pages/UploadPage.jsx";
 const pages = [
   { id: "upload", label: "Importar", icon: FileSpreadsheet, component: UploadPage },
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, component: DashboardPage },
-  { id: "requeridos", label: "Requeridos", icon: ListChecks, component: RequeridosPage },
-  { id: "resumen-requeridos", label: "Resumen", icon: Table2, component: RequeridosSummaryPage },
+  { id: "requeridos", label: "Requeridos", icon: ListChecks, component: RequeridosPage, hidden: true },
+  { id: "resumen-requeridos", label: "Resumen", icon: Table2, component: RequeridosSummaryPage, hidden: true },
   { id: "quality", label: "Calidad", icon: SearchCheck, component: QualityPage },
 ];
 
@@ -51,6 +51,7 @@ export default function App() {
   const [activePage, setActivePage] = useState("upload");
   const [sidebarHidden, setSidebarHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const visiblePages = pages.filter((page) => !page.hidden);
   const CurrentPage = pages.find((page) => page.id === activePage)?.component || UploadPage;
 
   const navigate = (pageId) => {
@@ -89,7 +90,7 @@ export default function App() {
           </div>
         </div>
         <nav className="nav-list">
-          {pages.map((page) => {
+          {visiblePages.map((page) => {
             const Icon = page.icon;
             return (
               <button

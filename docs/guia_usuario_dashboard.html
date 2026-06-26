@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Guía de Usuario - Dashboard de Análisis de Nómina</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 16mm 14mm 17mm;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: #0f1f35;
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 11.5px;
+      line-height: 1.48;
+      background: #ffffff;
+    }
+
+    .cover {
+      min-height: 248mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 10mm 0 0;
+      page-break-after: always;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: #10213a;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: #2dd4bf;
+      color: #0b1b33;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    h1 {
+      margin: 28mm 0 5mm;
+      font-size: 34px;
+      line-height: 1.08;
+      color: #071831;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      max-width: 150mm;
+      font-size: 15px;
+      color: #41587a;
+    }
+
+    .cover-card {
+      margin-top: 14mm;
+      padding: 8mm;
+      border: 1px solid #cfe0f5;
+      border-radius: 8px;
+      background: #f5f9ff;
+    }
+
+    .cover-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 5mm;
+      margin-top: 8mm;
+    }
+
+    .cover-grid div {
+      padding: 4mm;
+      border-radius: 6px;
+      background: #ffffff;
+      border: 1px solid #dbe7f6;
+    }
+
+    .small-label {
+      margin: 0 0 1mm;
+      color: #607594;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .big-value {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 750;
+      color: #071831;
+    }
+
+    .footer-note {
+      color: #607594;
+      font-size: 10px;
+      border-top: 1px solid #d9e5f4;
+      padding-top: 5mm;
+    }
+
+    h2 {
+      margin: 9mm 0 3mm;
+      padding-bottom: 1.8mm;
+      color: #071831;
+      font-size: 18px;
+      border-bottom: 2px solid #d8e6f7;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      margin: 5mm 0 2mm;
+      color: #163255;
+      font-size: 13.5px;
+      page-break-after: avoid;
+    }
+
+    p {
+      margin: 0 0 2.7mm;
+    }
+
+    ul, ol {
+      margin: 0 0 3.2mm 5mm;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 1.8mm;
+    }
+
+    .callout {
+      margin: 4mm 0;
+      padding: 4mm;
+      border-left: 4px solid #2f6df6;
+      border-radius: 6px;
+      background: #f1f6ff;
+      page-break-inside: avoid;
+    }
+
+    .warning {
+      border-left-color: #f59e0b;
+      background: #fff8e8;
+    }
+
+    .success {
+      border-left-color: #14b8a6;
+      background: #effcf9;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 3mm 0 5mm;
+      page-break-inside: avoid;
+    }
+
+    th {
+      text-align: left;
+      background: #eaf3ff;
+      color: #0b2545;
+      font-size: 10px;
+      text-transform: uppercase;
+      padding: 2.2mm;
+      border: 1px solid #cddced;
+    }
+
+    td {
+      vertical-align: top;
+      padding: 2.2mm;
+      border: 1px solid #d9e4f1;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5mm;
+    }
+
+    .card {
+      border: 1px solid #d5e3f4;
+      border-radius: 8px;
+      padding: 4mm;
+      background: #fbfdff;
+      page-break-inside: avoid;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 8mm 1fr;
+      gap: 3mm;
+      margin-bottom: 3mm;
+      page-break-inside: avoid;
+    }
+
+    .step-num {
+      width: 8mm;
+      height: 8mm;
+      border-radius: 50%;
+      background: #2f6df6;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+    }
+
+    .kbd {
+      display: inline-block;
+      padding: .6mm 1.4mm;
+      border: 1px solid #c7d5e8;
+      border-radius: 4px;
+      background: #f5f8fc;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .muted {
+      color: #566d8f;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <div>
+      <div class="brand"><span class="logo">AN</span><span>Análisis Nómina · Workforce intelligence</span></div>
+      <h1>Guía de Usuario<br>Dashboard de Análisis de Nómina</h1>
+      <p class="subtitle">Manual práctico para leer, filtrar, copiar y exportar la información del dashboard sin conocimientos técnicos.</p>
+
+    </div>
+
+    <p class="footer-note">Esta guía explica cómo usar la pantalla. Los cálculos dependen de que la nómina importada tenga columnas consistentes, especialmente fechas, estado, cliente, campaña, subcampaña, motivo de baja, líder y supervisor cuando aplique.</p>
+  </section>
+
+  <h2>1. Para qué sirve el Dashboard</h2>
+  <p>El Dashboard concentra la lectura ejecutiva y operativa de una nómina importada. Permite responder preguntas como:</p>
+  <ul>
+    <li>Cuántas personas hay activas y cuántas bajas se registran en el período.</li>
+    <li>Qué cuentas, campañas o servicios concentran más dotación o más bajas.</li>
+    <li>Qué motivos de baja pesan más dentro de cada campaña.</li>
+    <li>En qué tramo de antigüedad ocurren más bajas.</li>
+    <li>Cuántas horas se pierden por bajas, considerando días trabajados, feriados y fines de semana.</li>
+    <li>Cuántas bajas tuvo cada líder o supervisor por mes.</li>
+  </ul>
+
+  <div class="callout success">
+    <strong>Idea clave:</strong> primero se carga una nómina. Luego el Dashboard permite mirarla desde distintos ángulos sin modificar el archivo original.
+  </div>
+
+  <h2>2. Antes de empezar</h2>
+  <h3>Datos recomendados en la nómina</h3>
+  <p>Mientras más completa sea la nómina, más completos serán los análisis. Para aprovechar toda la pantalla, el archivo debería incluir:</p>
+  <table>
+    <thead>
+      <tr><th>Dato</th><th>Para que se usa</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Estado</td><td>Separar activos, bajas, inactivos u otros estados.</td></tr>
+      <tr><td>Fecha alta</td><td>Calcular antigüedad y permanencia.</td></tr>
+      <tr><td>Fecha baja</td><td>Filtrar bajas por período, mes y cálculo horario.</td></tr>
+      <tr><td>Motivo baja</td><td>Armar ranking de motivos y participación por antigüedad.</td></tr>
+      <tr><td>Cliente, campaña, subcampaña o servicio</td><td>Filtrar y comparar operaciones.</td></tr>
+      <tr><td>Líder y supervisor</td><td>Ver bajas por responsable y por mes.</td></tr>
+      <tr><td>Horas o jornada, si está disponible</td><td>Apoyar análisis de carga horaria; si no está, se puede configurar manualmente en impacto horario.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Uso local y uso online</h3>
+  <p>La pantalla puede funcionar en modo local o publicada online. En ambos casos, si se sube una nómina válida, el dashboard realiza los cálculos desde esos datos. En la versión online los datos quedan en el navegador del usuario; si se carga una nueva nómina, reemplaza la información anterior.</p>
+
+  <div class="callout warning">
+    <strong>Importante:</strong> si un dato aparece fuera de fecha o en una campaña incorrecta, lo primero es revisar que la fila de origen tenga bien cargadas la fecha de baja, campaña/servicio y estado.
+  </div>
+
+  <h2>3. Recorrido rapido de la pantalla</h2>
+  <div class="step">
+    <div class="step-num">1</div>
+    <div><strong>Cargar o confirmar la nómina.</strong> Si no hay datos cargados, el dashboard no tendrá información para calcular.</div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div><strong>Aplicar filtros generales.</strong> Elegir estado, cliente, campaña, área, modalidad u otros filtros de la barra principal.</div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div><strong>Revisar indicadores principales.</strong> Ver dotación, bajas, altas, participación y rankings.</div>
+  </div>
+  <div class="step">
+    <div class="step-num">4</div>
+    <div><strong>Entrar al detalle.</strong> Usar las tablas de bajas, permanencia, motivo, impacto horario, lideres y supervisores.</div>
+  </div>
+  <div class="step">
+    <div class="step-num">5</div>
+    <div><strong>Copiar o exportar.</strong> Usar los botones de copiar tabla o descargar informe para trabajar en Excel, Word o presentaciones.</div>
+  </div>
+
+  <h2>4. Filtros generales</h2>
+  <p>Los filtros generales están en la parte superior del Dashboard. Afectan a casi toda la pantalla. Sirven para elegir el universo que se quiere analizar.</p>
+  <table>
+    <thead>
+      <tr><th>Filtro</th><th>Uso recomendado</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Estado</td><td>Seleccionar activos para ver dotación actual, o bajas/inactivos para analizar salidas.</td></tr>
+      <tr><td>Cliente / Cuenta</td><td>Comparar o aislar una cuenta específica.</td></tr>
+      <tr><td>Campaña / Servicio</td><td>Revisar un servicio puntual dentro de una cuenta.</td></tr>
+      <tr><td>Área, modalidad u otros campos</td><td>Reducir el análisis a un segmento operativo.</td></tr>
+      <tr><td>Limpiar filtros</td><td>Volver al universo completo de la nómina cargada.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>Filtro dentro del filtro:</strong> si primero se filtra por una cuenta, las listas internas de campañas muestran solo los servicios asociados a esa cuenta. Esto evita elegir combinaciones que no existen en los datos.
+  </div>
+
+  <h2>5. Modos de visualización</h2>
+  <p>El Dashboard ajusta lo que muestra según el tipo de información seleccionada:</p>
+  <ul>
+    <li><strong>Vista activos:</strong> cuando se trabaja solo con personas activas, se prioriza dotación, participación y distribución.</li>
+    <li><strong>Vista bajas:</strong> cuando se trabaja con bajas, se muestran motivos, permanencia, impacto horario y responsables.</li>
+    <li><strong>Vista general:</strong> cuando el filtro incluye varios estados, se combinan indicadores de dotacion y de bajas.</li>
+  </ul>
+
+  <h2>6. Indicadores principales</h2>
+  <p>Los indicadores superiores dan una lectura rápida del estado de la nómina filtrada.</p>
+  <table>
+    <thead>
+      <tr><th>Indicador</th><th>Como interpretarlo</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Total empleados</td><td>Cantidad de registros dentro del filtro actual.</td></tr>
+      <tr><td>Activos</td><td>Personas que figuran con estado activo.</td></tr>
+      <tr><td>Bajas del mes</td><td>Salidas registradas en el mes analizado o periodo vigente.</td></tr>
+      <tr><td>Altas del mes</td><td>Ingresos detectados por fecha de alta.</td></tr>
+      <tr><td>Carga horaria total</td><td>Horas asociadas a la dotación o calculadas desde la jornada configurada.</td></tr>
+      <tr><td>Participación</td><td>Peso porcentual de una cuenta, campaña o segmento sobre el total filtrado.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>7. Rankings y participación</h2>
+  <p>Los gráficos de ranking ayudan a ver dónde se concentra la dotación o las bajas. Normalmente se muestran barras por cuenta, campaña, área o modalidad.</p>
+  <ul>
+    <li>Una barra más larga indica mayor cantidad o mayor participación.</li>
+    <li>Al seleccionar una cuenta o campaña, el panel lateral muestra el detalle del segmento elegido.</li>
+    <li>Si una cuenta aparece con un numero inesperado, revisar si el filtro general esta incluyendo otras campañas, subcampañas o estados.</li>
+  </ul>
+
+  <h2>8. Tablas con filtros independientes</h2>
+  <p>Varias tablas de bajas tienen sus propios filtros. Esto permite analizar una tabla sin romper el resto del dashboard.</p>
+  <div class="two-col">
+    <div class="card">
+      <h3>Fechas Desde / Hasta</h3>
+      <p>Filtran por <strong>Fecha baja</strong>. Si se coloca desde mayo hasta junio, la tabla debe mostrar solo bajas cuya fecha de baja este dentro de ese rango.</p>
+    </div>
+    <div class="card">
+      <h3>Listado de campañas</h3>
+      <p>Permite elegir uno o varios servicios. El buscador ayuda cuando la lista es larga.</p>
+    </div>
+    <div class="card">
+      <h3>Todo el filtro actual</h3>
+      <p>Usa todas las campañas disponibles dentro de los filtros generales aplicados arriba.</p>
+    </div>
+    <div class="card">
+      <h3>Limpiar fechas</h3>
+      <p>Borra el rango de fechas de esa tabla y vuelve a mostrar el periodo disponible para el filtro actual.</p>
+    </div>
+  </div>
+
+  <h2>9. Bajas mes por mes</h2>
+  <p>Esta tabla muestra cuantas bajas hubo por campaña en cada mes. Sirve para detectar meses con subidas, caidas o patrones repetidos.</p>
+  <p><strong>Como usarla:</strong></p>
+  <ol>
+    <li>Elegir un rango de fechas en <span class="kbd">Desde</span> y <span class="kbd">Hasta</span>.</li>
+    <li>Seleccionar una o varias campañas en el listado.</li>
+    <li>Revisar la fila total para entender el volumen mensual.</li>
+    <li>Copiar la tabla si se necesita trabajarla en Excel.</li>
+  </ol>
+
+  <h2>10. Bajas por meses en empresa</h2>
+  <p>Esta tabla calcula la permanencia de las personas dadas de baja. Cruza la <strong>Fecha alta</strong> con la <strong>Fecha baja</strong> y agrupa en tramos de antigüedad.</p>
+  <table>
+    <thead>
+      <tr><th>Tramo</th><th>Que significa</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Menos de 1 mes</td><td>Personas que salieron antes de cumplir un mes.</td></tr>
+      <tr><td>1 mes, 2 meses, etc.</td><td>Personas que salieron con esa antigüedad aproximada.</td></tr>
+      <tr><td>Mayor a 6 meses</td><td>Personas con permanencia superior a seis meses.</td></tr>
+    </tbody>
+  </table>
+  <p>Es util para separar problemas de seleccion, onboarding, curva de aprendizaje o desgaste posterior.</p>
+
+  <h2>11. Bajas por motivo</h2>
+  <p>Ordena las bajas según el motivo informado en la nómina. La columna de participación indica qué porcentaje representa cada motivo sobre el total de bajas filtradas.</p>
+  <div class="callout">
+    <strong>Ejemplo:</strong> si Renuncia muestra 65%, significa que 65 de cada 100 bajas del filtro actual fueron registradas con ese motivo.
+  </div>
+
+  <h2>12. Participación del motivo por antigüedad</h2>
+  <p>Esta visual permite entender si un motivo se concentra en personas nuevas, intermedias o antiguas.</p>
+  <p>Al seleccionar un motivo, cada tarjeta de antigüedad muestra dos medidas:</p>
+  <table>
+    <thead>
+      <tr><th>Medida</th><th>Que mide</th><th>Ejemplo de lectura</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Peso en tramo</td><td>Del total de bajas de ese tramo, que porcentaje corresponde al motivo elegido.</td><td>Si "Menos de 1 mes" tiene 34 bajas y 29 son renuncias, el peso en tramo es 29 / 34 = 85,3%.</td></tr>
+      <tr><td>Distribución del motivo</td><td>Del total de bajas de ese motivo, qué porcentaje cayó en ese tramo.</td><td>Si hay 143 renuncias totales y 29 ocurrieron antes del mes, la distribución es 29 / 143 = 20,3%.</td></tr>
+    </tbody>
+  </table>
+  <p>La primera barra responde: "dentro de este tramo, cuanto pesa el motivo". La segunda responde: "dentro de este motivo, en que tramo se concentra".</p>
+
+  <h2>13. Permanencia por mes de baja</h2>
+  <p>Esta tabla cruza los tramos de antigüedad con el mes de baja. Ayuda a ver, por ejemplo, si en enero se fueron principalmente personas nuevas o personas con mas permanencia.</p>
+  <p>Se recomienda usarla cuando se quiera explicar un pico de bajas no solo por cantidad, sino tambien por antigüedad.</p>
+
+  <h2>14. Impacto horario por bajas</h2>
+  <p>Esta seccion estima cuantas horas se trabajaron y cuantas horas se dejaron de trabajar por bajas ocurridas durante el mes.</p>
+  <table>
+    <thead>
+      <tr><th>Control</th><th>Funcion</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Horas/día</td><td>Cantidad de horas que trabaja una persona por día. Por ejemplo: 6.</td></tr>
+      <tr><td>Dias/semana</td><td>Cantidad de dias habituales de trabajo por semana. Por ejemplo: 5.</td></tr>
+      <tr><td>Contar fines de semana</td><td>Incluir sabados y domingos cuando la campaña trabaja esos dias.</td></tr>
+      <tr><td>Excluir feriados</td><td>Restar feriados nacionales configurados para Argentina.</td></tr>
+      <tr><td>Expandir mes</td><td>Ver el detalle por campaña o servicio dentro de ese mes.</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Lectura simple:</strong> si una persona se da de baja el 15 de enero, no se descuentan horas de febrero por esa baja; el impacto se calcula dentro del mes correspondiente a la fecha de baja.</p>
+
+  <h2>15. Bajas por responsable y mes</h2>
+  <p>Esta seccion permite ver cuantas bajas tuvo cada responsable en su equipo, separando dos miradas:</p>
+  <ul>
+    <li><strong>Por líder:</strong> agrupa las bajas por líder y mes.</li>
+    <li><strong>Por supervisor:</strong> agrupa las bajas por supervisor y mes.</li>
+  </ul>
+  <p>Para que funcione correctamente, la nómina debe traer columnas de líder y supervisor. Si esos campos vienen vacíos, el dashboard puede agruparlos como "Sin dato".</p>
+
+  <h2>16. Copiar tablas y exportar</h2>
+  <p>Los botones <span class="kbd">Copiar tabla</span> o <span class="kbd">Copiar</span> copian la tabla en formato compatible con Excel. Despues de copiar:</p>
+  <ol>
+    <li>Abrir Excel o Google Sheets.</li>
+    <li>Seleccionar una celda vacia.</li>
+    <li>Pegar con Ctrl + V.</li>
+    <li>Revisar que cada dato haya quedado en su propia celda.</li>
+  </ol>
+  <p>Los botones de exportacion generan reportes para compartir. El informe sirve para lectura ejecutiva; la copia de tablas sirve mejor para analisis detallado.</p>
+
+  <h2>17. Buenas practicas de analisis</h2>
+  <ul>
+    <li>Antes de analizar una cuenta, limpiar filtros anteriores para evitar conclusiones mezcladas.</li>
+    <li>Usar siempre rangos de fecha claros cuando se analicen bajas.</li>
+    <li>Comparar "Bajas por motivo" con "Bajas por meses en empresa" para entender si el problema ocurre al inicio o despues.</li>
+    <li>En impacto horario, ajustar horas/día y días/semana según la realidad de cada campaña.</li>
+    <li>Si se detecta un valor raro, buscar primero la fila de origen en la nómina importada.</li>
+    <li>Usar "Todo el filtro actual" cuando se quiera respetar el filtro general sin elegir campañas una por una.</li>
+  </ul>
+
+  <h2>18. Problemas frecuentes</h2>
+  <table>
+    <thead>
+      <tr><th>Situacion</th><th>Posible causa</th><th>Que hacer</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>No aparece una campaña en el listado</td><td>El filtro general ya la excluyo, o la campaña viene con otro nombre.</td><td>Limpiar filtros generales y buscar variantes del nombre.</td></tr>
+      <tr><td>Aparece "Sin dato"</td><td>La fila no trae campaña, motivo, líder, supervisor u otro campo necesario.</td><td>Completar o corregir el template original y volver a importar.</td></tr>
+      <tr><td>Un motivo aparece fuera del periodo filtrado</td><td>La fecha de baja puede estar mal interpretada o cargada.</td><td>Revisar formato de fecha y confirmar que sea Fecha baja.</td></tr>
+      <tr><td>Los acentos se ven mal</td><td>El archivo puede venir con codificación incorrecta.</td><td>Guardar el archivo como Excel o CSV UTF-8 antes de importar.</td></tr>
+      <tr><td>La dotación no coincide con lo esperado</td><td>El filtro puede incluir subcampañas reasignadas, otros estados o duplicados.</td><td>Filtrar por cuenta, campaña y estado; revisar subcampañas asociadas.</td></tr>
+      <tr><td>El impacto horario no coincide</td><td>Horas/dia, dias/semana, fines de semana o feriados no coinciden con la realidad de la campaña.</td><td>Ajustar los controles de impacto horario antes de copiar la tabla.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>19. Glosario</h2>
+  <table>
+    <thead>
+      <tr><th>Concepto</th><th>Definicion simple</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Dotación</td><td>Cantidad de personas dentro del filtro analizado.</td></tr>
+      <tr><td>Baja</td><td>Persona con fecha o estado de salida registrado.</td></tr>
+      <tr><td>Participación</td><td>Porcentaje que representa un grupo sobre el total.</td></tr>
+      <tr><td>Antigüedad</td><td>Tiempo entre fecha de alta y fecha de baja.</td></tr>
+      <tr><td>Campaña / Servicio</td><td>Operación o segmento donde trabaja la persona.</td></tr>
+      <tr><td>Filtro actual</td><td>Conjunto de datos que quedo despues de aplicar filtros.</td></tr>
+      <tr><td>Feriado excluido</td><td>Dia no trabajado que se resta del calculo horario.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+  <h2>20. Checklist rápido para una revisión mensual</h2>
+  <ol>
+    <li>Cargar la nómina actualizada.</li>
+    <li>Confirmar que se vean correctamente acentos, Ñ y fechas.</li>
+    <li>Filtrar el mes a revisar en las tablas de bajas.</li>
+    <li>Revisar el total de bajas por mes y por motivo.</li>
+    <li>Mirar permanencia para detectar si las salidas ocurren en los primeros meses.</li>
+    <li>Ajustar impacto horario segun jornada real de la campaña.</li>
+    <li>Revisar bajas por líder y supervisor.</li>
+    <li>Copiar tablas relevantes a Excel o exportar informe.</li>
+    <li>Guardar conclusiones y acciones en el archivo de seguimiento del equipo.</li>
+  </ol>
+
+  <div class="callout success">
+    <strong>Recomendacion final:</strong> para reuniones de gestion, empezar por el total mensual, luego motivo, luego antigüedad, y cerrar con responsables e impacto horario. Ese orden suele explicar primero el tamaño del problema y despues sus posibles causas.
+  </div>
+</body>
+</html>

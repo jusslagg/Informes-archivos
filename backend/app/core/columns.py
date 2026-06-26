@@ -31,6 +31,8 @@ OPTIONAL_COLUMNS = [
     "SITIO",
     "PRESENCIALIDAD",
     "EQUIPO",
+    "LÍDER",
+    "SUPERVISOR",
     "FORMADOR ASIGNADO",
     "MOTIVO BAJA",
 ]

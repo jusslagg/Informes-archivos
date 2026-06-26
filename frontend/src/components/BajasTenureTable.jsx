@@ -1,13 +1,17 @@
-import { Clipboard } from "lucide-react";
+﻿import { Clipboard } from "lucide-react";
 import { copyTableToClipboard, setClipboardTableData } from "../lib/clipboardTable.js";
 
 const number = new Intl.NumberFormat("es-AR");
+
+function tenureLabel(row = {}) {
+  return row.Antigüedad || row["AntigÃ¼edad"] || row["AntigÃƒÂ¼edad"] || row["AntigÃƒÆ’Ã‚Â¼edad"] || "Sin dato";
+}
 
 export default function BajasTenureTable({ rows = [], total = 0, dateRange = { start: "", end: "" }, filterControl = null }) {
   const copyLines = [
     ["Antigüedad", "Bajas", "Participación"],
     ...rows.map((row) => [
-      row.Antigüedad,
+      tenureLabel(row),
       row.Bajas,
       total ? `${((row.Bajas / total) * 100).toFixed(1)}%` : "0%",
     ]),
@@ -52,8 +56,8 @@ export default function BajasTenureTable({ rows = [], total = 0, dateRange = { s
           <tbody>
             {rows.length ? (
               rows.map((row) => (
-                <tr key={row.Antigüedad}>
-                  <td>{row.Antigüedad}</td>
+                <tr key={tenureLabel(row)}>
+                  <td>{tenureLabel(row)}</td>
                   <td>{number.format(row.Bajas)}</td>
                   <td>{total ? `${((row.Bajas / total) * 100).toFixed(1)}%` : "0%"}</td>
                 </tr>

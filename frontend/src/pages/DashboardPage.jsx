@@ -2,6 +2,7 @@
   AlertTriangle,
   ArrowDownRight,
   ArrowUpRight,
+  BookOpenText,
   Download,
   FileSpreadsheet,
   FileText,
@@ -10,17 +11,9 @@
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import {
   exportUrl,
   getBajasByMonth,
+  getBajasByOwnerMonth,
   getBajasByReason,
   getBajasByTenure,
   getBajasTenureByMonth,
@@ -34,6 +27,7 @@ import {
   usesBrowserData,
 } from "../api/client.js";
 import BajasByMonthTable from "../components/BajasByMonthTable.jsx";
+import BajasOwnerByMonthTable from "../components/BajasOwnerByMonthTable.jsx";
 import BajasReasonByCampaignTable from "../components/BajasReasonByCampaignTable.jsx";
 import BajasReasonTable from "../components/BajasReasonTable.jsx";
 import BajasReasonTenureExplorer from "../components/BajasReasonTenureExplorer.jsx";
@@ -47,6 +41,7 @@ import { readDashboardState, saveDashboardState } from "../lib/payrollSession.js
 import { exportDashboardReport } from "../utils/reportExport.js";
 
 const number = new Intl.NumberFormat("es-AR");
+const dashboardGuideUrl = `${import.meta.env.BASE_URL}guia_usuario_dashboard.pdf`;
 
 function normalizeText(value) {
   return String(value || "")
@@ -123,42 +118,6 @@ function DashboardInsight({ title, value, detail, tone = "neutral" }) {
   );
 }
 
-function ExecutiveRanking({ title, subtitle, data = [] }) {
-  const visibleData = data.slice(0, 8);
-
-  return (
-    <section className="dashboard-panel">
-      <header className="dashboard-panel-header">
-        <div>
-          <h2>{title}</h2>
-          <p>{subtitle}</p>
-        </div>
-        <span>{visibleData.length} segmentos</span>
-      </header>
-      <div className="dashboard-ranking-chart">
-        {visibleData.length ? (
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={visibleData} layout="vertical" margin={{ top: 8, right: 26, left: 18, bottom: 8 }}>
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
-              <XAxis type="number" tick={{ fontSize: 11, fill: "#64748b" }} tickFormatter={(value) => number.format(value)} />
-              <YAxis
-                type="category"
-                dataKey="name"
-                width={132}
-                tick={{ fontSize: 11, fill: "#334155", fontWeight: 700 }}
-              />
-              <Tooltip formatter={(value) => number.format(value)} contentStyle={{ borderRadius: 8, borderColor: "#dbe3ef" }} />
-              <Bar dataKey="value" fill="#2563eb" radius={[0, 8, 8, 0]} barSize={18} />
-            </BarChart>
-          </ResponsiveContainer>
-        ) : (
-          <div className="empty-chart">ImportÃ¡ una nÃ³mina o ajustÃ¡ los filtros para ver resultados.</div>
-        )}
-      </div>
-    </section>
-  );
-}
-
 function formatDateInput(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
@@ -231,6 +190,9 @@ export default function DashboardPage() {
   const [records, setRecords] = useState(() => savedState?.records || { columns: [], rows: [], total: 0, limit: 500 });
   const [staffingRows, setStaffingRows] = useState(() => savedState?.staffingRows || []);
   const [bajasByMonth, setBajasByMonth] = useState(() => savedState?.bajasByMonth || { months: [], rows: [], totals: {} });
+  const [bajasByOwnerMonth, setBajasByOwnerMonth] = useState(
+    () => savedState?.bajasByOwnerMonth || { months: [], leader: { rows: [], totals: {} }, supervisor: { rows: [], totals: {} } },
+  );
   const [bajasByTenure, setBajasByTenure] = useState(() => savedState?.bajasByTenure || { rows: [], total: 0 });
   const [bajasTenureByMonth, setBajasTenureByMonth] = useState(
     () => savedState?.bajasTenureByMonth || { months: [], rows: [], totals: {} },
@@ -245,6 +207,9 @@ export default function DashboardPage() {
   const [bajasDateRange, setBajasDateRange] = useState(() => savedState?.bajasDateRange || { start: "", end: "" });
   const defaultTableFilter = { dateRange: savedState?.bajasDateRange || { start: "", end: "" }, campaigns: [] };
   const [monthTableFilter, setMonthTableFilter] = useState(() => savedState?.monthTableFilter || defaultTableFilter);
+  const [ownerMonthTableFilter, setOwnerMonthTableFilter] = useState(
+    () => savedState?.ownerMonthTableFilter || defaultTableFilter,
+  );
   const [tenureTableFilter, setTenureTableFilter] = useState(() => savedState?.tenureTableFilter || defaultTableFilter);
   const [tenureMonthTableFilter, setTenureMonthTableFilter] = useState(
     () => savedState?.tenureMonthTableFilter || defaultTableFilter,
@@ -272,44 +237,28 @@ export default function DashboardPage() {
         dashboardResponse,
         recordsResponse,
         staffingResponse,
-        bajasResponse,
-        tenureResponse,
-        tenureByMonthResponse,
-        reasonResponse,
-        reasonByCampaignResponse,
-        reasonByTenureResponse,
       ] = await Promise.all([
         getFilteredDashboard(filterSpecs),
         getFilteredRecords(filterSpecs),
         getStaffingByCampaign(filterSpecs),
-        getBajasByMonth(filterSpecs, nextBajasDateRange),
-        getBajasByTenure(filterSpecs, nextBajasDateRange),
-        getBajasTenureByMonth(filterSpecs, nextBajasDateRange),
-        getBajasByReason(filterSpecs, nextBajasDateRange),
-        getBajasReasonByCampaign(filterSpecs, nextBajasDateRange),
-        getBajasReasonByTenure(filterSpecs, nextBajasDateRange),
       ]);
       setDashboard(dashboardResponse);
       setRecords(recordsResponse);
       setStaffingRows(staffingResponse.rows || []);
-      setBajasByMonth(bajasResponse);
-      setBajasByTenure(tenureResponse);
-      setBajasTenureByMonth(tenureByMonthResponse);
-      setBajasByReason(reasonResponse);
-      setBajasReasonByCampaign(reasonByCampaignResponse);
-      setBajasReasonByTenure(reasonByTenureResponse);
       saveDashboardState({
         dashboard: dashboardResponse,
         records: recordsResponse,
         staffingRows: staffingResponse.rows || [],
-        bajasByMonth: bajasResponse,
-        bajasByTenure: tenureResponse,
-        bajasTenureByMonth: tenureByMonthResponse,
-        bajasByReason: reasonResponse,
-        bajasReasonByCampaign: reasonByCampaignResponse,
-        bajasReasonByTenure: reasonByTenureResponse,
+        bajasByMonth,
+        bajasByOwnerMonth,
+        bajasByTenure,
+        bajasTenureByMonth,
+        bajasByReason,
+        bajasReasonByCampaign,
+        bajasReasonByTenure,
         bajasDateRange: nextBajasDateRange,
         monthTableFilter,
+        ownerMonthTableFilter,
         tenureTableFilter,
         tenureMonthTableFilter,
         reasonTableFilter,
@@ -374,6 +323,7 @@ export default function DashboardPage() {
       });
     };
     prune(setMonthTableFilter);
+    prune(setOwnerMonthTableFilter);
     prune(setTenureTableFilter);
     prune(setTenureMonthTableFilter);
     prune(setReasonTableFilter);
@@ -387,6 +337,13 @@ export default function DashboardPage() {
       .catch((err) => setError(err.message));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [baseFilterKey, JSON.stringify(monthTableFilter)]);
+
+  useEffect(() => {
+    getBajasByOwnerMonth(tableFilterSpecs(ownerMonthTableFilter), ownerMonthTableFilter.dateRange)
+      .then(setBajasByOwnerMonth)
+      .catch((err) => setError(err.message));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [baseFilterKey, JSON.stringify(ownerMonthTableFilter)]);
 
   useEffect(() => {
     getBajasByTenure(tableFilterSpecs(tenureTableFilter), tenureTableFilter.dateRange)
@@ -430,6 +387,7 @@ export default function DashboardPage() {
       records,
       staffingRows,
       bajasByMonth,
+      bajasByOwnerMonth,
       bajasByTenure,
       bajasTenureByMonth,
       bajasByReason,
@@ -437,6 +395,7 @@ export default function DashboardPage() {
       bajasReasonByTenure,
       bajasDateRange,
       monthTableFilter,
+      ownerMonthTableFilter,
       tenureTableFilter,
       tenureMonthTableFilter,
       reasonTableFilter,
@@ -452,6 +411,7 @@ export default function DashboardPage() {
     records,
     staffingRows,
     bajasByMonth,
+    bajasByOwnerMonth,
     bajasByTenure,
     bajasTenureByMonth,
     bajasByReason,
@@ -459,6 +419,7 @@ export default function DashboardPage() {
     bajasReasonByTenure,
     bajasDateRange,
     monthTableFilter,
+    ownerMonthTableFilter,
     tenureTableFilter,
     tenureMonthTableFilter,
     reasonTableFilter,
@@ -492,15 +453,15 @@ export default function DashboardPage() {
   const viewCopy = {
     active: {
       label: "Vista activos",
-      detail: "Mostrando dotaciÃ³n, distribuciÃ³n y detalle de personas activas. Se ocultan los bloques de bajas.",
+      detail: "Mostrando dotación, distribución y detalle de personas activas. Se ocultan los bloques de bajas.",
     },
     bajas: {
       label: "Vista bajas",
-      detail: "Mostrando rotaciÃ³n, motivos, antigÃ¼edad y detalle de bajas. Se ocultan los bloques de dotaciÃ³n activa.",
+      detail: "Mostrando rotación, motivos, antigüedad y detalle de bajas. Se ocultan los bloques de dotación activa.",
     },
     general: {
       label: "Vista general",
-      detail: "Mostrando activos, bajas, dotaciÃ³n y detalle segÃºn los filtros aplicados.",
+      detail: "Mostrando activos, bajas, dotación y detalle según los filtros aplicados.",
     },
   }[dashboardMode];
   const reportData = {
@@ -523,12 +484,16 @@ export default function DashboardPage() {
       <header className="page-header dashboard-hero">
         <div>
           <p>Dashboard</p>
-          <h1>Resumen de nÃ³mina</h1>
+          <h1>Resumen de nómina</h1>
           <span>
-            Lectura ejecutiva de la nÃ³mina importada, con filtros vivos y detalle operativo sin perder trazabilidad.
+            Lectura ejecutiva de la nómina importada, con filtros vivos y detalle operativo sin perder trazabilidad.
           </span>
         </div>
         <div className="header-actions">
+          <a className="primary-button secondary-button dashboard-guide-button" href={dashboardGuideUrl} download>
+            <BookOpenText size={18} />
+            Guía PDF
+          </a>
           <button className="icon-button" onClick={() => loadDashboard()} title="Actualizar" disabled={loading}>
             <RefreshCw size={18} />
           </button>
@@ -586,20 +551,20 @@ export default function DashboardPage() {
 
       <section className="dashboard-insight-grid">
         <DashboardInsight
-          title="Mayor concentraciÃ³n"
+          title="Mayor concentración"
           value={topClient?.name || "Sin datos"}
-          detail={topClient ? `${number.format(topClient.value)} empleados en el cliente lÃ­der.` : "ImportÃ¡ o filtrÃ¡ una nÃ³mina para calcularlo."}
+          detail={topClient ? `${number.format(topClient.value)} empleados en el cliente líder.` : "Importá o filtrá una nómina para calcularlo."}
           tone="success"
         />
         <DashboardInsight
-          title="Ãrea principal"
+          title="Área principal"
           value={topArea?.name || "Sin datos"}
-          detail={topArea ? `${number.format(topArea.value)} personas concentradas en esta Ã¡rea.` : "Sin registros visibles."}
+          detail={topArea ? `${number.format(topArea.value)} personas concentradas en esta área.` : "Sin registros visibles."}
         />
         <DashboardInsight
-          title={isBajasMode ? "CampaÃ±a con mÃ¡s bajas" : "CampaÃ±a crÃ­tica"}
+          title={isBajasMode ? "Campaña con más bajas" : "Campaña crítica"}
           value={topCampaign?.name || "Sin datos"}
-          detail={topCampaign ? `${number.format(topCampaign.value)} registros asociados.` : "No hay campaÃ±as para mostrar."}
+          detail={topCampaign ? `${number.format(topCampaign.value)} registros asociados.` : "No hay campañas para mostrar."}
         />
         {!isActiveMode && (
           <DashboardInsight
@@ -609,13 +574,6 @@ export default function DashboardPage() {
             tone={topReason ? "warning" : "neutral"}
           />
         )}
-      </section>
-
-      <section className="dashboard-main-grid">
-        <ExecutiveRanking title="Ranking por cliente" subtitle="Clientes con mayor dotaciÃ³n visible" data={charts.empleados_por_cliente} />
-        <ExecutiveRanking title="Ranking por campaÃ±a" subtitle="CampaÃ±as con mayor volumen operativo" data={charts.empleados_por_campana} />
-        <ExecutiveRanking title="Ranking por Ã¡rea" subtitle="DistribuciÃ³n por Ã¡rea del archivo importado" data={charts.empleados_por_area} />
-        <ExecutiveRanking title="Modalidad" subtitle="ComposiciÃ³n de contrataciÃ³n/modalidad" data={charts.empleados_por_modalidad} />
       </section>
 
       {!isActiveMode && (
@@ -632,6 +590,14 @@ export default function DashboardPage() {
             dateRange={monthTableFilter.dateRange}
             onDateRangeChange={(dateRange) => setMonthTableFilter((current) => ({ ...current, dateRange }))}
             filterControl={renderTableFilters(monthTableFilter, setMonthTableFilter)}
+          />
+
+          <BajasOwnerByMonthTable
+            months={bajasByOwnerMonth.months}
+            leader={bajasByOwnerMonth.leader}
+            supervisor={bajasByOwnerMonth.supervisor}
+            dateRange={ownerMonthTableFilter.dateRange}
+            filterControl={renderTableFilters(ownerMonthTableFilter, setOwnerMonthTableFilter)}
           />
 
           <section className="split-table-grid">
@@ -689,7 +655,7 @@ export default function DashboardPage() {
       <DataTable
         columns={records.columns}
         rows={records.rows}
-        title={`Detalle de la selecciÃ³n (${number.format(records.total)} registro${
+        title={`Detalle de la selección (${number.format(records.total)} registro${
           records.total === 1 ? "" : "s"
         })`}
         subtitle={

@@ -1,5 +1,6 @@
 import {
   getBajasByMonthBrowser,
+  getBajasByOwnerMonthBrowser,
   getBajasByReasonBrowser,
   getBajasByTenureBrowser,
   getBajasTenureByMonthBrowser,
@@ -202,6 +203,15 @@ export function getBajasByTenure(filters = [], dateRange = {}) {
 export function getBajasTenureByMonth(filters = [], dateRange = {}) {
   if (usesBrowserData) return Promise.resolve(getBajasTenureByMonthBrowser(filters, dateRange));
   return request("/bajas-tenure-by-month", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ filters, date_range: dateRange }),
+  });
+}
+
+export function getBajasByOwnerMonth(filters = [], dateRange = {}) {
+  if (usesBrowserData) return Promise.resolve(getBajasByOwnerMonthBrowser(filters, dateRange));
+  return request("/bajas-by-owner-month", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ filters, date_range: dateRange }),

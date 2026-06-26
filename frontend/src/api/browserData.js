@@ -41,6 +41,8 @@ const OPTIONAL_COLUMNS = [
   "SITIO",
   "PRESENCIALIDAD",
   "EQUIPO",
+  "LÍDER",
+  "SUPERVISOR",
   "FORMADOR ASIGNADO",
   "MOTIVO BAJA",
 ];
@@ -816,6 +818,52 @@ export function getBajasTenureByMonthBrowser(filters = [], dateRange = {}) {
     totals.Total += totals[label];
   });
   return { months: labels, rows: [...grouped.values()], totals };
+}
+
+export function getBajasByOwnerMonthBrowser(filters = [], dateRange = {}) {
+  ensureRows();
+  const rows = applyFechaBajaRange(applyFilters(state.rows, withoutEstadoFilter(filters)), dateRange);
+  const months = new Map();
+  rows.forEach((row) => {
+    const baja = dateValue(row["FECHA BAJA"]);
+    if (!baja) return;
+    const monthKey = `${baja.getFullYear()}-${String(baja.getMonth() + 1).padStart(2, "0")}`;
+    months.set(monthKey, `${MONTH_LABELS[baja.getMonth() + 1]} ${baja.getFullYear()}`);
+  });
+  const labels = [...months.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([, label]) => label);
+
+  const buildScope = (label, getters) => {
+    const grouped = new Map();
+    rows.forEach((row) => {
+      const baja = dateValue(row["FECHA BAJA"]);
+      if (!baja) return;
+      const month = `${MONTH_LABELS[baja.getMonth() + 1]} ${baja.getFullYear()}`;
+      const owner = getters.map((getter) => getter(row)).find(Boolean) || "Sin dato";
+      const current = grouped.get(owner) || { Responsable: owner, Total: 0 };
+      current[month] = (current[month] || 0) + 1;
+      current.Total += 1;
+      grouped.set(owner, current);
+    });
+    const scopeRows = [...grouped.values()].sort((a, b) => b.Total - a.Total);
+    const totals = { Total: 0 };
+    labels.forEach((month) => {
+      totals[month] = scopeRows.reduce((sum, row) => sum + (row[month] || 0), 0);
+      totals.Total += totals[month];
+    });
+    return { label, rows: scopeRows, totals };
+  };
+
+  return {
+    months: labels,
+    leader: buildScope("Líder / Equipo", [
+      (row) => looseValue(row, "LÍDER", "LIDER", "JEFE", "JEFE DE EQUIPO"),
+      (row) => looseValue(row, "EQUIPO"),
+    ]),
+    supervisor: buildScope("Supervisor", [
+      (row) => looseValue(row, "SUPERVISOR"),
+      (row) => looseValue(row, "FORMADOR ASIGNADO", "RESPONSABLE"),
+    ]),
+  };
 }
 
 export function getBajasReasonByTenureBrowser(filters = [], dateRange = {}) {

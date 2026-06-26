@@ -664,7 +664,7 @@ def get_bajas_by_tenure(payload: DynamicAnalysisRequest):
     ]
     rows = [
         {
-            "AntigÃ¼edad": label,
+            "Antigüedad": label,
             "Bajas": int(mask.sum()),
         }
         for label, mask in buckets
@@ -724,6 +724,57 @@ def get_bajas_tenure_by_month(payload: DynamicAnalysisRequest):
         rows.append(row)
 
     return {"months": [month_labels[key] for key in month_keys], "rows": rows, "totals": totals}
+
+
+@router.post("/bajas-by-owner-month")
+def get_bajas_by_owner_month(payload: DynamicAnalysisRequest):
+    df = _apply_fecha_baja_range(
+        _only_bajas(_apply_filter_specs(_latest_df(), _exclude_filter_specs(payload.filters, "ESTADO"))),
+        payload.date_range,
+    )
+    if "FECHA BAJA" not in df.columns:
+        return {"months": [], "leader": {"label": "Líder", "rows": [], "totals": {}}, "supervisor": {"label": "Supervisor", "rows": [], "totals": {}}}
+
+    leader_column = _find_column(df, "LÍDER", "LIDER", "JEFE", "JEFE DE EQUIPO", "EQUIPO")
+    supervisor_column = _find_column(df, "SUPERVISOR", "FORMADOR ASIGNADO", "RESPONSABLE")
+    working = df.copy()
+    working["FECHA BAJA"] = pd.to_datetime(working["FECHA BAJA"], errors="coerce")
+    working = working[working["FECHA BAJA"].notna()].copy()
+    if working.empty:
+        return {"months": [], "leader": {"label": leader_column or "Líder", "rows": [], "totals": {}}, "supervisor": {"label": supervisor_column or "Supervisor", "rows": [], "totals": {}}}
+
+    working["_period"] = working["FECHA BAJA"].dt.to_period("M")
+    periods = sorted(working["_period"].dropna().unique())
+    month_keys = [str(period) for period in periods]
+    month_labels = {str(period): f"{MONTH_LABELS[int(period.month)]} {int(period.year)}" for period in periods}
+
+    def build_scope(column, fallback_label):
+        if not column:
+            return {"label": fallback_label, "rows": [], "totals": {}}
+        grouped = working.copy()
+        grouped["_owner"] = grouped[column].astype(str).str.strip().replace("", "Sin dato")
+        rows = []
+        totals = {month_labels[key]: 0 for key in month_keys}
+        totals["Total"] = 0
+        for owner, group in grouped.groupby("_owner", dropna=False):
+            row = {"Responsable": str(owner)}
+            total = 0
+            for period_key in month_keys:
+                value = int(group["_period"].astype(str).eq(period_key).sum())
+                row[month_labels[period_key]] = value
+                totals[month_labels[period_key]] += value
+                total += value
+            row["Total"] = total
+            totals["Total"] += total
+            rows.append(row)
+        rows = sorted(rows, key=lambda item: item["Total"], reverse=True)
+        return {"label": column, "rows": rows, "totals": totals}
+
+    return {
+        "months": [month_labels[key] for key in month_keys],
+        "leader": build_scope(leader_column, "Líder"),
+        "supervisor": build_scope(supervisor_column, "Supervisor"),
+    }
 
 
 @router.post("/bajas-reason-by-tenure")

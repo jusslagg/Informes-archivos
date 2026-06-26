@@ -191,6 +191,10 @@ button:disabled {
   justify-content: flex-end;
 }
 
+.dashboard-guide-button {
+  min-width: max-content;
+}
+
 .section-header {
   display: flex;
   align-items: center;
@@ -430,18 +434,13 @@ button:disabled {
   line-height: 1.3;
 }
 
-.dashboard-insight-grid,
-.dashboard-main-grid {
+.dashboard-insight-grid {
   display: grid;
   gap: 14px;
 }
 
 .dashboard-insight-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.dashboard-main-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .dashboard-insight,
@@ -518,11 +517,6 @@ button:disabled {
   min-width: max-content;
   font-size: 0.78rem;
   font-weight: 900;
-}
-
-.dashboard-ranking-chart {
-  height: 330px;
-  padding: 12px;
 }
 
 .split-table-grid {
@@ -2174,20 +2168,25 @@ tbody tr:hover {
 
 .bajas-table-filters {
   display: grid;
-  grid-template-columns: minmax(280px, auto) minmax(320px, 1fr);
-  gap: 10px;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  align-items: start;
   border: 1px solid #dbe3ef;
   border-radius: 8px;
   margin: 0 0 10px;
-  padding: 10px;
+  padding: 10px 12px;
   background: #f8fafc;
 }
 
 .bajas-date-controls {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(132px, 180px)) minmax(140px, 1fr);
   align-items: end;
-  flex-wrap: wrap;
   gap: 8px;
+}
+
+.bajas-date-controls .primary-button {
+  min-height: 36px;
 }
 
 .bajas-campaign-filter {
@@ -2196,21 +2195,51 @@ tbody tr:hover {
   min-width: 0;
 }
 
+.bajas-campaign-filter .search-field {
+  max-width: 360px;
+}
+
+.bajas-selection-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 520px;
+}
+
+.bajas-selection-summary .select-all-row {
+  flex: 1;
+}
+
+.bajas-selection-summary strong {
+  min-width: max-content;
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
 .bajas-campaign-list {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
-  max-height: 112px;
-  overflow: auto;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 7px;
+  max-height: 156px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
 }
 
 .bajas-campaign-list .check-row,
 .bajas-campaign-filter .select-all-row {
-  min-height: 28px;
+  min-height: 32px;
   border: 1px solid #e2e8f0;
   border-radius: 7px;
-  padding: 5px 8px;
+  padding: 6px 9px;
   background: #ffffff;
+}
+
+.bajas-campaign-list .check-row span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .tenure-month-table table {
@@ -2226,6 +2255,54 @@ tbody tr:hover {
 .tenure-month-table th:not(:first-child),
 .tenure-month-table td:not(:first-child) {
   width: 78px;
+  text-align: center;
+}
+
+.owner-month-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.owner-month-card {
+  min-width: 0;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.owner-month-card .table-toolbar {
+  padding: 10px;
+}
+
+.owner-month-card h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 0.98rem;
+}
+
+.owner-month-table table {
+  min-width: 760px;
+  table-layout: fixed;
+}
+
+.owner-month-table th,
+.owner-month-table td,
+.owner-month-table tfoot td {
+  padding: 6px 8px;
+  font-size: 0.72rem;
+}
+
+.owner-month-table th:first-child,
+.owner-month-table td:first-child {
+  width: 210px;
+  text-align: left;
+}
+
+.owner-month-table th:not(:first-child),
+.owner-month-table td:not(:first-child) {
+  width: 72px;
   text-align: center;
 }
 
@@ -3136,7 +3213,6 @@ tbody tr:hover {
 
   .chart-grid,
   .split-table-grid,
-  .dashboard-main-grid,
   .filter-layout,
   .ops-layout,
   .ops-main-grid,
@@ -3163,8 +3239,20 @@ tbody tr:hover {
     grid-template-columns: 1fr;
   }
 
+  .bajas-date-controls {
+    grid-template-columns: repeat(2, minmax(132px, 1fr));
+  }
+
+  .bajas-date-controls .primary-button {
+    grid-column: 1 / -1;
+  }
+
+  .owner-month-grid {
+    grid-template-columns: 1fr;
+  }
+
   .bajas-campaign-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   }
 
   .monthly-load-kpis,
@@ -3189,6 +3277,10 @@ tbody tr:hover {
   .filter-column-list,
   .option-list,
   .bajas-campaign-list {
+    grid-template-columns: 1fr;
+  }
+
+  .bajas-date-controls {
     grid-template-columns: 1fr;
   }
 
