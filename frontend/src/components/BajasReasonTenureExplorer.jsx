@@ -55,7 +55,7 @@ export default function BajasReasonTenureExplorer({
     ["Campaña", activeCampaign || "Todas las campañas"],
     ["Rango", dateRange.start || "inicio", dateRange.end || "hoy"],
     [],
-    ["Antigüedad", "Bajas del motivo", "Bajas del tramo", "Participación en tramo", "Distribución del motivo"],
+    ["Período de antigüedad", "Bajas del motivo", "Total de bajas del período", "% de bajas del período por el motivo", "% de casos del motivo en el período"],
     ...model.map((row) => [
       row.label,
       row.reasonCount,
@@ -80,7 +80,7 @@ export default function BajasReasonTenureExplorer({
         <div>
           <span className="eyebrow">Lectura de permanencia</span>
           <h2>Participación del motivo por antigüedad</h2>
-          <p>Compará cuánto pesa cada motivo dentro de cada tramo y dónde se concentra el motivo seleccionado.</p>
+          <p>Compará qué porcentaje de las bajas de cada período de antigüedad corresponde al motivo seleccionado y en qué períodos se concentra.</p>
         </div>
         <div className="reason-tenure-actions">
           <label>
@@ -143,22 +143,22 @@ export default function BajasReasonTenureExplorer({
             </div>
             <div className="reason-tenure-bars">
               <div
-                title={`${activeReason}: ${number.format(row.reasonCount)} de ${number.format(row.bucketTotal)} bajas en ${row.label} (${percent.format(row.bucketShare)}% del tramo)`}
+                title={`${activeReason}: ${number.format(row.reasonCount)} de ${number.format(row.bucketTotal)} bajas en el período ${row.label} (${percent.format(row.bucketShare)}%)`}
               >
-                <small>Peso en tramo</small>
+                <small>Bajas por este motivo</small>
                 <span style={{ width: `${Math.min(100, row.bucketShare)}%` }} />
                 <b>{percent.format(row.bucketShare)}%</b>
               </div>
               <div
                 title={`${row.label}: ${number.format(row.reasonCount)} de ${number.format(reasonTotal)} bajas por ${activeReason} (${percent.format(row.reasonShare)}% del motivo)`}
               >
-                <small>Distribución del motivo</small>
+                <small>Casos del motivo aquí</small>
                 <span style={{ width: `${Math.min(100, row.reasonShare)}%` }} />
                 <b>{percent.format(row.reasonShare)}%</b>
               </div>
             </div>
             <div className="reason-tenure-row-foot">
-              <span>{number.format(row.bucketTotal)} bajas en el tramo</span>
+              <span>{number.format(row.bucketTotal)} bajas en este período</span>
               <span>{number.format(row.reasonCount)} por {activeReason}</span>
             </div>
           </article>
@@ -167,7 +167,9 @@ export default function BajasReasonTenureExplorer({
 
       <footer className="reason-tenure-note">
         <Activity size={16} />
-        <span>La primera barra mide peso dentro del tramo; la segunda muestra cómo se distribuye el motivo seleccionado.</span>
+        <span>
+          Primera barra: de todas las bajas del período, qué porcentaje corresponde a {activeReason}. Segunda barra: de todos los casos de {activeReason}, qué porcentaje ocurrió en ese período.
+        </span>
       </footer>
     </section>
   );

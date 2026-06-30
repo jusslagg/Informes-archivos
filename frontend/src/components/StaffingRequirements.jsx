@@ -150,15 +150,16 @@ function summarizeRows(rows) {
       diferencia: acc.diferencia + row.diferencia,
       bajasMes: acc.bajasMes + row.bajasMes,
       licencia: acc.licencia + row.licencia,
+      dotacionMes: acc.dotacionMes + row.dotacionMes,
     }),
-    { activo: 0, requeridos: 0, diferencia: 0, bajasMes: 0, licencia: 0 },
+    { activo: 0, requeridos: 0, diferencia: 0, bajasMes: 0, licencia: 0, dotacionMes: 0 },
   );
   const requeridosMasCinco = requiredWithBuffer(totals.requeridos);
   return {
     ...totals,
     requeridosMasCinco,
     diferenciaMasCinco: totals.activo - requeridosMasCinco,
-    rotacionMes: totals.requeridos > 0 ? (totals.bajasMes / totals.requeridos) * 100 : null,
+    rotacionMes: totals.activo > 0 ? (totals.bajasMes / totals.activo) * 100 : null,
   };
 }
 
@@ -225,6 +226,8 @@ export default function StaffingRequirements({
         const bajasMes = Number(
           hasSelectedBajasPeriod ? bajasSeleccionadas ?? 0 : activeRow.bajasMes ?? activeRow.bajas_mes ?? 0,
         );
+        const licencia = Number(activeRow.licencia || 0);
+        const dotacionMes = activo + bajasMes;
         return {
           key,
           requirementKey: rowKey,
@@ -235,8 +238,9 @@ export default function StaffingRequirements({
           diferencia: activo - requeridos,
           diferenciaMasCinco: activo - requiredWithBuffer(requeridos),
           bajasMes,
-          rotacionMes: requeridos > 0 ? (bajasMes / requeridos) * 100 : null,
-          licencia: Number(activeRow.licencia || 0),
+          dotacionMes,
+          rotacionMes: activo > 0 ? (bajasMes / activo) * 100 : null,
+          licencia,
           observacion: cleanLabel(activeRow.observacion, ""),
         };
       })

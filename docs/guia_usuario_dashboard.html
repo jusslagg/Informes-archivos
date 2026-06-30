@@ -256,6 +256,7 @@
     <li>En qué tramo de antigüedad ocurren más bajas.</li>
     <li>Cuántas horas se pierden por bajas, considerando días trabajados, feriados y fines de semana.</li>
     <li>Cuántas bajas tuvo cada líder o supervisor por mes.</li>
+    <li>Cómo se distribuyen las bajas semana por semana dentro de un mes.</li>
   </ul>
 
   <div class="callout success">
@@ -391,6 +392,17 @@
     <li>Copiar la tabla si se necesita trabajarla en Excel.</li>
   </ol>
 
+  <h2>9.1. Bajas por semana</h2>
+  <p>Este bloque resume las bajas del mes en semanas calendario, siempre de <strong>lunes a domingo</strong>. Cada fila muestra el rango de fechas y la cantidad total de bajas de esa semana.</p>
+  <ol>
+    <li>Elegir el mes desde el selector <span class="kbd">Mes</span>.</li>
+    <li>Revisar las semanas para detectar en qué parte del mes se concentraron las salidas.</li>
+    <li>Usar <span class="kbd">Copiar tabla</span> para llevar el resumen a Excel, un correo o una presentación.</li>
+  </ol>
+  <div class="callout">
+    <strong>Lectura:</strong> el total mensual es la suma de todas las semanas. La primera y la última semana muestran solamente las fechas que pertenecen al mes seleccionado; una baja del mes siguiente nunca se incluye.
+  </div>
+
   <h2>10. Bajas por meses en empresa</h2>
   <p>Esta tabla calcula la permanencia de las personas dadas de baja. Cruza la <strong>Fecha alta</strong> con la <strong>Fecha baja</strong> y agrupa en tramos de antigüedad.</p>
   <table>
@@ -451,6 +463,7 @@
     <li><strong>Por líder:</strong> agrupa las bajas por líder y mes.</li>
     <li><strong>Por supervisor:</strong> agrupa las bajas por supervisor y mes.</li>
   </ul>
+  <p>La rotación se calcula como <strong>bajas del mes / dotación activa</strong> del líder o supervisor, multiplicado por 100.</p>
   <p>Para que funcione correctamente, la nómina debe traer columnas de líder y supervisor. Si esos campos vienen vacíos, el dashboard puede agruparlos como "Sin dato".</p>
 
   <h2>16. Copiar tablas y exportar</h2>
@@ -510,6 +523,7 @@
     <li>Cargar la nómina actualizada.</li>
     <li>Confirmar que se vean correctamente acentos, Ñ y fechas.</li>
     <li>Filtrar el mes a revisar en las tablas de bajas.</li>
+    <li>Revisar la distribución semanal para detectar concentraciones dentro del mes.</li>
     <li>Revisar el total de bajas por mes y por motivo.</li>
     <li>Mirar permanencia para detectar si las salidas ocurren en los primeros meses.</li>
     <li>Ajustar impacto horario segun jornada real de la campaña.</li>

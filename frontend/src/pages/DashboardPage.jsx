@@ -34,6 +34,7 @@ import BajasReasonTenureExplorer from "../components/BajasReasonTenureExplorer.j
 import BajasTableFilters from "../components/BajasTableFilters.jsx";
 import BajasTenureByMonthTable from "../components/BajasTenureByMonthTable.jsx";
 import BajasTenureTable from "../components/BajasTenureTable.jsx";
+import BajasWeeklyTable from "../components/BajasWeeklyTable.jsx";
 import DataTable from "../components/DataTable.jsx";
 import FilterBar, { toFilterSpecs } from "../components/FilterBar.jsx";
 import StaffingRequirements from "../components/StaffingRequirements.jsx";
@@ -135,6 +136,11 @@ function monthValueFromRange(dateRange = {}) {
   return String(dateRange.start || dateRange.end || "").slice(0, 7);
 }
 
+function currentMonthValue() {
+  const today = new Date();
+  return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
+}
+
 function BajasPeriodFilter({ dateRange, onDateRangeChange }) {
   const selectedMonth = monthValueFromRange(dateRange);
   const useCurrentMonth = () => {
@@ -190,6 +196,8 @@ export default function DashboardPage() {
   const [records, setRecords] = useState(() => savedState?.records || { columns: [], rows: [], total: 0, limit: 500 });
   const [staffingRows, setStaffingRows] = useState(() => savedState?.staffingRows || []);
   const [bajasByMonth, setBajasByMonth] = useState(() => savedState?.bajasByMonth || { months: [], rows: [], totals: {} });
+  const [bajasByWeek, setBajasByWeek] = useState(() => savedState?.bajasByWeek || { hourEvents: [] });
+  const [weeklyMonth, setWeeklyMonth] = useState(() => savedState?.weeklyMonth || currentMonthValue());
   const [bajasByOwnerMonth, setBajasByOwnerMonth] = useState(
     () => savedState?.bajasByOwnerMonth || { months: [], leader: { rows: [], totals: {} }, supervisor: { rows: [], totals: {} } },
   );
@@ -250,6 +258,8 @@ export default function DashboardPage() {
         records: recordsResponse,
         staffingRows: staffingResponse.rows || [],
         bajasByMonth,
+        bajasByWeek,
+        weeklyMonth,
         bajasByOwnerMonth,
         bajasByTenure,
         bajasTenureByMonth,
@@ -339,6 +349,13 @@ export default function DashboardPage() {
   }, [baseFilterKey, JSON.stringify(monthTableFilter)]);
 
   useEffect(() => {
+    getBajasByMonth(toFilterSpecs(filters), monthRange(weeklyMonth))
+      .then(setBajasByWeek)
+      .catch((err) => setError(err.message));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [baseFilterKey, weeklyMonth]);
+
+  useEffect(() => {
     getBajasByOwnerMonth(tableFilterSpecs(ownerMonthTableFilter), ownerMonthTableFilter.dateRange)
       .then(setBajasByOwnerMonth)
       .catch((err) => setError(err.message));
@@ -387,6 +404,8 @@ export default function DashboardPage() {
       records,
       staffingRows,
       bajasByMonth,
+      bajasByWeek,
+      weeklyMonth,
       bajasByOwnerMonth,
       bajasByTenure,
       bajasTenureByMonth,
@@ -411,6 +430,8 @@ export default function DashboardPage() {
     records,
     staffingRows,
     bajasByMonth,
+    bajasByWeek,
+    weeklyMonth,
     bajasByOwnerMonth,
     bajasByTenure,
     bajasTenureByMonth,
@@ -590,6 +611,12 @@ export default function DashboardPage() {
             dateRange={monthTableFilter.dateRange}
             onDateRangeChange={(dateRange) => setMonthTableFilter((current) => ({ ...current, dateRange }))}
             filterControl={renderTableFilters(monthTableFilter, setMonthTableFilter)}
+          />
+
+          <BajasWeeklyTable
+            month={weeklyMonth}
+            events={bajasByWeek.hourEvents || []}
+            onMonthChange={setWeeklyMonth}
           />
 
           <BajasOwnerByMonthTable

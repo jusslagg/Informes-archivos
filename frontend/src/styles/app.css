@@ -2166,6 +2166,93 @@ tbody tr:hover {
   padding-bottom: 8px;
 }
 
+.weekly-bajas-table {
+  width: min(100%, 680px);
+  align-self: flex-start;
+}
+
+.weekly-bajas-table table {
+  min-width: 0;
+  table-layout: fixed;
+}
+
+.weekly-bajas-table th,
+.weekly-bajas-table td {
+  text-align: center;
+}
+
+.weekly-bajas-table th:first-child,
+.weekly-bajas-table td:first-child {
+  width: auto;
+  text-align: left;
+}
+
+.weekly-bajas-table th:last-child,
+.weekly-bajas-table td:last-child {
+  width: 120px;
+  background: #f8fafc;
+  font-weight: 900;
+}
+
+.weekly-bajas-table tbody td {
+  height: 42px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.weekly-bajas-table tbody td strong,
+.weekly-bajas-table tbody td small {
+  display: block;
+}
+
+.weekly-bajas-table tbody td small {
+  margin-bottom: 0;
+  color: #64748b;
+  font-size: 0.68rem;
+}
+
+.weekly-bajas-table tbody td:first-child {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.weekly-bajas-table tbody td:not(:first-child) strong {
+  color: #0f172a;
+  font-size: 0.95rem;
+}
+
+.weekly-bajas-table .outside-month {
+  background: #f8fafc;
+  color: #94a3b8;
+}
+
+.weekly-bajas-table tfoot td {
+  border-top: 2px solid #cbd5e1;
+  background: #edf2f7;
+  font-weight: 900;
+}
+
+.weekly-bajas-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 8px;
+}
+
+.weekly-bajas-summary {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+  color: #475569;
+  font-size: 0.78rem;
+}
+
+.weekly-bajas-summary strong {
+  color: #0f172a;
+}
+
 .bajas-table-filters {
   display: grid;
   grid-template-columns: 1fr;
@@ -2302,8 +2389,31 @@ tbody tr:hover {
 
 .owner-month-table th:not(:first-child),
 .owner-month-table td:not(:first-child) {
-  width: 72px;
+  width: 118px;
   text-align: center;
+}
+
+.rotation-cell {
+  display: grid;
+  gap: 2px;
+  line-height: 1.15;
+}
+
+.rotation-cell strong {
+  color: #0f172a;
+  font-size: 0.72rem;
+}
+
+.rotation-cell span {
+  color: #64748b;
+  font-size: 0.66rem;
+}
+
+.rotation-cell em {
+  color: #2563eb;
+  font-size: 0.72rem;
+  font-style: normal;
+  font-weight: 900;
 }
 
 .hours-impact-block {

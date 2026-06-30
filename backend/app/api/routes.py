@@ -200,6 +200,14 @@ def _only_bajas(df):
     return df[estado.eq("BAJA")].copy()
 
 
+def _only_activos(df):
+    estado_column = _find_column(df, "ESTADO")
+    if not estado_column:
+        return df.iloc[0:0].copy()
+    estado = df[estado_column].astype(str).map(_normalize_column_name)
+    return df[estado.eq("ACTIVO")].copy()
+
+
 @router.post("/upload")
 async def upload_payroll(file: UploadFile = File(...), db: Session = Depends(get_db)):
     suffix = Path(file.filename or "").suffix.lower()
@@ -728,15 +736,16 @@ def get_bajas_tenure_by_month(payload: DynamicAnalysisRequest):
 
 @router.post("/bajas-by-owner-month")
 def get_bajas_by_owner_month(payload: DynamicAnalysisRequest):
+    base_df = _apply_filter_specs(_latest_df(), _exclude_filter_specs(payload.filters, "ESTADO"))
     df = _apply_fecha_baja_range(
-        _only_bajas(_apply_filter_specs(_latest_df(), _exclude_filter_specs(payload.filters, "ESTADO"))),
+        _only_bajas(base_df),
         payload.date_range,
     )
     if "FECHA BAJA" not in df.columns:
         return {"months": [], "leader": {"label": "Líder", "rows": [], "totals": {}}, "supervisor": {"label": "Supervisor", "rows": [], "totals": {}}}
 
-    leader_column = _find_column(df, "LÍDER", "LIDER", "JEFE", "JEFE DE EQUIPO", "EQUIPO")
-    supervisor_column = _find_column(df, "SUPERVISOR", "FORMADOR ASIGNADO", "RESPONSABLE")
+    leader_column = _find_column(base_df, "LÍDER", "LIDER", "JEFE", "JEFE DE EQUIPO", "EQUIPO")
+    supervisor_column = _find_column(base_df, "SUPERVISOR", "FORMADOR ASIGNADO", "RESPONSABLE")
     working = df.copy()
     working["FECHA BAJA"] = pd.to_datetime(working["FECHA BAJA"], errors="coerce")
     working = working[working["FECHA BAJA"].notna()].copy()
@@ -747,26 +756,55 @@ def get_bajas_by_owner_month(payload: DynamicAnalysisRequest):
     periods = sorted(working["_period"].dropna().unique())
     month_keys = [str(period) for period in periods]
     month_labels = {str(period): f"{MONTH_LABELS[int(period.month)]} {int(period.year)}" for period in periods}
+    staffing_base = _only_activos(base_df)
 
     def build_scope(column, fallback_label):
         if not column:
             return {"label": fallback_label, "rows": [], "totals": {}}
         grouped = working.copy()
         grouped["_owner"] = grouped[column].astype(str).str.strip().replace("", "Sin dato")
+        assigned = staffing_base.copy()
+        assigned["_owner"] = assigned[column].astype(str).str.strip().replace("", "Sin dato")
         rows = []
         totals = {month_labels[key]: 0 for key in month_keys}
+        staffing_totals = {month_labels[key]: 0 for key in month_keys}
+        rate_totals = {month_labels[key]: 0 for key in month_keys}
         totals["Total"] = 0
-        for owner, group in grouped.groupby("_owner", dropna=False):
-            row = {"Responsable": str(owner)}
+        owners = sorted(set(grouped["_owner"].dropna().astype(str)).union(set(assigned["_owner"].dropna().astype(str))))
+        for owner in owners:
+            group = grouped[grouped["_owner"].eq(owner)]
+            assigned_group = assigned[assigned["_owner"].eq(owner)]
+            active_count = int(assigned_group.shape[0])
+            row = {"Responsable": str(owner), "_staffing": {}, "_rotation": {}}
             total = 0
+            staffing_sum = 0
             for period_key in month_keys:
                 value = int(group["_period"].astype(str).eq(period_key).sum())
-                row[month_labels[period_key]] = value
-                totals[month_labels[period_key]] += value
+                month_label = month_labels[period_key]
+                assigned_count = active_count
+                rotation = round((value / assigned_count) * 100, 1) if assigned_count else 0
+                row[month_label] = value
+                row["_staffing"][month_label] = assigned_count
+                row["_rotation"][month_label] = rotation
+                totals[month_label] += value
+                staffing_totals[month_label] += assigned_count
                 total += value
+                staffing_sum += assigned_count
             row["Total"] = total
+            average_staffing = round(staffing_sum / len(month_keys), 1) if month_keys else 0
+            row["_staffing"]["Promedio"] = average_staffing
+            row["_rotation"]["Total"] = round((total / average_staffing) * 100, 1) if average_staffing else 0
             totals["Total"] += total
-            rows.append(row)
+            if total > 0:
+                rows.append(row)
+        for period_key in month_keys:
+            month_label = month_labels[period_key]
+            rate_totals[month_label] = round((totals[month_label] / staffing_totals[month_label]) * 100, 1) if staffing_totals[month_label] else 0
+        totals["_staffing"] = staffing_totals
+        totals["_rotation"] = rate_totals
+        staffing_average = round(sum(staffing_totals.values()) / len(month_keys), 1) if month_keys else 0
+        totals["_staffing"]["Promedio"] = staffing_average
+        totals["_rotation"]["Total"] = round((totals["Total"] / staffing_average) * 100, 1) if staffing_average else 0
         rows = sorted(rows, key=lambda item: item["Total"], reverse=True)
         return {"label": column, "rows": rows, "totals": totals}
 

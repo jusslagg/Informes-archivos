@@ -2,9 +2,40 @@ import { Clipboard } from "lucide-react";
 import { copyTableToClipboard, setClipboardTableData } from "../lib/clipboardTable.js";
 
 const number = new Intl.NumberFormat("es-AR");
+const percent = new Intl.NumberFormat("es-AR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
 function ownerName(row = {}) {
   return row.Responsable || row.responsable || "Sin dato";
+}
+
+function staffingValue(row = {}, month) {
+  return row._staffing?.[month] ?? row.staffing?.[month] ?? 0;
+}
+
+function rotationValue(row = {}, month) {
+  return row._rotation?.[month] ?? row.rotation?.[month] ?? 0;
+}
+
+function copyCell(row = {}, month) {
+  const bajas = row[month] || 0;
+  const assigned = staffingValue(row, month);
+  const rotation = rotationValue(row, month);
+  return bajas || assigned ? `${bajas} bajas / ${assigned} activos / ${percent.format(rotation)}%` : "";
+}
+
+function RotationCell({ row, month }) {
+  const bajas = month === "Total" ? row.Total || 0 : row[month] || 0;
+  const assigned = staffingValue(row, month === "Total" ? "Promedio" : month);
+  const rotation = rotationValue(row, month);
+  if (!bajas && !assigned) return null;
+
+  return (
+    <div className="rotation-cell">
+      <strong>{number.format(bajas)} bajas</strong>
+      <span>{number.format(assigned)} activos</span>
+      <em>{percent.format(rotation)}%</em>
+    </div>
+  );
 }
 
 function OwnerTable({ title, label, months = [], rows = [], totals = {} }) {
@@ -12,8 +43,16 @@ function OwnerTable({ title, label, months = [], rows = [], totals = {} }) {
   const copyLines = [
     [title],
     columns,
-    ...rows.map((row) => [ownerName(row), ...months.map((month) => row[month] || ""), row.Total || ""]),
-    ["Total", ...months.map((month) => totals[month] || ""), totals.Total || ""],
+    ...rows.map((row) => [
+      ownerName(row),
+      ...months.map((month) => copyCell(row, month)),
+      `${row.Total || 0} bajas / ${staffingValue(row, "Promedio")} activos prom. / ${percent.format(rotationValue(row, "Total"))}%`,
+    ]),
+    [
+      "Total",
+      ...months.map((month) => copyCell(totals, month)),
+      `${totals.Total || 0} bajas / ${staffingValue(totals, "Promedio")} activos prom. / ${percent.format(rotationValue(totals, "Total"))}%`,
+    ],
   ];
 
   const copyTable = async () => {
@@ -29,7 +68,7 @@ function OwnerTable({ title, label, months = [], rows = [], totals = {} }) {
       <div className="table-toolbar compact-toolbar">
         <div>
           <h3>{title}</h3>
-          <span>{label || "Responsable"} por mes de baja</span>
+          <span>Bajas / dotación activa / % rotación mensual</span>
         </div>
         <button className="primary-button secondary-button" onClick={copyTable}>
           <Clipboard size={16} />
@@ -51,9 +90,13 @@ function OwnerTable({ title, label, months = [], rows = [], totals = {} }) {
                 <tr key={ownerName(row)}>
                   <td>{ownerName(row)}</td>
                   {months.map((month) => (
-                    <td key={month}>{row[month] ? number.format(row[month]) : ""}</td>
+                    <td key={month}>
+                      <RotationCell row={row} month={month} />
+                    </td>
                   ))}
-                  <td>{number.format(row.Total || 0)}</td>
+                  <td>
+                    <RotationCell row={row} month="Total" />
+                  </td>
                 </tr>
               ))
             ) : (
@@ -69,9 +112,13 @@ function OwnerTable({ title, label, months = [], rows = [], totals = {} }) {
               <tr>
                 <td>Total</td>
                 {months.map((month) => (
-                  <td key={month}>{totals[month] ? number.format(totals[month]) : ""}</td>
+                  <td key={month}>
+                    <RotationCell row={totals} month={month} />
+                  </td>
                 ))}
-                <td>{number.format(totals.Total || 0)}</td>
+                <td>
+                  <RotationCell row={totals} month="Total" />
+                </td>
               </tr>
             </tfoot>
           )}
@@ -92,9 +139,9 @@ export default function BajasOwnerByMonthTable({
     <section className="table-wrap compact-a4 owner-month-table">
       <div className="table-toolbar">
         <div>
-          <h2>Bajas por responsable y mes</h2>
+          <h2>Rotación por responsable y mes</h2>
           <span>
-            Revisa bajas mensuales por líder/equipo y por supervisor
+            Rotación = bajas del mes / dotación activa de ese líder o supervisor
             {dateRange.start || dateRange.end ? ` (${dateRange.start || "inicio"} a ${dateRange.end || "hoy"})` : ""}
           </span>
         </div>

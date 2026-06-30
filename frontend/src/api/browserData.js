@@ -215,6 +215,11 @@ function isBajaRow(row) {
   return estado === "BAJA";
 }
 
+function isActiveRow(row) {
+  const estado = normalizeColumnName(value(row, "ESTADO"));
+  return estado === "ACTIVO";
+}
+
 function currentMonthToDateBounds() {
   const today = new Date();
   const end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -822,7 +827,8 @@ export function getBajasTenureByMonthBrowser(filters = [], dateRange = {}) {
 
 export function getBajasByOwnerMonthBrowser(filters = [], dateRange = {}) {
   ensureRows();
-  const rows = applyFechaBajaRange(applyFilters(state.rows, withoutEstadoFilter(filters)), dateRange);
+  const baseRows = applyFilters(state.rows, withoutEstadoFilter(filters));
+  const rows = applyFechaBajaRange(baseRows, dateRange);
   const months = new Map();
   rows.forEach((row) => {
     const baja = dateValue(row["FECHA BAJA"]);
@@ -831,6 +837,13 @@ export function getBajasByOwnerMonthBrowser(filters = [], dateRange = {}) {
     months.set(monthKey, `${MONTH_LABELS[baja.getMonth() + 1]} ${baja.getFullYear()}`);
   });
   const labels = [...months.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([, label]) => label);
+  const monthMeta = [...months.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, label]) => {
+      const [year, month] = key.split("-").map(Number);
+      const start = new Date(year, month - 1, 1);
+      return { key, label, start, end: monthEnd(start) };
+    });
 
   const buildScope = (label, getters) => {
     const grouped = new Map();
@@ -844,12 +857,50 @@ export function getBajasByOwnerMonthBrowser(filters = [], dateRange = {}) {
       current.Total += 1;
       grouped.set(owner, current);
     });
-    const scopeRows = [...grouped.values()].sort((a, b) => b.Total - a.Total);
-    const totals = { Total: 0 };
-    labels.forEach((month) => {
-      totals[month] = scopeRows.reduce((sum, row) => sum + (row[month] || 0), 0);
-      totals.Total += totals[month];
+    const staffingByOwner = new Map();
+    baseRows.filter(isActiveRow).forEach((row) => {
+      const owner = getters.map((getter) => getter(row)).find(Boolean) || "Sin dato";
+      if (!staffingByOwner.has(owner)) staffingByOwner.set(owner, []);
+      staffingByOwner.get(owner).push(row);
     });
+
+    const scopeRows = [...grouped.values()].map((ownerRow) => {
+      const assignedRows = staffingByOwner.get(ownerRow.Responsable) || [];
+      const next = { ...ownerRow, _staffing: {}, _rotation: {} };
+      let staffingSum = 0;
+      monthMeta.forEach((month) => {
+        const bajas = next[month.label] || 0;
+        const assigned = assignedRows.length;
+        next._staffing[month.label] = assigned;
+        next._rotation[month.label] = assigned ? Number(((bajas / assigned) * 100).toFixed(1)) : 0;
+        staffingSum += assigned;
+      });
+      next._staffing.Promedio = monthMeta.length ? Number((staffingSum / monthMeta.length).toFixed(1)) : 0;
+      next._rotation.Total = next._staffing.Promedio
+        ? Number(((next.Total / next._staffing.Promedio) * 100).toFixed(1))
+        : 0;
+      return next;
+    }).sort((a, b) => b.Total - a.Total);
+
+    const totals = { Total: 0, _staffing: {}, _rotation: {} };
+    monthMeta.forEach((month) => {
+      totals[month.label] = scopeRows.reduce((sum, row) => sum + (row[month.label] || 0), 0);
+      totals._staffing[month.label] = [...staffingByOwner.values()].reduce(
+        (sum, ownerRows) => sum + ownerRows.length,
+        0,
+      );
+      totals._rotation[month.label] = totals._staffing[month.label]
+        ? Number(((totals[month.label] / totals._staffing[month.label]) * 100).toFixed(1))
+        : 0;
+      totals.Total += totals[month.label];
+    });
+    const staffingAverage = monthMeta.length
+      ? Number((Object.values(totals._staffing).reduce((sum, item) => sum + item, 0) / monthMeta.length).toFixed(1))
+      : 0;
+    totals._staffing.Promedio = staffingAverage;
+    totals._rotation.Total = staffingAverage
+      ? Number(((totals.Total / staffingAverage) * 100).toFixed(1))
+      : 0;
     return { label, rows: scopeRows, totals };
   };
 
