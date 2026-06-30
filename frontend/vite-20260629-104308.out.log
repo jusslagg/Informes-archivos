@@ -35,3 +35,11 @@
 05:02:12 [vite] (client) hmr update /src/styles/app.css
 05:03:28 [vite] (client) hmr update /src/styles/app.css
 05:10:33 [vite] (client) hmr update /src/components/BajasWeeklyTable.jsx, /src/styles/app.css
+05:19:34 [vite] (client) hmr update /src/styles/app.css, /src/pages/RequeridosSummaryPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
+05:19:34 [vite] (client) hmr update /src/components/BajasOwnerByMonthTable.jsx, /src/styles/app.css
+05:27:30 [vite] (client) hmr update /src/styles/app.css, /src/pages/RequeridosSummaryPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
+05:27:30 [vite] (client) hmr update /src/components/BajasOwnerByMonthTable.jsx, /src/styles/app.css
+05:29:11 [vite] (client) hmr update /src/styles/app.css, /src/pages/RequeridosSummaryPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
+05:36:11 [vite] (client) hmr update /src/styles/app.css, /src/pages/RequeridosSummaryPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
+05:38:49 [vite] (client) hmr update /src/styles/app.css, /src/pages/RequeridosSummaryPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
+05:44:56 [vite] (client) hmr update /src/styles/app.css, /src/pages/RequeridosSummaryPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx

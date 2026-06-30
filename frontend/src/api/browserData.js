@@ -845,27 +845,82 @@ export function getBajasByOwnerMonthBrowser(filters = [], dateRange = {}) {
       return { key, label, start, end: monthEnd(start) };
     });
 
-  const buildScope = (label, getters) => {
+  const personNameKey = (input) => normalizeColumnName(input).replace(/[,.]/g, " ").replace(/\s+/g, " ").trim();
+  const supervisorNames = new Map();
+  const managerByPerson = new Map();
+  state.rows.forEach((row) => {
+    const surname = looseValue(row, "APELLIDOS", "APELLIDO");
+    const names = looseValue(row, "NOMBRES", "NOMBRE");
+    const fullName = surname && names ? `${surname}, ${names}` : surname || names;
+    const personKey = personNameKey(fullName);
+    const manager = looseValue(row, "EQUIPO");
+    if (personKey && manager) managerByPerson.set(personKey, manager);
+    if (!normalizeColumnName(looseValue(row, "PUESTO")).includes("SUPERVISOR")) return;
+    const key = personNameKey(fullName);
+    if (key) supervisorNames.set(key, fullName);
+  });
+
+  const supervisorResolutionCache = new Map();
+  const resolveSupervisor = (row) => {
+    let manager = looseValue(row, "EQUIPO");
+    const initialKey = personNameKey(manager);
+    if (supervisorResolutionCache.has(initialKey)) return supervisorResolutionCache.get(initialKey);
+    const visited = new Set();
+    const path = [];
+    let resolved = "Sin supervisor identificado";
+    while (manager) {
+      const managerKey = personNameKey(manager);
+      if (!managerKey || visited.has(managerKey)) break;
+      if (supervisorResolutionCache.has(managerKey)) {
+        resolved = supervisorResolutionCache.get(managerKey);
+        break;
+      }
+      if (supervisorNames.has(managerKey)) {
+        resolved = supervisorNames.get(managerKey);
+        break;
+      }
+      visited.add(managerKey);
+      path.push(managerKey);
+      manager = managerByPerson.get(managerKey) || "";
+    }
+    if (initialKey) supervisorResolutionCache.set(initialKey, resolved);
+    path.forEach((managerKey) => supervisorResolutionCache.set(managerKey, resolved));
+    return resolved;
+  };
+  const supervisorScopeNames = new Map(supervisorNames);
+  supervisorScopeNames.set(personNameKey("Sin supervisor identificado"), "Sin supervisor identificado");
+
+  const buildScope = (label, getters, allowedOwnerNames = null) => {
     const grouped = new Map();
+    allowedOwnerNames?.forEach((owner, ownerKey) => {
+      grouped.set(ownerKey, { Responsable: owner, Total: 0 });
+    });
     rows.forEach((row) => {
       const baja = dateValue(row["FECHA BAJA"]);
       if (!baja) return;
       const month = `${MONTH_LABELS[baja.getMonth() + 1]} ${baja.getFullYear()}`;
       const owner = getters.map((getter) => getter(row)).find(Boolean) || "Sin dato";
-      const current = grouped.get(owner) || { Responsable: owner, Total: 0 };
+      const ownerKey = personNameKey(owner);
+      if (allowedOwnerNames && !allowedOwnerNames.has(ownerKey)) return;
+      const current = grouped.get(ownerKey) || {
+        Responsable: allowedOwnerNames?.get(ownerKey) || owner,
+        Total: 0,
+      };
       current[month] = (current[month] || 0) + 1;
       current.Total += 1;
-      grouped.set(owner, current);
+      grouped.set(ownerKey, current);
     });
     const staffingByOwner = new Map();
     baseRows.filter(isActiveRow).forEach((row) => {
       const owner = getters.map((getter) => getter(row)).find(Boolean) || "Sin dato";
-      if (!staffingByOwner.has(owner)) staffingByOwner.set(owner, []);
-      staffingByOwner.get(owner).push(row);
+      const ownerKey = personNameKey(owner);
+      if (allowedOwnerNames && !allowedOwnerNames.has(ownerKey)) return;
+      if (!staffingByOwner.has(ownerKey)) staffingByOwner.set(ownerKey, []);
+      staffingByOwner.get(ownerKey).push(row);
     });
 
-    const scopeRows = [...grouped.values()].map((ownerRow) => {
-      const assignedRows = staffingByOwner.get(ownerRow.Responsable) || [];
+    const scopeRows = [...grouped.entries()].map(([ownerKey, ownerRow]) => {
+      const assignedRows = staffingByOwner.get(ownerKey) || [];
       const next = { ...ownerRow, _staffing: {}, _rotation: {} };
       let staffingSum = 0;
       monthMeta.forEach((month) => {
@@ -880,7 +935,8 @@ export function getBajasByOwnerMonthBrowser(filters = [], dateRange = {}) {
         ? Number(((next.Total / next._staffing.Promedio) * 100).toFixed(1))
         : 0;
       return next;
-    }).sort((a, b) => b.Total - a.Total);
+    }).filter((row) => row.Total > 0 || row._staffing.Promedio > 0)
+      .sort((a, b) => b.Total - a.Total);
 
     const totals = { Total: 0, _staffing: {}, _rotation: {} };
     monthMeta.forEach((month) => {
@@ -911,9 +967,8 @@ export function getBajasByOwnerMonthBrowser(filters = [], dateRange = {}) {
       (row) => looseValue(row, "EQUIPO"),
     ]),
     supervisor: buildScope("Supervisor", [
-      (row) => looseValue(row, "SUPERVISOR"),
-      (row) => looseValue(row, "FORMADOR ASIGNADO", "RESPONSABLE"),
-    ]),
+      resolveSupervisor,
+    ], supervisorScopeNames),
   };
 }
 

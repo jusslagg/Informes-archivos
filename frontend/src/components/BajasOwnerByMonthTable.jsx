@@ -149,7 +149,7 @@ export default function BajasOwnerByMonthTable({
       {filterControl}
       <div className="owner-month-grid">
         <OwnerTable title="Por líder / equipo" label={leader.label} months={months} rows={leader.rows} totals={leader.totals} />
-        <OwnerTable title="Por supervisor" label={supervisor.label} months={months} rows={supervisor.rows} totals={supervisor.totals} />
+        <OwnerTable title="Por supervisor · PUESTO + EQUIPO" label={supervisor.label} months={months} rows={supervisor.rows} totals={supervisor.totals} />
       </div>
     </section>
   );

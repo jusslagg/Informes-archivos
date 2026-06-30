@@ -461,7 +461,7 @@
   <p>Esta seccion permite ver cuantas bajas tuvo cada responsable en su equipo, separando dos miradas:</p>
   <ul>
     <li><strong>Por líder:</strong> agrupa las bajas por líder y mes.</li>
-    <li><strong>Por supervisor:</strong> agrupa las bajas por supervisor y mes.</li>
+    <li><strong>Por supervisor:</strong> toma como padrón a las personas cuyo PUESTO contiene "SUPERVISOR" (SUPERVISOR, SUPERVISOR PP o SUPERVISOR EXPERTO), arma su identificación como "APELLIDO, NOMBRE" y recorre la asignación de EQUIPO. Si una persona está asignada a un team leader, también toma el EQUIPO de ese líder hasta llegar al supervisor. Los casos sin una cadena válida aparecen como "Sin supervisor identificado" para conservar el total. Los filtros de cliente y campaña delimitan la dotación y las bajas.</li>
   </ul>
   <p>La rotación se calcula como <strong>bajas del mes / dotación activa</strong> del líder o supervisor, multiplicado por 100.</p>
   <p>Para que funcione correctamente, la nómina debe traer columnas de líder y supervisor. Si esos campos vienen vacíos, el dashboard puede agruparlos como "Sin dato".</p>

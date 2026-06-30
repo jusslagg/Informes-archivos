@@ -736,7 +736,8 @@ def get_bajas_tenure_by_month(payload: DynamicAnalysisRequest):
 
 @router.post("/bajas-by-owner-month")
 def get_bajas_by_owner_month(payload: DynamicAnalysisRequest):
-    base_df = _apply_filter_specs(_latest_df(), _exclude_filter_specs(payload.filters, "ESTADO"))
+    source_df = _latest_df()
+    base_df = _apply_filter_specs(source_df, _exclude_filter_specs(payload.filters, "ESTADO"))
     df = _apply_fecha_baja_range(
         _only_bajas(base_df),
         payload.date_range,
@@ -745,12 +746,16 @@ def get_bajas_by_owner_month(payload: DynamicAnalysisRequest):
         return {"months": [], "leader": {"label": "Líder", "rows": [], "totals": {}}, "supervisor": {"label": "Supervisor", "rows": [], "totals": {}}}
 
     leader_column = _find_column(base_df, "LÍDER", "LIDER", "JEFE", "JEFE DE EQUIPO", "EQUIPO")
-    supervisor_column = _find_column(base_df, "SUPERVISOR", "FORMADOR ASIGNADO", "RESPONSABLE")
+    supervisor_column = _find_column(base_df, "EQUIPO")
+    puesto_column = _find_column(source_df, "PUESTO")
+    surname_column = _find_column(source_df, "APELLIDOS", "APELLIDO")
+    names_column = _find_column(source_df, "NOMBRES", "NOMBRE")
+    team_column = _find_column(source_df, "EQUIPO")
     working = df.copy()
     working["FECHA BAJA"] = pd.to_datetime(working["FECHA BAJA"], errors="coerce")
     working = working[working["FECHA BAJA"].notna()].copy()
     if working.empty:
-        return {"months": [], "leader": {"label": leader_column or "Líder", "rows": [], "totals": {}}, "supervisor": {"label": supervisor_column or "Supervisor", "rows": [], "totals": {}}}
+        return {"months": [], "leader": {"label": leader_column or "Líder", "rows": [], "totals": {}}, "supervisor": {"label": "Supervisor", "rows": [], "totals": {}}}
 
     working["_period"] = working["FECHA BAJA"].dt.to_period("M")
     periods = sorted(working["_period"].dropna().unique())
@@ -758,22 +763,88 @@ def get_bajas_by_owner_month(payload: DynamicAnalysisRequest):
     month_labels = {str(period): f"{MONTH_LABELS[int(period.month)]} {int(period.year)}" for period in periods}
     staffing_base = _only_activos(base_df)
 
-    def build_scope(column, fallback_label):
-        if not column:
+    def person_name_key(value):
+        return _normalize_column_name(value).replace(",", " ").replace(".", " ").strip()
+
+    supervisor_names = {}
+    if puesto_column and (surname_column or names_column):
+        supervisor_mask = source_df[puesto_column].astype(str).map(_normalize_column_name).str.contains("SUPERVISOR", na=False)
+        for _, item in source_df[supervisor_mask].iterrows():
+            surname = str(item.get(surname_column, "") if surname_column else "").strip()
+            names = str(item.get(names_column, "") if names_column else "").strip()
+            full_name = f"{surname}, {names}" if surname and names else surname or names
+            key = person_name_key(full_name)
+            if key:
+                supervisor_names[key] = full_name
+
+    manager_by_person = {}
+    if team_column and (surname_column or names_column):
+        for _, item in source_df.iterrows():
+            surname = str(item.get(surname_column, "") if surname_column else "").strip()
+            names = str(item.get(names_column, "") if names_column else "").strip()
+            full_name = f"{surname}, {names}" if surname and names else surname or names
+            person_key = person_name_key(full_name)
+            manager = str(item.get(team_column, "")).strip()
+            if person_key and manager:
+                manager_by_person[person_key] = manager
+
+    supervisor_resolution_cache = {}
+
+    def resolve_supervisor(item):
+        manager = str(item.get(team_column, "") if team_column else "").strip()
+        initial_key = person_name_key(manager)
+        if initial_key in supervisor_resolution_cache:
+            return supervisor_resolution_cache[initial_key]
+        visited = set()
+        path = []
+        resolved = "Sin supervisor identificado"
+        while manager:
+            manager_key = person_name_key(manager)
+            if not manager_key or manager_key in visited:
+                break
+            if manager_key in supervisor_resolution_cache:
+                resolved = supervisor_resolution_cache[manager_key]
+                break
+            if manager_key in supervisor_names:
+                resolved = supervisor_names[manager_key]
+                break
+            visited.add(manager_key)
+            path.append(manager_key)
+            manager = manager_by_person.get(manager_key, "")
+        if initial_key:
+            supervisor_resolution_cache[initial_key] = resolved
+        for manager_key in path:
+            supervisor_resolution_cache[manager_key] = resolved
+        return resolved
+
+    supervisor_scope_names = dict(supervisor_names)
+    supervisor_scope_names[person_name_key("Sin supervisor identificado")] = "Sin supervisor identificado"
+
+    def build_scope(column, fallback_label, allowed_owner_names=None, label_override=None, owner_resolver=None):
+        if not column and not owner_resolver:
             return {"label": fallback_label, "rows": [], "totals": {}}
         grouped = working.copy()
-        grouped["_owner"] = grouped[column].astype(str).str.strip().replace("", "Sin dato")
+        grouped["_owner"] = grouped.apply(owner_resolver, axis=1) if owner_resolver else grouped[column].astype(str).str.strip().replace("", "Sin dato")
+        grouped["_owner_key"] = grouped["_owner"].map(person_name_key)
         assigned = staffing_base.copy()
-        assigned["_owner"] = assigned[column].astype(str).str.strip().replace("", "Sin dato")
+        assigned["_owner"] = assigned.apply(owner_resolver, axis=1) if owner_resolver else assigned[column].astype(str).str.strip().replace("", "Sin dato")
+        assigned["_owner_key"] = assigned["_owner"].map(person_name_key)
+        if allowed_owner_names is not None:
+            allowed_keys = set(allowed_owner_names)
+            grouped = grouped[grouped["_owner_key"].isin(allowed_keys)]
+            assigned = assigned[assigned["_owner_key"].isin(allowed_keys)]
         rows = []
         totals = {month_labels[key]: 0 for key in month_keys}
         staffing_totals = {month_labels[key]: 0 for key in month_keys}
         rate_totals = {month_labels[key]: 0 for key in month_keys}
         totals["Total"] = 0
-        owners = sorted(set(grouped["_owner"].dropna().astype(str)).union(set(assigned["_owner"].dropna().astype(str))))
-        for owner in owners:
-            group = grouped[grouped["_owner"].eq(owner)]
-            assigned_group = assigned[assigned["_owner"].eq(owner)]
+        owner_keys = sorted(set(grouped["_owner_key"].dropna().astype(str)).union(set(assigned["_owner_key"].dropna().astype(str))))
+        if allowed_owner_names is not None:
+            owner_keys = sorted(set(owner_keys).union(allowed_owner_names))
+        for owner_key in owner_keys:
+            group = grouped[grouped["_owner_key"].eq(owner_key)]
+            assigned_group = assigned[assigned["_owner_key"].eq(owner_key)]
+            owner = allowed_owner_names.get(owner_key) if allowed_owner_names is not None else str(group["_owner"].iloc[0] if not group.empty else assigned_group["_owner"].iloc[0])
             active_count = int(assigned_group.shape[0])
             row = {"Responsable": str(owner), "_staffing": {}, "_rotation": {}}
             total = 0
@@ -795,7 +866,7 @@ def get_bajas_by_owner_month(payload: DynamicAnalysisRequest):
             row["_staffing"]["Promedio"] = average_staffing
             row["_rotation"]["Total"] = round((total / average_staffing) * 100, 1) if average_staffing else 0
             totals["Total"] += total
-            if total > 0:
+            if total > 0 or active_count > 0:
                 rows.append(row)
         for period_key in month_keys:
             month_label = month_labels[period_key]
@@ -806,12 +877,12 @@ def get_bajas_by_owner_month(payload: DynamicAnalysisRequest):
         totals["_staffing"]["Promedio"] = staffing_average
         totals["_rotation"]["Total"] = round((totals["Total"] / staffing_average) * 100, 1) if staffing_average else 0
         rows = sorted(rows, key=lambda item: item["Total"], reverse=True)
-        return {"label": column, "rows": rows, "totals": totals}
+        return {"label": label_override or column, "rows": rows, "totals": totals}
 
     return {
         "months": [month_labels[key] for key in month_keys],
         "leader": build_scope(leader_column, "Líder"),
-        "supervisor": build_scope(supervisor_column, "Supervisor"),
+        "supervisor": build_scope(supervisor_column, "Supervisor", supervisor_scope_names, "Supervisor", resolve_supervisor),
     }
 
 
