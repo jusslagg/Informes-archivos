@@ -1,5 +1,7 @@
 ﻿import * as XLSX from "xlsx";
 
+import { getBrowserHierarchyExceptions } from "../config/hierarchyExceptions.js";
+
 const C = {
   area: "\u00c1REA",
   subArea: "SUB \u00c1REA",
@@ -687,6 +689,269 @@ export function getRequiredStructureBrowser(filters = []) {
     rows: [...grouped.values()].sort((a, b) =>
       `${a.cliente} ${a.campana} ${a.subcampana}`.localeCompare(`${b.cliente} ${b.campana} ${b.subcampana}`),
     ),
+  };
+}
+
+export function getHierarchySummaryBrowser(filters = []) {
+  ensureRows();
+  const savedExceptions = getBrowserHierarchyExceptions().rows;
+  const exceptionsByClient = new Map();
+  savedExceptions.forEach((row) => {
+    const key = normalizeColumnName(row.client);
+    if (!exceptionsByClient.has(key)) exceptionsByClient.set(key, []);
+    exceptionsByClient.get(key).push(row);
+  });
+  exceptionsByClient.forEach((items) => items.sort((a, b) => {
+    const aScoped = Boolean(a.scopeManager || a.scopeSiteHead || a.scopeSupervisor);
+    const bScoped = Boolean(b.scopeManager || b.scopeSiteHead || b.scopeSupervisor);
+    return Number(bScoped) - Number(aScoped);
+  }));
+  const personKey = (input) => normalizeColumnName(input).replace(/[,.]/g, " ").replace(/\s+/g, " ").trim();
+  const personName = (row) => {
+    const surname = looseValue(row, "APELLIDOS", "APELLIDO");
+    const names = looseValue(row, "NOMBRES", "NOMBRE");
+    return surname && names ? `${surname}, ${names}` : surname || names || "Sin identificar";
+  };
+  const roleFromPosition = (position) => {
+    const value = normalizeColumnName(position);
+    if (value.includes("TEAM LEADER")) return "leader";
+    if (value.includes("SUPERVISOR")) return "supervisor";
+    if (value.includes("JEFE DE SITE")) return "siteHead";
+    if (value.includes("GERENTE")) return "manager";
+    return "";
+  };
+
+  const directory = new Map();
+  state.rows.forEach((row) => {
+    const key = personKey(personName(row));
+    if (!key) return;
+    const item = {
+      name: personName(row),
+      manager: looseValue(row, "EQUIPO"),
+      role: roleFromPosition(looseValue(row, "PUESTO")),
+      active: isActiveRow(row),
+    };
+    const current = directory.get(key);
+    if (!current || item.active) directory.set(key, item);
+  });
+
+  const hierarchyCache = new Map();
+  const resolveHierarchy = (row) => {
+    const firstManager = looseValue(row, "EQUIPO");
+    const firstKey = personKey(firstManager);
+    const client = clientValue(row);
+    const cacheKey = `${firstKey}||${normalizeColumnName(client)}`;
+    if (hierarchyCache.has(cacheKey)) return hierarchyCache.get(cacheKey);
+    const result = { leader: "", supervisor: "", siteHead: "", manager: "" };
+    const visited = new Set();
+    let manager = firstManager;
+    while (manager) {
+      const key = personKey(manager);
+      if (!key || visited.has(key)) break;
+      visited.add(key);
+      const person = directory.get(key);
+      if (!person) break;
+      if (person.role && !result[person.role]) result[person.role] = person.name;
+      manager = person.manager;
+    }
+    const sourceManager = result.manager || "Multicuentas";
+    const sourceSiteHead = result.siteHead || "Sin jefe de site identificado";
+    const sourceSupervisor = result.supervisor || "Sin supervisor";
+    result.scopeManager = sourceManager;
+    result.scopeSiteHead = sourceSiteHead;
+    result.scopeSupervisor = sourceSupervisor;
+    const exception = (exceptionsByClient.get(normalizeColumnName(client)) || []).find((item) => (
+      (!item.scopeManager || normalizeColumnName(item.scopeManager) === normalizeColumnName(sourceManager))
+      && (!item.scopeSiteHead || normalizeColumnName(item.scopeSiteHead) === normalizeColumnName(sourceSiteHead))
+      && (!item.scopeSupervisor || normalizeColumnName(item.scopeSupervisor) === normalizeColumnName(sourceSupervisor))
+    ));
+    if (exception) {
+      if (exception.manager) {
+        result.manager = normalizeColumnName(exception.manager) === "SIN GERENTE IDENTIFICADO"
+          ? "Multicuentas"
+          : exception.manager;
+      }
+      if (exception.siteHead) result.siteHead = exception.siteHead;
+      if (exception.supervisor) {
+        result.supervisor = normalizeColumnName(exception.supervisor) === "SIN SUPERVISOR"
+          ? ""
+          : exception.supervisor;
+      }
+    }
+    if (cacheKey) hierarchyCache.set(cacheKey, result);
+    return result;
+  };
+
+  const activeRows = applyFilters(state.rows, withoutEstadoFilter(filters)).filter(isActiveRow);
+  const ratioFilters = filters.filter((filter) => {
+    const column = normalizeColumnName(filter.column);
+    return ![normalizeColumnName("ESTADO"), normalizeColumnName("CLIENTE"), normalizeColumnName(C.campaign)].includes(column);
+  });
+  const ratioRows = applyFilters(state.rows, ratioFilters).filter(isActiveRow);
+  const accountTotals = new Map();
+  activeRows.forEach((row) => {
+    const client = clientValue(row);
+    accountTotals.set(client, (accountTotals.get(client) || 0) + 1);
+  });
+
+  const groups = {
+    leaders: new Map(),
+    supervisors: new Map(),
+    siteHeads: new Map(),
+    managers: new Map(),
+  };
+  const currentStructure = new Map();
+  const add = (map, key, initial) => {
+    const current = map.get(key) || { ...initial, active: 0 };
+    current.active += 1;
+    map.set(key, current);
+  };
+
+  activeRows.forEach((row) => {
+    const client = clientValue(row);
+    const campaign = campaignValue(row);
+    const hierarchy = resolveHierarchy(row);
+    const leader = hierarchy.leader || "Sin líder identificado";
+    const supervisor = hierarchy.supervisor || "Sin supervisor identificado";
+    const siteHead = hierarchy.siteHead || "Sin jefe de site identificado";
+    const manager = hierarchy.manager || "Multicuentas";
+
+    const structureKey = [client, hierarchy.scopeManager, hierarchy.scopeSiteHead, hierarchy.scopeSupervisor]
+      .map(normalizeColumnName)
+      .join("||");
+    const structureRow = currentStructure.get(structureKey) || {
+      client,
+      scopeManager: hierarchy.scopeManager,
+      scopeSiteHead: hierarchy.scopeSiteHead,
+      scopeSupervisor: hierarchy.scopeSupervisor,
+      manager,
+      siteHead,
+      supervisor,
+      active: 0,
+    };
+    structureRow.active += 1;
+    currentStructure.set(structureKey, structureRow);
+
+    add(groups.leaders, [client, campaign, leader].map(normalizeColumnName).join("||"), {
+      client,
+      campaign,
+      leader,
+      supervisor,
+      siteHead,
+      manager,
+    });
+    add(groups.supervisors, [client, supervisor].map(normalizeColumnName).join("||"), {
+      client,
+      supervisor,
+      siteHead,
+      manager,
+    });
+    add(groups.siteHeads, [client, siteHead].map(normalizeColumnName).join("||"), {
+      client,
+      siteHead,
+      manager,
+    });
+    add(groups.managers, [client, manager].map(normalizeColumnName).join("||"), {
+      client,
+      manager,
+    });
+  });
+
+  const ratioMaps = {
+    leaders: { account: new Map(), total: new Map() },
+    supervisors: { account: new Map(), total: new Map() },
+    siteHeads: { account: new Map(), total: new Map() },
+    managers: { account: new Map(), total: new Map() },
+  };
+  const addRatio = (level, client, responsible) => {
+    const responsibleKey = personKey(responsible);
+    const accountKey = `${normalizeColumnName(client)}||${responsibleKey}`;
+    ratioMaps[level].account.set(accountKey, (ratioMaps[level].account.get(accountKey) || 0) + 1);
+    ratioMaps[level].total.set(responsibleKey, (ratioMaps[level].total.get(responsibleKey) || 0) + 1);
+  };
+  ratioRows.forEach((row) => {
+    const client = clientValue(row);
+    const hierarchy = resolveHierarchy(row);
+    addRatio("leaders", client, hierarchy.leader || "Sin líder identificado");
+    addRatio("supervisors", client, hierarchy.supervisor || "Sin supervisor identificado");
+    addRatio("siteHeads", client, hierarchy.siteHead || "Sin jefe de site identificado");
+    addRatio("managers", client, hierarchy.manager || "Multicuentas");
+  });
+
+  const finalize = (level, map, responsibleField) => [...map.values()]
+    .map((row) => {
+      const responsibleKey = personKey(row[responsibleField]);
+      const accountKey = `${normalizeColumnName(row.client)}||${responsibleKey}`;
+      const accountAssigned = ratioMaps[level].account.get(accountKey) || 0;
+      const responsibleTotal = ratioMaps[level].total.get(responsibleKey) || 0;
+      return {
+        ...row,
+        accountTotal: accountTotals.get(row.client) || 0,
+        accountAssigned,
+        responsibleTotal,
+        share: responsibleTotal ? Number(((accountAssigned / responsibleTotal) * 100).toFixed(1)) : 0,
+      };
+    })
+    .sort((a, b) => a.client.localeCompare(b.client) || b.active - a.active);
+
+  const rows = {
+    leaders: finalize("leaders", groups.leaders, "leader"),
+    supervisors: finalize("supervisors", groups.supervisors, "supervisor"),
+    siteHeads: finalize("siteHeads", groups.siteHeads, "siteHead"),
+    managers: finalize("managers", groups.managers, "manager"),
+  };
+  const activeRoleSets = {
+    leader: new Set(),
+    supervisor: new Set(),
+    siteHead: new Set(),
+    manager: new Set(),
+  };
+  const rosterMaps = {
+    supervisors: new Map(),
+    siteHeads: new Map(),
+    managers: new Map(),
+  };
+  activeRows.forEach((row) => {
+    const role = roleFromPosition(looseValue(row, "PUESTO"));
+    if (!role) return;
+    const name = personName(row);
+    const key = personKey(name);
+    const client = clientValue(row);
+    const hierarchy = resolveHierarchy(row);
+    activeRoleSets[role].add(key);
+    if (role === "manager") rosterMaps.managers.set(key, { name, client });
+    if (role === "siteHead") {
+      rosterMaps.siteHeads.set(key, {
+        name,
+        client,
+        manager: hierarchy.manager || "Multicuentas",
+      });
+    }
+    if (role === "supervisor") {
+      rosterMaps.supervisors.set(key, {
+        name,
+        client,
+        siteHead: hierarchy.siteHead || "Sin jefe de site identificado",
+        manager: hierarchy.manager || "Multicuentas",
+      });
+    }
+  });
+  return {
+    rows,
+    currentStructure: [...currentStructure.values()].sort((a, b) => a.client.localeCompare(b.client) || b.active - a.active),
+    roster: {
+      supervisors: [...rosterMaps.supervisors.values()],
+      siteHeads: [...rosterMaps.siteHeads.values()],
+      managers: [...rosterMaps.managers.values()],
+    },
+    totals: {
+      active: activeRows.length,
+      clients: accountTotals.size,
+      leaders: activeRoleSets.leader.size,
+      supervisors: activeRoleSets.supervisor.size,
+      siteHeads: activeRoleSets.siteHead.size,
+      managers: activeRoleSets.manager.size,
+    },
   };
 }
 

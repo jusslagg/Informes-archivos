@@ -5,11 +5,13 @@ import {
   LayoutDashboard,
   ListChecks,
   Menu,
+  Network,
   SearchCheck,
   Table2,
 } from "lucide-react";
 import { Component, useState } from "react";
 import DashboardPage from "./pages/DashboardPage.jsx";
+import HierarchyPage from "./pages/HierarchyPage.jsx";
 import QualityPage from "./pages/QualityPage.jsx";
 import RequeridosPage from "./pages/RequeridosPage.jsx";
 import RequeridosSummaryPage from "./pages/RequeridosSummaryPage.jsx";
@@ -18,6 +20,7 @@ import UploadPage from "./pages/UploadPage.jsx";
 const pages = [
   { id: "upload", label: "Importar", icon: FileSpreadsheet, component: UploadPage },
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, component: DashboardPage },
+  { id: "estructura", label: "Estructura", icon: Network, component: HierarchyPage },
   { id: "requeridos", label: "Requeridos", icon: ListChecks, component: RequeridosPage, hidden: true },
   { id: "resumen-requeridos", label: "Resumen", icon: Table2, component: RequeridosSummaryPage, hidden: true },
   { id: "quality", label: "Calidad", icon: SearchCheck, component: QualityPage },

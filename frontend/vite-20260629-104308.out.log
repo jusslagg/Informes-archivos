@@ -43,3 +43,60 @@
 05:36:11 [vite] (client) hmr update /src/styles/app.css, /src/pages/RequeridosSummaryPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
 05:38:49 [vite] (client) hmr update /src/styles/app.css, /src/pages/RequeridosSummaryPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
 05:44:56 [vite] (client) hmr update /src/styles/app.css, /src/pages/RequeridosSummaryPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
+05:59:08 [vite] (client) hmr update /src/styles/app.css, /src/pages/RequeridosSummaryPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
+05:59:08 [vite] (client) hmr update /src/styles/app.css, /src/pages/RequeridosSummaryPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
+06:00:14 [vite] (client) hmr update /src/App.jsx, /src/styles/app.css
+06:00:14 [vite] (client) hmr update /src/styles/app.css
+06:05:37 [vite] (client) hmr update /src/pages/HierarchyPage.jsx, /src/styles/app.css
+06:05:37 [vite] (client) hmr update /src/styles/app.css
+06:07:25 [vite] (client) hmr update /src/styles/app.css, /src/pages/RequeridosSummaryPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx, /src/pages/HierarchyPage.jsx
+06:15:36 [vite] (client) hmr update /src/pages/DashboardPage.jsx, /src/styles/app.css
+06:15:36 [vite] (client) page reload public/guia_usuario_dashboard.html
+06:15:44 [vite] (client) page reload public/guia_usuario_dashboard.html
+06:19:29 [vite] vite.config.js changed, restarting server...
+06:19:30 [vite] server restarted.
+09:23:52 [vite] (client) hmr update /src/styles/app.css, /src/pages/HierarchyPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/RequeridosSummaryPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
+09:23:52 [vite] (client) hmr update /src/pages/HierarchyPage.jsx, /src/styles/app.css
+09:23:52 [vite] (client) page reload public/guia_usuario_dashboard.html
+09:25:04 [vite] (client) hmr update /src/pages/HierarchyPage.jsx, /src/styles/app.css
+12:32:47 [vite] (client) hmr update /src/styles/app.css, /src/pages/HierarchyPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/RequeridosSummaryPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
+12:32:47 [vite] (client) hmr update /src/pages/HierarchyPage.jsx, /src/styles/app.css
+01:49:46 [vite] (client) hmr update /src/styles/app.css, /src/pages/HierarchyPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/RequeridosSummaryPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
+01:50:56 [vite] (client) hmr update /src/pages/HierarchyPage.jsx, /src/styles/app.css
+01:50:57 [vite] (client) hmr update /src/styles/app.css
+01:52:05 [vite] (client) page reload public/guia_usuario_dashboard.html
+02:03:18 [vite] (client) hmr update /src/pages/HierarchyPage.jsx, /src/styles/app.css
+02:03:18 [vite] (client) page reload public/guia_usuario_dashboard.html
+02:05:35 [vite] (client) hmr update /src/pages/HierarchyPage.jsx, /src/styles/app.css
+02:05:35 [vite] (client) hmr update /src/styles/app.css
+02:05:36 [vite] (client) page reload public/guia_usuario_dashboard.html
+02:08:26 [vite] (client) hmr update /src/pages/HierarchyPage.jsx, /src/styles/app.css
+02:08:26 [vite] (client) hmr update /src/styles/app.css
+02:15:37 [vite] (client) hmr update /src/styles/app.css, /src/pages/HierarchyPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/RequeridosSummaryPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
+02:15:37 [vite] (client) hmr update /src/styles/app.css, /src/pages/HierarchyPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/RequeridosSummaryPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
+02:16:32 [vite] (client) hmr update /src/pages/HierarchyPage.jsx, /src/styles/app.css
+02:17:37 [vite] (client) hmr update /src/styles/app.css
+02:17:41 [vite] (client) page reload public/guia_usuario_dashboard.html
+02:25:05 [vite] (client) hmr update /src/pages/HierarchyPage.jsx, /src/styles/app.css
+02:25:05 [vite] (client) hmr update /src/styles/app.css, /src/pages/HierarchyPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/RequeridosSummaryPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
+02:25:21 [vite] (client) hmr update /src/styles/app.css, /src/pages/HierarchyPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/RequeridosSummaryPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
+02:25:21 [vite] (client) page reload public/guia_usuario_dashboard.html
+02:38:44 [vite] (client) hmr update /src/pages/HierarchyPage.jsx, /src/styles/app.css
+02:39:10 [vite] (client) hmr update /src/styles/app.css
+02:39:10 [vite] (client) page reload public/guia_usuario_dashboard.html
+02:41:57 [vite] (client) hmr update /src/pages/HierarchyPage.jsx, /src/styles/app.css
+02:41:57 [vite] (client) hmr update /src/styles/app.css, /src/pages/HierarchyPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/RequeridosSummaryPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
+02:42:26 [vite] (client) hmr update /src/pages/HierarchyPage.jsx, /src/styles/app.css
+02:42:26 [vite] (client) hmr update /src/styles/app.css
+02:42:26 [vite] (client) page reload public/guia_usuario_dashboard.html
+02:57:32 [vite] (client) hmr update /src/styles/app.css, /src/pages/HierarchyPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/RequeridosSummaryPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
+02:58:03 [vite] (client) hmr update /src/pages/HierarchyPage.jsx, /src/styles/app.css
+02:58:36 [vite] (client) hmr update /src/pages/HierarchyPage.jsx, /src/styles/app.css
+02:58:58 [vite] (client) hmr update /src/styles/app.css
+02:58:58 [vite] (client) page reload public/guia_usuario_dashboard.html
+03:26:03 [vite] (client) hmr update /src/styles/app.css, /src/pages/HierarchyPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/RequeridosSummaryPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
+03:26:15 [vite] (client) hmr update /src/styles/app.css, /src/pages/HierarchyPage.jsx, /src/pages/QualityPage.jsx, /src/pages/UploadPage.jsx, /src/pages/RequeridosSummaryPage.jsx, /src/pages/DashboardPage.jsx, /src/pages/RequeridosPage.jsx, /src/components/StaffingRequirements.jsx
+03:26:27 [vite] vite.config.js changed, restarting server...
+03:26:27 [vite] server restarted.
+03:26:51 [vite] (client) hmr update /src/pages/HierarchyPage.jsx, /src/styles/app.css
+03:26:51 [vite] (client) page reload public/guia_usuario_dashboard.html

@@ -19,12 +19,14 @@ from app.services.processor import clean_payroll, read_payroll_file
 from app.services.storage import (
     append_requirements_history,
     load_holidays,
+    load_hierarchy_exceptions,
     load_latest_dataset,
     load_requirements,
     load_requirements_catalog,
     load_requirements_history,
     requirements_summary,
     save_holidays,
+    save_hierarchy_exceptions,
     save_latest_dataset,
     save_requirements,
     save_requirements_catalog,
@@ -102,6 +104,16 @@ def get_saved_holidays(year: str):
 @router.put("/holidays/{year}")
 def put_saved_holidays(year: str, payload: dict):
     return save_holidays(year, payload)
+
+
+@router.get("/hierarchy-exceptions")
+def get_saved_hierarchy_exceptions():
+    return load_hierarchy_exceptions()
+
+
+@router.put("/hierarchy-exceptions")
+def put_saved_hierarchy_exceptions(payload: dict):
+    return save_hierarchy_exceptions(payload)
 
 
 def _latest_df():
@@ -494,6 +506,270 @@ def get_required_structure(payload: DynamicAnalysisRequest):
 
     rows = sorted(rows, key=lambda item: (item["cliente"], item["campana"], item["subcampana"]))
     return {"rows": rows}
+
+
+@router.post("/hierarchy-summary")
+def get_hierarchy_summary(payload: DynamicAnalysisRequest):
+    source_df = _latest_df()
+    scoped_df = _only_activos(_apply_filter_specs(source_df, _exclude_filter_specs(payload.filters, "ESTADO")))
+    ratio_filters = _exclude_filter_specs(
+        _exclude_filter_specs(
+            _exclude_filter_specs(payload.filters, "ESTADO"),
+            "CLIENTE",
+        ),
+        "CAMPAÑA",
+    )
+    ratio_df = _only_activos(_apply_filter_specs(source_df, ratio_filters))
+    surname_column = _find_column(source_df, "APELLIDOS", "APELLIDO")
+    names_column = _find_column(source_df, "NOMBRES", "NOMBRE")
+    position_column = _find_column(source_df, "PUESTO")
+    team_column = _find_column(source_df, "EQUIPO")
+    client_column = _find_column(source_df, "CLIENTE")
+    campaign_column = _find_column(source_df, "CAMPAÑA", "CAMPANA")
+    exceptions_by_client = {}
+    for exception_row in load_hierarchy_exceptions().get("rows", []):
+        exception_client = _normalize_column_name(exception_row.get("client", ""))
+        if exception_client:
+            exceptions_by_client.setdefault(exception_client, []).append(exception_row)
+    for client_exceptions in exceptions_by_client.values():
+        client_exceptions.sort(
+            key=lambda row: bool(row.get("scopeManager") or row.get("scopeSiteHead") or row.get("scopeSupervisor")),
+            reverse=True,
+        )
+
+    if not client_column or not team_column:
+        return {"rows": {"leaders": [], "supervisors": [], "siteHeads": [], "managers": []}, "totals": {"active": 0, "clients": 0, "leaders": 0, "supervisors": 0, "siteHeads": 0, "managers": 0}}
+
+    def person_key(value):
+        return _normalize_column_name(value).replace(",", " ").replace(".", " ").strip()
+
+    def person_name(item):
+        surname = str(item.get(surname_column, "") if surname_column else "").strip()
+        names = str(item.get(names_column, "") if names_column else "").strip()
+        return f"{surname}, {names}" if surname and names else surname or names or "Sin identificar"
+
+    def role_from_position(value):
+        position = _normalize_column_name(value)
+        if "TEAM LEADER" in position:
+            return "leader"
+        if "SUPERVISOR" in position:
+            return "supervisor"
+        if "JEFE DE SITE" in position:
+            return "siteHead"
+        if "GERENTE" in position:
+            return "manager"
+        return ""
+
+    directory = {}
+    estado_column = _find_column(source_df, "ESTADO")
+    for item in source_df.to_dict(orient="records"):
+        key = person_key(person_name(item))
+        if not key:
+            continue
+        is_active = _normalize_column_name(item.get(estado_column, "")) == "ACTIVO" if estado_column else True
+        current = directory.get(key)
+        entry = {
+            "name": person_name(item),
+            "manager": str(item.get(team_column, "")).strip(),
+            "role": role_from_position(item.get(position_column, "") if position_column else ""),
+            "active": is_active,
+        }
+        if not current or is_active:
+            directory[key] = entry
+
+    hierarchy_cache = {}
+
+    def resolve_hierarchy(item):
+        first_manager = str(item.get(team_column, "")).strip()
+        first_key = person_key(first_manager)
+        client = str(item.get(client_column, "")).strip() if client_column else ""
+        cache_key = f"{first_key}||{_normalize_column_name(client)}"
+        if cache_key in hierarchy_cache:
+            return hierarchy_cache[cache_key]
+        result = {"leader": "", "supervisor": "", "siteHead": "", "manager": ""}
+        visited = set()
+        manager = first_manager
+        while manager:
+            key = person_key(manager)
+            if not key or key in visited:
+                break
+            visited.add(key)
+            person = directory.get(key)
+            if not person:
+                break
+            role = person["role"]
+            if role and not result[role]:
+                result[role] = person["name"]
+            manager = person["manager"]
+        source_manager = result["manager"] or "Multicuentas"
+        source_site_head = result["siteHead"] or "Sin jefe de site identificado"
+        source_supervisor = result["supervisor"] or "Sin supervisor"
+        result["scopeManager"] = source_manager
+        result["scopeSiteHead"] = source_site_head
+        result["scopeSupervisor"] = source_supervisor
+        exception = next(
+            (
+                row
+                for row in exceptions_by_client.get(_normalize_column_name(client), [])
+                if (not row.get("scopeManager") or _normalize_column_name(row.get("scopeManager")) == _normalize_column_name(source_manager))
+                and (not row.get("scopeSiteHead") or _normalize_column_name(row.get("scopeSiteHead")) == _normalize_column_name(source_site_head))
+                and (not row.get("scopeSupervisor") or _normalize_column_name(row.get("scopeSupervisor")) == _normalize_column_name(source_supervisor))
+            ),
+            None,
+        )
+        if exception:
+            exception_manager = str(exception.get("manager") or "").strip()
+            if exception_manager:
+                result["manager"] = "Multicuentas" if _normalize_column_name(exception_manager) == "SIN GERENTE IDENTIFICADO" else exception_manager
+            exception_site_head = str(exception.get("siteHead") or "").strip()
+            if exception_site_head:
+                result["siteHead"] = exception_site_head
+            supervisor = str(exception.get("supervisor") or "").strip()
+            if supervisor:
+                result["supervisor"] = "" if _normalize_column_name(supervisor) == "SIN SUPERVISOR" else supervisor
+        if cache_key:
+            hierarchy_cache[cache_key] = result
+        return result
+
+    active_records = scoped_df.to_dict(orient="records")
+    account_totals = {}
+    for item in active_records:
+        client = str(item.get(client_column, "")).strip() or "Sin dato"
+        account_totals[client] = account_totals.get(client, 0) + 1
+
+    groups = {"leaders": {}, "supervisors": {}, "siteHeads": {}, "managers": {}}
+    current_structure = {}
+
+    def add(group_name, key, initial):
+        current = groups[group_name].setdefault(key, {**initial, "active": 0})
+        current["active"] += 1
+
+    for item in active_records:
+        client = str(item.get(client_column, "")).strip() or "Sin dato"
+        campaign = str(item.get(campaign_column, "")).strip() or "Sin dato" if campaign_column else "Sin dato"
+        hierarchy = resolve_hierarchy(item)
+        leader = hierarchy["leader"] or "Sin líder identificado"
+        supervisor = hierarchy["supervisor"] or "Sin supervisor identificado"
+        site_head = hierarchy["siteHead"] or "Sin jefe de site identificado"
+        manager = hierarchy["manager"] or "Multicuentas"
+
+        structure_key = "||".join(
+            map(
+                _normalize_column_name,
+                [client, hierarchy["scopeManager"], hierarchy["scopeSiteHead"], hierarchy["scopeSupervisor"]],
+            )
+        )
+        structure_row = current_structure.setdefault(
+            structure_key,
+            {
+                "client": client,
+                "scopeManager": hierarchy["scopeManager"],
+                "scopeSiteHead": hierarchy["scopeSiteHead"],
+                "scopeSupervisor": hierarchy["scopeSupervisor"],
+                "manager": manager,
+                "siteHead": site_head,
+                "supervisor": supervisor,
+                "active": 0,
+            },
+        )
+        structure_row["active"] += 1
+
+        add("leaders", "||".join(map(_normalize_column_name, [client, campaign, leader])), {
+            "client": client, "campaign": campaign, "leader": leader, "supervisor": supervisor, "siteHead": site_head, "manager": manager,
+        })
+        add("supervisors", "||".join(map(_normalize_column_name, [client, supervisor])), {
+            "client": client, "supervisor": supervisor, "siteHead": site_head, "manager": manager,
+        })
+        add("siteHeads", "||".join(map(_normalize_column_name, [client, site_head])), {
+            "client": client, "siteHead": site_head, "manager": manager,
+        })
+        add("managers", "||".join(map(_normalize_column_name, [client, manager])), {
+            "client": client, "manager": manager,
+        })
+
+    ratio_maps = {
+        "leaders": {"account": {}, "total": {}},
+        "supervisors": {"account": {}, "total": {}},
+        "siteHeads": {"account": {}, "total": {}},
+        "managers": {"account": {}, "total": {}},
+    }
+
+    def add_ratio(level, client, responsible):
+        responsible_key = person_key(responsible)
+        account_key = f"{_normalize_column_name(client)}||{responsible_key}"
+        ratio_maps[level]["account"][account_key] = ratio_maps[level]["account"].get(account_key, 0) + 1
+        ratio_maps[level]["total"][responsible_key] = ratio_maps[level]["total"].get(responsible_key, 0) + 1
+
+    for item in ratio_df.to_dict(orient="records"):
+        client = str(item.get(client_column, "")).strip() or "Sin dato"
+        hierarchy = resolve_hierarchy(item)
+        add_ratio("leaders", client, hierarchy["leader"] or "Sin líder identificado")
+        add_ratio("supervisors", client, hierarchy["supervisor"] or "Sin supervisor identificado")
+        add_ratio("siteHeads", client, hierarchy["siteHead"] or "Sin jefe de site identificado")
+        add_ratio("managers", client, hierarchy["manager"] or "Multicuentas")
+
+    def finalize(level, group, responsible_field):
+        rows = []
+        for row in group.values():
+            account_total = account_totals.get(row["client"], 0)
+            responsible_key = person_key(row[responsible_field])
+            account_key = f"{_normalize_column_name(row['client'])}||{responsible_key}"
+            account_assigned = ratio_maps[level]["account"].get(account_key, 0)
+            responsible_total = ratio_maps[level]["total"].get(responsible_key, 0)
+            rows.append({
+                **row,
+                "accountTotal": account_total,
+                "accountAssigned": account_assigned,
+                "responsibleTotal": responsible_total,
+                "share": round((account_assigned / responsible_total) * 100, 1) if responsible_total else 0,
+            })
+        return sorted(rows, key=lambda row: (row["client"], -row["active"]))
+
+    rows = {
+        "leaders": finalize("leaders", groups["leaders"], "leader"),
+        "supervisors": finalize("supervisors", groups["supervisors"], "supervisor"),
+        "siteHeads": finalize("siteHeads", groups["siteHeads"], "siteHead"),
+        "managers": finalize("managers", groups["managers"], "manager"),
+    }
+    active_role_sets = {"leader": set(), "supervisor": set(), "siteHead": set(), "manager": set()}
+    roster_maps = {"supervisors": {}, "siteHeads": {}, "managers": {}}
+    for item in active_records:
+        role = role_from_position(item.get(position_column, "") if position_column else "")
+        if not role:
+            continue
+        name = person_name(item)
+        key = person_key(name)
+        client = str(item.get(client_column, "")).strip() or "Sin dato"
+        hierarchy = resolve_hierarchy(item)
+        active_role_sets[role].add(key)
+        if role == "manager":
+            roster_maps["managers"][key] = {"name": name, "client": client}
+        elif role == "siteHead":
+            roster_maps["siteHeads"][key] = {
+                "name": name,
+                "client": client,
+                "manager": hierarchy["manager"] or "Multicuentas",
+            }
+        elif role == "supervisor":
+            roster_maps["supervisors"][key] = {
+                "name": name,
+                "client": client,
+                "siteHead": hierarchy["siteHead"] or "Sin jefe de site identificado",
+                "manager": hierarchy["manager"] or "Multicuentas",
+            }
+    return {
+        "rows": rows,
+        "currentStructure": sorted(current_structure.values(), key=lambda row: (row["client"], -row["active"])),
+        "roster": {key: list(value.values()) for key, value in roster_maps.items()},
+        "totals": {
+            "active": len(active_records),
+            "clients": len(account_totals),
+            "leaders": len(active_role_sets["leader"]),
+            "supervisors": len(active_role_sets["supervisor"]),
+            "siteHeads": len(active_role_sets["siteHead"]),
+            "managers": len(active_role_sets["manager"]),
+        },
+    }
 
 
 @router.post("/staffing-by-campaign-legacy-disabled")

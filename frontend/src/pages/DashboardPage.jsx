@@ -42,7 +42,7 @@ import { readDashboardState, saveDashboardState } from "../lib/payrollSession.js
 import { exportDashboardReport } from "../utils/reportExport.js";
 
 const number = new Intl.NumberFormat("es-AR");
-const dashboardGuideUrl = `${import.meta.env.BASE_URL}guia_usuario_dashboard.pdf`;
+const dashboardGuideUrl = `${import.meta.env.BASE_URL}guia_usuario_dashboard.html`;
 
 function normalizeText(value) {
   return String(value || "")
@@ -511,9 +511,9 @@ export default function DashboardPage() {
           </span>
         </div>
         <div className="header-actions">
-          <a className="primary-button secondary-button dashboard-guide-button" href={dashboardGuideUrl} download>
+          <a className="primary-button secondary-button dashboard-guide-button" href={dashboardGuideUrl} target="_blank" rel="noreferrer">
             <BookOpenText size={18} />
-            Guía PDF
+            Guía
           </a>
           <button className="icon-button" onClick={() => loadDashboard()} title="Actualizar" disabled={loading}>
             <RefreshCw size={18} />

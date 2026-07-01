@@ -71,6 +71,25 @@ def requirements_history_path() -> Path:
     return settings.export_dir.parent / "requirements_history.json"
 
 
+def hierarchy_exceptions_path() -> Path:
+    return settings.export_dir.parent / "hierarchy_exceptions.json"
+
+
+def default_hierarchy_exceptions_path() -> Path:
+    return Path(__file__).resolve().parents[3] / "shared" / "hierarchy_exceptions.json"
+
+
+def load_default_hierarchy_exceptions() -> dict:
+    path = default_hierarchy_exceptions_path()
+    if not path.exists():
+        return {"rows": []}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return {"rows": data.get("rows") or []}
+    except json.JSONDecodeError:
+        return {"rows": []}
+
+
 def available_requirement_months() -> list[str]:
     storage_dir = settings.export_dir.parent
     return sorted(
@@ -330,6 +349,71 @@ def load_requirements_catalog() -> dict:
 def save_requirements_catalog(payload: dict) -> dict:
     data = {"rows": payload.get("rows") or []}
     path = requirements_catalog_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    return data
+
+
+def load_hierarchy_exceptions() -> dict:
+    path = hierarchy_exceptions_path()
+    if not path.exists():
+        return load_default_hierarchy_exceptions()
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        rows = data.get("rows") or []
+        for row in rows:
+            if _normalize_key(row.get("manager")) == "sin gerente identificado":
+                row["manager"] = "Multicuentas"
+        return {"rows": rows}
+    except json.JSONDecodeError:
+        return load_default_hierarchy_exceptions()
+
+
+def save_hierarchy_exceptions(payload: dict) -> dict:
+    clean_rows = []
+    seen_scopes = set()
+    for row in payload.get("rows") or []:
+        if not isinstance(row, dict):
+            continue
+        client = str(row.get("client") or "").strip()
+        manager = str(row.get("manager") or "").strip()
+        if _normalize_key(manager) == "sin gerente identificado":
+            manager = "Multicuentas"
+        site_head = str(row.get("siteHead") or "").strip()
+        supervisor = str(row.get("supervisor") or "").strip()
+        scope_manager = str(row.get("scopeManager") or "").strip()
+        scope_site_head = str(row.get("scopeSiteHead") or "").strip()
+        scope_supervisor = str(row.get("scopeSupervisor") or "").strip()
+        scope_key = "||".join(
+            _normalize_key(value)
+            for value in [client, scope_manager, scope_site_head, scope_supervisor]
+        )
+        if not client or not any([manager, site_head, supervisor]) or scope_key in seen_scopes:
+            continue
+        seen_scopes.add(scope_key)
+        clean_rows.append(
+            {
+                "client": client,
+                "scopeManager": scope_manager,
+                "scopeSiteHead": scope_site_head,
+                "scopeSupervisor": scope_supervisor,
+                "manager": manager,
+                "siteHead": site_head,
+                "supervisor": supervisor,
+            }
+        )
+    data = {
+        "rows": sorted(
+            clean_rows,
+            key=lambda row: (
+                _normalize_key(row["client"]),
+                _normalize_key(row["scopeManager"]),
+                _normalize_key(row["scopeSiteHead"]),
+                _normalize_key(row["scopeSupervisor"]),
+            ),
+        )
+    }
+    path = hierarchy_exceptions_path()
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     return data

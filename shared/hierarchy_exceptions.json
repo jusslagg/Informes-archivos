@@ -1,0 +1,301 @@
+{
+  "rows": [
+    {
+      "client": "ASSURANT",
+      "scopeManager": "",
+      "scopeSiteHead": "",
+      "scopeSupervisor": "",
+      "manager": "Multicuentas",
+      "siteHead": "",
+      "supervisor": ""
+    },
+    {
+      "client": "BANCO BICE",
+      "scopeManager": "",
+      "scopeSiteHead": "",
+      "scopeSupervisor": "",
+      "manager": "Multicuentas",
+      "siteHead": "SURACE, CAROLINA VICTORIA",
+      "supervisor": ""
+    },
+    {
+      "client": "BANCO PIANO",
+      "scopeManager": "",
+      "scopeSiteHead": "",
+      "scopeSupervisor": "",
+      "manager": "Multicuentas",
+      "siteHead": "",
+      "supervisor": ""
+    },
+    {
+      "client": "BBVA",
+      "scopeManager": "",
+      "scopeSiteHead": "",
+      "scopeSupervisor": "",
+      "manager": "Multicuentas",
+      "siteHead": "LOPEZ DE LA VEGA, ROXANA",
+      "supervisor": "MEIJOME, MARIA FLORENCIA"
+    },
+    {
+      "client": "BBVA OPENPAY",
+      "scopeManager": "",
+      "scopeSiteHead": "",
+      "scopeSupervisor": "",
+      "manager": "Multicuentas",
+      "siteHead": "",
+      "supervisor": ""
+    },
+    {
+      "client": "BNA",
+      "scopeManager": "",
+      "scopeSiteHead": "",
+      "scopeSupervisor": "",
+      "manager": "QUESADA, MARIANO JUAN LUIS",
+      "siteHead": "RISSI PEREIRA, ISMAEL NICOLAS",
+      "supervisor": ""
+    },
+    {
+      "client": "BSF",
+      "scopeManager": "",
+      "scopeSiteHead": "",
+      "scopeSupervisor": "",
+      "manager": "Multicuentas",
+      "siteHead": "",
+      "supervisor": ""
+    },
+    {
+      "client": "CACHAMAI",
+      "scopeManager": "",
+      "scopeSiteHead": "",
+      "scopeSupervisor": "",
+      "manager": "Multicuentas",
+      "siteHead": "",
+      "supervisor": ""
+    },
+    {
+      "client": "FARMAPAY",
+      "scopeManager": "",
+      "scopeSiteHead": "",
+      "scopeSupervisor": "",
+      "manager": "Multicuentas",
+      "siteHead": "ALMEIRA, SALVADOR EMILIO",
+      "supervisor": "Sin supervisor"
+    },
+    {
+      "client": "GIRE",
+      "scopeManager": "",
+      "scopeSiteHead": "",
+      "scopeSupervisor": "",
+      "manager": "Multicuentas",
+      "siteHead": "ALMEIRA, SALVADOR EMILIO",
+      "supervisor": "ROMERO, VIVIANA JESICA"
+    },
+    {
+      "client": "JONHSON & JONHSON",
+      "scopeManager": "",
+      "scopeSiteHead": "",
+      "scopeSupervisor": "",
+      "manager": "Multicuentas",
+      "siteHead": "",
+      "supervisor": ""
+    },
+    {
+      "client": "LEIVA JOYAS",
+      "scopeManager": "",
+      "scopeSiteHead": "",
+      "scopeSupervisor": "",
+      "manager": "Multicuentas",
+      "siteHead": "ALMEIRA, SALVADOR EMILIO",
+      "supervisor": ""
+    },
+    {
+      "client": "METROGAS",
+      "scopeManager": "",
+      "scopeSiteHead": "",
+      "scopeSupervisor": "",
+      "manager": "Multicuentas",
+      "siteHead": "ALMEIRA, SALVADOR EMILIO",
+      "supervisor": "VILLALVA, SILVANA ELIZABETH"
+    },
+    {
+      "client": "MIRGOR",
+      "scopeManager": "",
+      "scopeSiteHead": "",
+      "scopeSupervisor": "",
+      "manager": "Multicuentas",
+      "siteHead": "",
+      "supervisor": "ALVARENGA, JUAN FRANCISCO"
+    },
+    {
+      "client": "NATURGY",
+      "scopeManager": "",
+      "scopeSiteHead": "",
+      "scopeSupervisor": "",
+      "manager": "",
+      "siteHead": "RISSI PEREIRA, ISMAEL NICOLAS",
+      "supervisor": ""
+    },
+    {
+      "client": "NATURGY",
+      "scopeManager": "QUESADA, MARIANO JUAN LUIS",
+      "scopeSiteHead": "RISSI PEREIRA, ISMAEL NICOLAS",
+      "scopeSupervisor": "Sin supervisor",
+      "manager": "",
+      "siteHead": "",
+      "supervisor": "ROMERO, VIVIANA JESICA"
+    },
+    {
+      "client": "OMINT",
+      "scopeManager": "",
+      "scopeSiteHead": "",
+      "scopeSupervisor": "",
+      "manager": "Multicuentas",
+      "siteHead": "",
+      "supervisor": "VAINER, PATRICIA"
+    },
+    {
+      "client": "PERSONAL",
+      "scopeManager": "CAAMAÑO, LUCAS DAMIAN",
+      "scopeSiteHead": "ANTELO LEMOS, MICAELA SOLEDAD",
+      "scopeSupervisor": "Sin supervisor",
+      "manager": "",
+      "siteHead": "",
+      "supervisor": "BOTTURA, DAIANA MICAELA"
+    },
+    {
+      "client": "PERSONAL",
+      "scopeManager": "CAAMAÑO, LUCAS DAMIAN",
+      "scopeSiteHead": "Sin jefe de site identificado",
+      "scopeSupervisor": "Sin supervisor",
+      "manager": "",
+      "siteHead": "CHANAMPA, PABLO NAHUEL",
+      "supervisor": "LLACTAS RODRIGUEZ, JOSSELYN STEFANY"
+    },
+    {
+      "client": "PERSONAL",
+      "scopeManager": "Multicuentas",
+      "scopeSiteHead": "Sin jefe de site identificado",
+      "scopeSupervisor": "Sin supervisor",
+      "manager": "CAAMAÑO, LUCAS DAMIAN",
+      "siteHead": "CHANAMPA, PABLO NAHUEL",
+      "supervisor": "LLACTAS RODRIGUEZ, JOSSELYN STEFANY"
+    },
+    {
+      "client": "QUALIA",
+      "scopeManager": "QUESADA, MARIANO JUAN LUIS",
+      "scopeSiteHead": "ALMEIRA, SALVADOR EMILIO",
+      "scopeSupervisor": "ALVARENGA, JUAN FRANCISCO",
+      "manager": "Multicuentas",
+      "siteHead": "",
+      "supervisor": ""
+    },
+    {
+      "client": "RIVER PLATE",
+      "scopeManager": "QUESADA, MARIANO JUAN LUIS",
+      "scopeSiteHead": "ALMEIRA, SALVADOR EMILIO",
+      "scopeSupervisor": "ROMERO, VIVIANA JESICA",
+      "manager": "",
+      "siteHead": "RISSI PEREIRA, ISMAEL NICOLAS",
+      "supervisor": ""
+    },
+    {
+      "client": "SANTANDER",
+      "scopeManager": "Multicuentas",
+      "scopeSiteHead": "Sin jefe de site identificado",
+      "scopeSupervisor": "Sin supervisor",
+      "manager": "QUESADA, MARIANO JUAN LUIS",
+      "siteHead": "DITTO, MARIELA",
+      "supervisor": "IRALA, ROCIO ANAHI"
+    },
+    {
+      "client": "SANTANDER",
+      "scopeManager": "QUESADA, MARIANO JUAN LUIS",
+      "scopeSiteHead": "DITTO, MARIELA",
+      "scopeSupervisor": "Sin supervisor",
+      "manager": "",
+      "siteHead": "",
+      "supervisor": "IRALA, ROCIO ANAHI"
+    },
+    {
+      "client": "SANTANDER GETNET",
+      "scopeManager": "QUESADA, MARIANO JUAN LUIS",
+      "scopeSiteHead": "LOPEZ DE LA VEGA, ROXANA",
+      "scopeSupervisor": "Sin supervisor",
+      "manager": "",
+      "siteHead": "",
+      "supervisor": "SALINAS, ROMINA BEATRIZ"
+    },
+    {
+      "client": "SPAZIOS",
+      "scopeManager": "QUESADA, MARIANO JUAN LUIS",
+      "scopeSiteHead": "ALMEIRA, SALVADOR EMILIO",
+      "scopeSupervisor": "ROMERO, VIVIANA JESICA",
+      "manager": "Multicuentas",
+      "siteHead": "SURACE, CAROLINA VICTORIA",
+      "supervisor": "VILLALVA, SILVANA ELIZABETH"
+    },
+    {
+      "client": "SPAZIOS",
+      "scopeManager": "QUESADA, MARIANO JUAN LUIS",
+      "scopeSiteHead": "SURACE, CAROLINA VICTORIA",
+      "scopeSupervisor": "Sin supervisor",
+      "manager": "Multicuentas",
+      "siteHead": "",
+      "supervisor": "VILLALVA, SILVANA ELIZABETH"
+    },
+    {
+      "client": "SPAZIOS",
+      "scopeManager": "QUESADA, MARIANO JUAN LUIS",
+      "scopeSiteHead": "SURACE, CAROLINA VICTORIA",
+      "scopeSupervisor": "VILLALVA, SILVANA ELIZABETH",
+      "manager": "Multicuentas",
+      "siteHead": "",
+      "supervisor": ""
+    },
+    {
+      "client": "SUPERVIELLE",
+      "scopeManager": "QUESADA, MARIANO JUAN LUIS",
+      "scopeSiteHead": "SURACE, CAROLINA VICTORIA",
+      "scopeSupervisor": "VILLALVA, SILVANA ELIZABETH",
+      "manager": "Multicuentas",
+      "siteHead": "",
+      "supervisor": ""
+    },
+    {
+      "client": "SUPERVIELLE SEGUROS",
+      "scopeManager": "QUESADA, MARIANO JUAN LUIS",
+      "scopeSiteHead": "RISSI PEREIRA, ISMAEL NICOLAS",
+      "scopeSupervisor": "Sin supervisor",
+      "manager": "",
+      "siteHead": "",
+      "supervisor": "MARIANI, MARIA CELESTE"
+    },
+    {
+      "client": "UNICEF",
+      "scopeManager": "QUESADA, MARIANO JUAN LUIS",
+      "scopeSiteHead": "LOPEZ DE LA VEGA, ROXANA",
+      "scopeSupervisor": "MEIJOME, MARIA FLORENCIA",
+      "manager": "Multicuentas",
+      "siteHead": "SURACE, CAROLINA VICTORIA",
+      "supervisor": "VILLALVA, SILVANA ELIZABETH"
+    },
+    {
+      "client": "UNICEF",
+      "scopeManager": "QUESADA, MARIANO JUAN LUIS",
+      "scopeSiteHead": "SURACE, CAROLINA VICTORIA",
+      "scopeSupervisor": "VILLALVA, SILVANA ELIZABETH",
+      "manager": "Multicuentas",
+      "siteHead": "",
+      "supervisor": ""
+    },
+    {
+      "client": "YAMAHA",
+      "scopeManager": "",
+      "scopeSiteHead": "",
+      "scopeSupervisor": "",
+      "manager": "Multicuentas",
+      "siteHead": "LOPEZ DE LA VEGA, ROXANA",
+      "supervisor": "Sin supervisor"
+    }
+  ]
+}

@@ -10,16 +10,21 @@ import {
   getDatasetMetadataBrowser,
   getFilterOptionsBrowser,
   getFilteredRecordsBrowser,
+  getHierarchySummaryBrowser,
   getRequiredStructureBrowser,
   getStaffingByCampaignBrowser,
   getValidationsBrowser,
   runDynamicAnalysisBrowser,
   uploadPayrollBrowser,
 } from "./browserData.js";
+import {
+  getBrowserHierarchyExceptions,
+  hierarchyExceptionsStorageKey,
+} from "../config/hierarchyExceptions.js";
 
 const localApiUrl =
   typeof window !== "undefined" && ["127.0.0.1:5173", "localhost:5173"].includes(window.location.host)
-    ? "http://127.0.0.1:8000"
+    ? "http://127.0.0.1:8001"
     : "";
 const API_URL = import.meta.env.VITE_API_URL || localApiUrl;
 export const usesBrowserData = !API_URL;
@@ -98,6 +103,42 @@ export function getRequiredStructure(filters = []) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ filters }),
+  });
+}
+
+export function getHierarchySummary(filters = []) {
+  if (usesBrowserData) return Promise.resolve(getHierarchySummaryBrowser(filters));
+  return request("/hierarchy-summary", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ filters }),
+  });
+}
+
+export function getHierarchyExceptions() {
+  if (usesBrowserData) {
+    const data = getBrowserHierarchyExceptions();
+    data.rows = (data.rows || []).map((row) => ({
+      ...row,
+      manager: String(row.manager || "").trim().toUpperCase() === "SIN GERENTE IDENTIFICADO"
+        ? "Multicuentas"
+        : row.manager,
+    }));
+    return Promise.resolve(data);
+  }
+  return request("/hierarchy-exceptions");
+}
+
+export function saveHierarchyExceptions(payload) {
+  if (usesBrowserData) {
+    const data = { rows: payload.rows || [] };
+    localStorage.setItem(hierarchyExceptionsStorageKey, JSON.stringify(data));
+    return Promise.resolve(data);
+  }
+  return request("/hierarchy-exceptions", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
   });
 }
 
